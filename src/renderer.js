@@ -45,6 +45,12 @@ async function render(){
 
     //下面对每条消息进行判断
     for(let chatElement of allChats){
-        const innerChatElement = chatElement.querySelector('')
+        const innerChatElement = chatElement.querySelector('.text-normal')
+
+        if(!innerChatElement?.classList ||
+            innerChatElement?.classList.contains('changed-text')) continue;
+
+        innerChatElement.classList.add('changed-text')
+        innerChatElement.innerHTML+=''
     }
 }

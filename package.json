@@ -1,5 +1,6 @@
 {
   "dependencies": {
+    "crypto-js": "^4.2.0",
     "qrcode": "^1.5.4"
   }
 }
