@@ -1,1 +1,0 @@
-基于QQNT插件LiteLoader的加密通话插件

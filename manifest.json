@@ -5,6 +5,7 @@
     "slug": "encrypt_chat",
     "description": "一个用于LiteLoaderQQNT的加密通话插件(*^_^*)",
     "version": "0.1.0",
+    "icon": "./chat.png",
     "authors": [{
         "name": "WJZ_P",
         "link": "https://github.com/WJZ_P"
