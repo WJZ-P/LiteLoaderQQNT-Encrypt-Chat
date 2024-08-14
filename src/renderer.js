@@ -62,8 +62,7 @@ async function render() {
  * @returns {boolean}
  */
 function checkMsgElement(msgElement) {
-    return !(!msgElement?.classList || msgElement?.classList.contains('changed-text') //已修改则不再修改
-        || '' === decodeHex(msgElement.innerText.trim())); //未加密消息不修改
-
-
+    const result= !(!msgElement?.classList || msgElement?.classList.contains('changed-text') //已修改则不再修改
+        || '' === decodeHex(msgElement.innerText)); //未加密消息不修改
+    if(!result) console.log('[EC]'+'这条消息不对哦，消息内容为'+msgElement.innerText)
 }
