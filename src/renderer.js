@@ -1,5 +1,4 @@
 import {addMenuItemEC} from "./MenuUtils.js";
-import {decodeHex, messageDecoder} from "./cryptoUtils.js";
 
 addMenuItemEC()//添加鼠标右键时的菜单选项
 export const onSettingWindowCreated = view => {
@@ -20,8 +19,8 @@ const chatObserver = new MutationObserver(mutationsList => {
     if (observerRendering) return;
 
     observerRendering = true
-    setTimeout(() => {
-        render()
+    setTimeout(async () => {
+        await render()
         observerRendering = false
     }, 50)
 
@@ -47,22 +46,27 @@ async function render() {
     //下面对每条消息进行判断
     for (let chatElement of allChats) {
         const innerChatElement = chatElement.querySelector('.text-normal')
-        if(!checkMsgElement(innerChatElement)) continue; //如果消息元素不符合加密解密条件，则不修改
+        if (!(await checkMsgElement(innerChatElement))) continue; //如果消息元素不符合加密解密条件，则不修改
 
-        const msg=innerChatElement.innerText  //发送的消息内容
-        const decryptedMsg=messageDecoder(msg) //解密消息
-        innerChatElement.innerText+=`(${decryptedMsg})`
+        const msg = innerChatElement.innerText  //发送的消息内容
+        const decryptedMsg =await window.encrypt_chat.messageDecoder(msg) //解密消息
+        innerChatElement.innerText += `(${decryptedMsg})`
 
     }
 }
 
 /**
- * 检查消息元素是否需要修改
+ * 检查消息元素是否需要修改，不能进程间通讯，因为只能传朴素值
  * @param msgElement
  * @returns {boolean}
  */
-function checkMsgElement(msgElement) {
-    const result= !(!msgElement?.classList || msgElement?.classList.contains('changed-text') //已修改则不再修改
-        || '' === decodeHex(msgElement.innerText)); //未加密消息不修改
-    if(!result) console.log('[EC]'+'这条消息不对哦，消息内容为'+msgElement.innerText)
+async function checkMsgElement(msgElement) {
+    const result = !(!msgElement?.classList || msgElement?.innerText ||
+        msgElement?.classList.contains('changed-text') //已修改则不再修改
+        || '' ===(await window.encrypt_chat.decodeHex(msgElement.innerText))); //未加密消息不修改
+    if (!result && msgElement?.innerText) {
+        console.log('[EC]' + '这条消息不对哦，消息内容为' + msgElement?.innerText)
+        console.log('[EC]' + 'decodeHex解码结果为' + (await window.encrypt_chat.decodeHex(msgElement.innerText)))
+    }
+    return result
 }

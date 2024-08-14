@@ -1,5 +1,4 @@
 const CryptoJS = require("crypto-js");
-const {exp} = require("qrcode/lib/core/galois-field");
 
 const cryptoConfig = {
     iv: CryptoJS.lib.WordArray.random(16),
@@ -29,7 +28,7 @@ let secretKey = '20040821'
  * @param {string} messageToBeEncrypted
  * @returns {string}
  */
-export function messageEncrypter(messageToBeEncrypted) {
+function messageEncrypter(messageToBeEncrypted) {
     let minLength = nowStyles.length[0];
     let maxLength = nowStyles.length[1];
     let content = nowStyles.content;
@@ -56,7 +55,7 @@ export function messageEncrypter(messageToBeEncrypted) {
  * @param {string} message
  * @returns {string}
  */
-export function messageDecoder(message) {
+function messageDecoder(message) {
     //拿到密文
     const encrypedMessage=decodeHex(message)
     //密文转回UTF-8
@@ -67,17 +66,21 @@ export function messageDecoder(message) {
 }
 
 
-export function encodeHex(result) {
+function encodeHex(result) {
     for (const key in replaceMap) {
         result = result.replaceAll(key, replaceMap[key])
     }
     return result
 }
 
-export function decodeHex(content) {
+function decodeHex(content) {
     content = [...content].filter((it) => Object.values(replaceMap).includes(it)).join("").trim()
     for (const key in replaceMap) {
         content = content.replaceAll(replaceMap[key], key)
     }
     return content
 }
+
+
+
+module.exports={messageEncrypter,messageDecoder,decodeHex}

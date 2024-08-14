@@ -3,4 +3,4 @@ let msg ='嘻嘻喵'
 if(''===decodeHex(msg)) console.log(123)
 else console.log(1)
 
-console.log(messageEncrypter('哇嘎嘎！'))
+console.log(messageEncrypter('嘻嘻喵！'))
