@@ -49,9 +49,9 @@ async function render() {
         if (!(await checkMsgElement(innerChatElement))) continue; //如果消息元素不符合加密解密条件，则不修改
 
         const msg = innerChatElement.innerText  //发送的消息内容
-        const decryptedMsg =await window.encrypt_chat.messageDecoder(msg) //解密消息
+        const decryptedMsg = await window.encrypt_chat.messageDecoder(msg) //解密消息
         innerChatElement.innerText += `(${decryptedMsg})`
-
+        innerChatElement.classList.add('changed-text') //标记已修改
     }
 }
 
@@ -61,12 +61,12 @@ async function render() {
  * @returns {boolean}
  */
 async function checkMsgElement(msgElement) {
-    const result = !(!msgElement?.classList || msgElement?.innerText ||
-        msgElement?.classList.contains('changed-text') //已修改则不再修改
-        || '' ===(await window.encrypt_chat.decodeHex(msgElement.innerText))); //未加密消息不修改
-    if (!result && msgElement?.innerText) {
-        console.log('[EC]' + '这条消息不对哦，消息内容为' + msgElement?.innerText)
-        console.log('[EC]' + 'decodeHex解码结果为' + (await window.encrypt_chat.decodeHex(msgElement.innerText)))
-    }
-    return result
+    if (!msgElement?.classList) return false; //如果元素没有classList属性，直接返回，因为右键的不一定是文字元素
+    if (msgElement.classList.contains('changed-text')) return false; //已修改则不再修改
+    if (!msgElement?.innerText) return false; //如果消息为空，则不修改
+
+    let decodeRes = await window.encrypt_chat.decodeHex(msgElement.innerText)//解码消息
+    if (!decodeRes) return false; //如果消息解码失败，则不修改
+
+    return true
 }

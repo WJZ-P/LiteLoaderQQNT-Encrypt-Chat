@@ -12,3 +12,4 @@ module.exports.onBrowserWindowCreated = window => {
 ipcMain.handle("LiteLoader.encrypt_chat.messageEncrypter", (_, message) => messageEncrypter(message))
 ipcMain.handle("LiteLoader.encrypt_chat.messageDecoder", (_, message) => messageDecoder(message))
 ipcMain.handle("LiteLoader.encrypt_chat.decodeHex", (_, message) => decodeHex(message))
+
