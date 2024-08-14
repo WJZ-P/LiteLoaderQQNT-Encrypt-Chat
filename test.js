@@ -1,10 +1,6 @@
-const CryptoJS = require("crypto-js");
+const {decodeHex}=require('./src/cryptoUtils')
+let msg ='嘻嘻喵'
+if(''===decodeHex(msg)) console.log(123)
+else console.log(1)
 
-let encrypedText=CryptoJS.AES.encrypt("Hello, world!", "secret key 123").toString();
-
-console.log(encrypedText);
-
-//解密
-let originalText=CryptoJS.AES.decrypt(encrypedText, "secret key 123").toString(CryptoJS.enc.Utf8);
-
-console.log(originalText);
+console.log(typeof (decodeHex(msg)))

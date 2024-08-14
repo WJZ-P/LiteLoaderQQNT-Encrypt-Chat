@@ -1,4 +1,5 @@
 import {addMenuItemEC} from "./MenuUtils.js";
+import {decodeHex, messageDecoder} from "./cryptoUtils.js";
 
 addMenuItemEC()//添加鼠标右键时的菜单选项
 export const onSettingWindowCreated = view => {
@@ -22,7 +23,7 @@ const chatObserver = new MutationObserver(mutationsList => {
     setTimeout(() => {
         render()
         observerRendering = false
-    },50)
+    }, 50)
 
 })
 
@@ -39,18 +40,30 @@ const finder = setInterval(() => {
 }, 100);
 
 //渲染函数，修改文本
-async function render(){
+async function render() {
     //console.log('[Encrypt-Chat]'+'尝试渲染消息')
     let allChats = document.querySelectorAll('.ml-item')
 
     //下面对每条消息进行判断
-    for(let chatElement of allChats){
+    for (let chatElement of allChats) {
         const innerChatElement = chatElement.querySelector('.text-normal')
+        if(!checkMsgElement(innerChatElement)) continue; //如果消息元素不符合加密解密条件，则不修改
 
-        if(!innerChatElement?.classList ||
-            innerChatElement?.classList.contains('changed-text')) continue;
+        const msg=innerChatElement.innerText  //发送的消息内容
+        const decryptedMsg=messageDecoder(msg) //解密消息
+        innerChatElement.innerText+=`(${decryptedMsg})`
 
-        innerChatElement.classList.add('changed-text')
-        innerChatElement.innerHTML+=''
     }
+}
+
+/**
+ * 检查消息元素是否需要修改
+ * @param msgElement
+ * @returns {boolean}
+ */
+function checkMsgElement(msgElement) {
+    return !(!msgElement?.classList || msgElement?.classList.contains('changed-text') //已修改则不再修改
+        || '' === decodeHex(msgElement.innerText.trim())); //未加密消息不修改
+
+
 }

@@ -6,19 +6,29 @@ const cryptoConfig = {
     padding: CryptoJS.pad.Pkcs7 // 设置填充方式为PKCS#7
 }
 
+const replaceMap = {}
+
+for (let i = 0xfe00; i <= 0xfe0f; i++) {//型号选择器1-16
+    const hex = (i - 0xfe00).toString(16)
+    replaceMap[hex] = String.fromCodePoint(i)//根据Unicode码替换成对应的字符
+}
+
 const styles = {
     Bangboo: {
-        length: [1, 5],
-        content: ['嗯呢', '，', '嗯', '！', '...', '嗯呢哒', '嗯呐呐', '嗯哒!', '嗯呢呢!']
+        length: [2, 5],
+        content: ['嗯呢', '，', '嗯', '！', '...', '嗯呢哒', '嗯呐呐', '嗯哒！', '嗯呢呢！']
     }
 }
 
 let nowStyles = styles.Bangboo
 let secretKey = '20040821'
-const divider = '⁣'
 
-//消息加密器
-function messageEncrypter(originalMessage) {
+/**
+ * 消息加密器
+ * @param {string} messageToBeEncrypted
+ * @returns {string}
+ */
+function messageEncrypter(messageToBeEncrypted) {
     let minLength = nowStyles.length[0];
     let maxLength = nowStyles.length[1];
     let content = nowStyles.content;
@@ -30,62 +40,44 @@ function messageEncrypter(originalMessage) {
         result += content[randomIndex]
     }
     //加密明文
-    let encryptedMessage = CryptoJS.AES.encrypt(originalMessage, secretKey, cryptoConfig).toString();
-    //明文转成空白符
-    encryptedMessage = encryptedMessage.split('').map(char => customMappingTable[char] || char).join('');
-    return result + divider + encryptedMessage
+    let encryptedMessage = CryptoJS.AES.encrypt(messageToBeEncrypted, secretKey, cryptoConfig).toString();
+    console.log('[EC] 加密后的密文'+encryptedMessage)
+    //密文转十六进制
+    let hexMsg = Buffer.from(encryptedMessage, 'utf-8').toString('hex')
+    console.log('[EC] 密文转十六进制'+hexMsg)
+
+    //密文转成空白符
+    return result + encodeHex(hexMsg)//加密后的密文
 }
 
 /**
  *消息解密器
  * @param {string} message
+ * @returns {string}
  */
 function messageDecoder(message) {
     //拿到密文
-    let encrypedMessage = message.split(divider)[1]
-    encrypedMessage = encrypedMessage.split('').map(char => reversedMappingTable[char] || char).join('');
-    console.log('[messageDecoder]'+encrypedMessage)
+    const encrypedMessage=decodeHex(message)
+    //密文转回UTF-8
+    const utfMsg=Buffer.from(encrypedMessage, 'hex').toString('utf-8')
+    console.log('[messageDecoder]' + utfMsg)
     //返回明文
-    return CryptoJS.AES.decrypt(encrypedMessage, secretKey).toString(CryptoJS.enc.Utf8)
+    return CryptoJS.AES.decrypt(utfMsg, secretKey).toString(CryptoJS.enc.Utf8)
 }
 
 
-const customMappingTable = {
-    '0': '︀', '1': '︁', '2': '︂', '3': '︃', '4': '︄',
-    '5': '︅', '6': '︆', '7': '︇', '8': '︈', '9': '︉',
-    'a': '󠁡', 'b': '󠁢', 'c': '󠁣', 'd': '󠁤', 'e': '󠁥',
-    'f': '󠁦', 'g': '󠁧', 'h': '󠁨', 'i': '󠁩', 'j': '󠁪',
-    'k': '󠁫', 'l': '󠁬', 'm': '󠁭', 'n': '󠁮', 'o': '󠁯',
-    'p': '󠁰', 'q': '󠁱', 'r': '󠁲', 's': '󠁳', 't': '󠁴',
-    'u': '󠁵', 'v': '󠁶', 'w': '󠁷', 'x': '󠁸', 'y': '󠁹',
-    'z': '󠁺',
-    'A': '󠁁', 'B': '󠁂', 'C': '󠁃', 'D': '󠁄', 'E': '󠁅',
-    'F': '󠁆', 'G': '󠁇', 'H': '󠁈', 'I': '󠁉', 'J': '󠁊',
-    'K': '󠁋', 'L': '󠁌', 'M': '󠁍', 'N': '󠁎', 'O': '󠁏',
-    'P': '󠁐', 'Q': '󠁑', 'R': '󠁒', 'S': '󠁓', 'T': '󠁔',
-    'U': '󠁕', 'V': '󠁖', 'W': '󠁗', 'X': '󠁘', 'Y': '󠁙',
-    'Z': '󠁚',
-    '+': '󠄀', '/': '󠄁', '=': '󠄂'
-};
-const reversedMappingTable = {
-    '︀': '0', '︁': '1', '︂': '2', '︃': '3', '︄': '4',
-    '︅': '5', '︆': '6', '︇': '7', '︈': '8', '︉': '9',
-    '󠁡': 'a', '󠁢': 'b', '󠁣': 'c', '󠁤': 'd', '󠁥': 'e',
-    '󠁦': 'f', '󠁧': 'g', '󠁨': 'h', '󠁩': 'i', '󠁪': 'j',
-    '󠁫': 'k', '󠁬': 'l', '󠁭': 'm', '󠁮': 'n', '󠁯': 'o',
-    '󠁰': 'p', '󠁱': 'q', '󠁲': 'r', '󠁳': 's', '󠁴': 't',
-    '󠁵': 'u', '󠁶': 'v', '󠁷': 'w', '󠁸': 'x', '󠁹': 'y',
-    '󠁺': 'z',
-    '󠁁': 'A', '󠁂': 'B', '󠁃': 'C', '󠁄': 'D', '󠁅': 'E',
-    '󠁆': 'F', '󠁇': 'G', '󠁈': 'H', '󠁉': 'I', '󠁊': 'J',
-    '󠁋': 'K', '󠁌': 'L', '󠁍': 'M', '󠁎': 'N', '󠁏': 'O',
-    '󠁐': 'P', '󠁑': 'Q', '󠁒': 'R', '󠁓': 'S', '󠁔': 'T',
-    '󠁕': 'U', '󠁖': 'V', '󠁗': 'W', '󠁘': 'X', '󠁙': 'Y',
-    '󠁚': 'Z',
-    '󠄀': '+', '󠄁': '/', '󠄂': '='
+function encodeHex(result) {
+    for (const key in replaceMap) {
+        result = result.replaceAll(key, replaceMap[key])
+    }
+    return result
 }
 
-let encryptedText='a'.split('').map(char => customMappingTable[char] || char).join('')
-console.log(encryptedText)
-console.log(encryptedText.split('').map(char => reversedMappingTable[char] || char).join(''))
-module.exports = {messageEncrypter, messageDecoder};
+function decodeHex(content) {
+    content = [...content].filter((it) => Object.values(replaceMap).includes(it)).join("").trim()
+    for (const key in replaceMap) {
+        content = content.replaceAll(replaceMap[key], key)
+    }
+    return content
+}
+module.exports ={decodeHex,messageDecoder}
