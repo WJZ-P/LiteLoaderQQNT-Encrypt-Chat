@@ -41,10 +41,10 @@ function messageEncrypter(messageToBeEncrypted) {
     }
     //加密明文
     let encryptedMessage = CryptoJS.AES.encrypt(messageToBeEncrypted, secretKey, cryptoConfig).toString();
-    console.log('[EC] 加密后的密文'+encryptedMessage)
+    //console.log('[EC] 加密后的密文'+encryptedMessage)
     //密文转十六进制
     let hexMsg = Buffer.from(encryptedMessage, 'utf-8').toString('hex')
-    console.log('[EC] 密文转十六进制'+hexMsg)
+    //console.log('[EC] 密文转十六进制'+hexMsg)
 
     //密文转成空白符
     return result + encodeHex(hexMsg)//加密后的密文
