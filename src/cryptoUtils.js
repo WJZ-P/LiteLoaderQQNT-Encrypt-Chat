@@ -40,14 +40,10 @@ function messageEncrypter(messageToBeEncrypted) {
         result += content[randomIndex]
     }
     //加密明文
-    let encryptedMessage = CryptoJS.AES.encrypt(messageToBeEncrypted, secretKey, cryptoConfig).toString();
+    let encryptedMessage = CryptoJS.AES.encrypt(messageToBeEncrypted, secretKey, cryptoConfig).toString('hex');
     //console.log('[EC] 加密后的密文'+encryptedMessage)
-    //密文转十六进制
-    let hexMsg = Buffer.from(encryptedMessage, 'utf-8').toString('hex')
-    //console.log('[EC] 密文转十六进制'+hexMsg)
-
     //密文转成空白符
-    return result + encodeHex(hexMsg)//加密后的密文
+    return result + encodeHex(encryptedMessage)//加密后的密文
 }
 
 /**
@@ -58,11 +54,11 @@ function messageEncrypter(messageToBeEncrypted) {
 function messageDecoder(message) {
     //拿到密文
     const encrypedMessage=decodeHex(message)
-    //密文转回UTF-8
-    const utfMsg=Buffer.from(encrypedMessage, 'hex').toString('utf-8')
-    console.log('[messageDecoder]' + utfMsg)
+    //密文转回二进制
+    const bufferMsg=Buffer.from(encrypedMessage, 'hex')
+    console.log('[messageDecoder]' + bufferMsg)
     //返回明文
-    return CryptoJS.AES.decrypt(utfMsg, secretKey).toString(CryptoJS.enc.Utf8)
+    return CryptoJS.AES.decrypt(bufferMsg, secretKey).toString(CryptoJS.enc.Utf8)
 }
 
 

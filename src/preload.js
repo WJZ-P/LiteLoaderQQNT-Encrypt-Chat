@@ -5,4 +5,5 @@ contextBridge.exposeInMainWorld("encrypt_chat", {
     messageEncrypter: (message) => ipcRenderer.invoke("LiteLoader.encrypt_chat.messageEncrypter", message),
     messageDecoder: (message) => ipcRenderer.invoke("LiteLoader.encrypt_chat.messageDecoder", message),
     decodeHex: (message) => ipcRenderer.invoke("LiteLoader.encrypt_chat.decodeHex", message),
+    getMenuHTML:()=> ipcRenderer.invoke("LiteLoader.encrypt_chat.getMenuHTML"),
 });
