@@ -1,11 +1,5 @@
 const CryptoJS = require("crypto-js");
 
-const cryptoConfig = {
-    iv: CryptoJS.lib.WordArray.random(16),
-    mode: CryptoJS.mode.CBC, // 设置模式为CBC
-    padding: CryptoJS.pad.Pkcs7 // 设置填充方式为PKCS#7
-}
-
 const replaceMap = {}
 
 for (let i = 0xfe00; i <= 0xfe0f; i++) {//型号选择器1-16
@@ -21,7 +15,7 @@ const styles = {
 }
 
 let nowStyles = styles.Bangboo
-let secretKey = '20040821'
+let secretKey = CryptoJS.MD5('20040821')
 
 /**
  * 消息加密器
@@ -40,27 +34,49 @@ function messageEncrypter(messageToBeEncrypted) {
         result += content[randomIndex]
     }
     //加密明文
-    let encryptedMessage = CryptoJS.AES.encrypt(messageToBeEncrypted, secretKey, cryptoConfig).toString('hex');
-    //console.log('[EC] 加密后的密文'+encryptedMessage)
+    const iv = CryptoJS.lib.WordArray.random(16)
+    let encryptedMessage = CryptoJS.AES.encrypt(messageToBeEncrypted, secretKey, {
+        iv: iv,
+        mode: CryptoJS.mode.CBC, // 设置模式为CBC
+        padding: CryptoJS.pad.Pkcs7 // 设置填充方式为PKCS#7
+    }).ciphertext.toString(CryptoJS.enc.Hex);
+    console.log('[EC] 加密后的密文' + encryptedMessage)
     //密文转成空白符
-    return result + encodeHex(encryptedMessage)//加密后的密文
+    return encodeHex(iv.toString(CryptoJS.enc.Hex) + encryptedMessage) + result//加密后的密文
 }
 
 /**
  *消息解密器
- * @param {string} message
+ * @param {string} message 里面有一个十六进制格式的字符串
  * @returns {string}
  */
-function messageDecoder(message) {
-    //拿到密文
-    const encrypedMessage=decodeHex(message)
-    //密文转回二进制
-    const bufferMsg=Buffer.from(encrypedMessage, 'hex')
-    console.log('[messageDecoder]' + bufferMsg)
-    //返回明文
-    return CryptoJS.AES.decrypt(bufferMsg, secretKey).toString(CryptoJS.enc.Utf8)
-}
+function messageDecrypter(message) {
+    console.log('[EC] 解密器启动，message为' + message)
 
+    //获得密文中的iv，为密文的前32位
+    const iv = CryptoJS.enc.Hex.parse(message.slice(0, 32))
+
+    // 创建 CipherParams 对象
+    const ciphertext = CryptoJS.enc.Hex.parse(message.substring(32));
+
+    // 进行解密
+    const decrypted = CryptoJS.AES.decrypt({ciphertext: ciphertext}, secretKey, {
+        iv: iv,
+        mode: CryptoJS.mode.CBC, // 设置模式为CBC
+        padding: CryptoJS.pad.Pkcs7 // 设置填充方式为PKCS#7
+    });
+
+    // 尝试将解密的数据转换为 UTF-8 字符串
+    const decryptedText = decrypted.toString(CryptoJS.enc.Utf8);
+
+    // 检查是否解密成功
+    if (!decryptedText) {
+        console.error('解密失败，返回的结果为空或无效 UTF-8 数据');
+        return null; // 或其他处理
+    }
+
+    return decryptedText;
+}
 
 function encodeHex(result) {
     for (const key in replaceMap) {
@@ -70,6 +86,7 @@ function encodeHex(result) {
 }
 
 function decodeHex(content) {
+    console.log('decodeHex启动，content为' + content)
     content = [...content].filter((it) => Object.values(replaceMap).includes(it)).join("").trim()
     for (const key in replaceMap) {
         content = content.replaceAll(replaceMap[key], key)
@@ -78,5 +95,4 @@ function decodeHex(content) {
 }
 
 
-
-module.exports={messageEncrypter,messageDecoder,decodeHex}
+module.exports = {messageEncrypter, messageDecrypter, decodeHex}
