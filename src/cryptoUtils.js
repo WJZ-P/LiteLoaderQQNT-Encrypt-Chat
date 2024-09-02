@@ -10,7 +10,7 @@ for (let i = 0xfe00; i <= 0xfe0f; i++) {//型号选择器1-16
 const styles = {
     Bangboo: {
         length: [2, 5],
-        content: ['嗯呢', '，', '嗯', '！', '...', '嗯呢哒', '嗯呐呐', '嗯哒！', '嗯呢呢！']
+        content: ['嗯呢，', '嗯', '！', '...', '嗯呢哒', '嗯呐呐!', '嗯哒！', '嗯呢呢！']
     }
 }
 
@@ -86,7 +86,7 @@ function encodeHex(result) {
 }
 
 function decodeHex(content) {
-    console.log('decodeHex启动，content为' + content)
+    // console.log('decodeHex启动，content为' + content)
     content = [...content].filter((it) => Object.values(replaceMap).includes(it)).join("").trim()
     for (const key in replaceMap) {
         content = content.replaceAll(replaceMap[key], key)

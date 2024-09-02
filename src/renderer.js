@@ -1,5 +1,5 @@
-import {addMenuItemEC} from "./MenuUtils.js";
-import {appendEncreptedTag} from "./frontendUtils";
+import {addFuncBar, addMenuItemEC} from "./MenuUtils.js";
+import {appendEncreptedTag} from "./frontendUtils.js";
 
 const nowConfig = {
     mainColor: '#66ccff',
@@ -257,8 +257,10 @@ export const onSettingWindowCreated = view => {
 
 //注入函数
 function onLoad() {
+    console.log('下面执行onLoad方法')
     addMenuItemEC()//添加鼠标右键时的菜单选项
     patchCss()//修改css
+    addFuncBar()//添加功能栏的功能图标
 }
 
 //节流，防止多次渲染
@@ -297,13 +299,12 @@ async function render() {
         //包裹住消息内容的div msg-content-container
         const msgContentContainer = chatElement.querySelector('.msg-content-container')
 
-        console.log('准备检测消息是否符合加密条件')
-        const hexString=await checkMsgElement(innerChatElement)
+        const hexString = await checkMsgElement(innerChatElement)
         if (!hexString) continue; //如果消息元素不符合加密解密条件，则不修改
 
 
         //解密消息并替换消息
-        const originalText=innerChatElement.innerText//获取原本的密文
+        const originalText = innerChatElement.innerText//获取原本的密文
         innerChatElement.innerText = await window.encrypt_chat.messageDecrypter(hexString)//文本内容修改为解密结果
         innerChatElement.classList.add('message-encrypted') //标记已修改
         appendEncreptedTag(msgContentContainer, originalText)//添加解密消息标记
@@ -321,13 +322,10 @@ async function checkMsgElement(msgElement) {
     if (msgElement.classList.contains('message-encrypted')) return false; //已修改则不再修改
     if (!msgElement?.innerText) return false; //如果消息为空，则不修改
 
-    console.log('消息检测：下面即将开始尝试解码消息')
     let decodeRes = await window.encrypt_chat.decodeHex(msgElement.innerHTML)//解码消息
     if (!decodeRes) return false; //如果消息解码失败，则不修改
     return decodeRes    //直接返回解密的结果，是十六进制的字符串
 }
-
-
 
 
 //添加css样式
@@ -392,15 +390,54 @@ function patchCss() {
             }
             
             .message-encrypted-tip-parent {
-                    border-radius: 10px;
-                    position: relative;
-                    overflow: unset !important;
-                    margin-top:3px;
-                    margin-left:3px;
-                    margin-right:3px;
-                    margin-bottom: 25px;
-                    box-shadow: 0px 0px 8px 5px ${nowConfig.mainColor};
-            }`
+                border-radius: 10px;
+                position: relative;
+                overflow: unset !important;
+                margin-top:3px;
+                margin-left:3px;
+                margin-right:3px;
+                margin-bottom: 25px;
+                box-shadow: 0px 0px 8px 5px ${nowConfig.mainColor};
+            }
+            
+.q-svg{
+    position: relative;
+    display: inline-block;
+    transition: 0.25s;
+    &:hover{
+        color: #2f2f2f;
+        cursor: pointer;
+        scale: 1.05;
+    }
+}
+
+.q-svg.active {
+    fill: #66ccff; /* 更深的颜色 */
+}
+
+.q-tooltips-div{
+    visibility: hidden;
+    width: fit-content;
+    background-color: #555;
+    color: #fff;
+    text-align: center;
+    border-radius: 5px;
+    padding: 5px;
+    position: absolute;
+    z-index: 1;
+    left: 50%;
+    /*margin-left: -60px; !* 居中 *!*/
+    opacity: 0;
+    transition: visibility 0s 0.5s, opacity 0.25s; /* 延迟显示 */
+}
+
+.q-tooltips:hover .q-tooltips-div{
+    visibility: visible;
+    opacity: 1;
+    transition-delay: 0.25s;
+}
+
+}`
 
     style.innerHTML = sHtml
     document.getElementsByTagName('head')[0].appendChild(style)
