@@ -156,13 +156,31 @@ export function addFuncBar() {
  * @param svg svg元素
  */
 function ECactivator(svg) {
+    let isActive = false
     console.log('更改active')
     svg.classList.toggle('active');
+    isActive = !isActive
 
     //下面启用/关闭加密聊天功能
-    let isActive=false
+
+    //查找到发送按钮
+    const sendElement = document.querySelector('.send')
+
+    console.log('下面打印的是window')
+    console.log(window)
+    console.log('下面打印的是window.webContents')
+    console.log(window.webContents)
+    console.log('下面打印的是window.webContents._events')
+    console.log(window.webContents._events)
+
+    //给发送按钮绑定事件
+    sendElement.addEventListener('click', () => {
+        //找到输入文本的input元素
+        //
+    })
 
     //下面给发送消息的按钮加一个监听器
 
 }
+
 window.ECactivator = ECactivator//给window对象添加一个方法，供其他地方调用
