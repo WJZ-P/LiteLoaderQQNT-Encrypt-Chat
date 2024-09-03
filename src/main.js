@@ -14,10 +14,19 @@ module.exports.onBrowserWindowCreated = window => {
     const ipcMessageProxy=window.webContents._events["-ipc-message"]
     //创建一个自己的代理
     const proxyIpcMsg=new Proxy(ipcMessageProxy,{
-        apply(target, thisArg, argumentsList) {
-
+        apply(target, thisArg, args) {
+            ipcMessage(args).then(result=>{
+                return target.apply(thisArg, result)
+            }).catch(err=>{
+                console.log('err',err)
+                target.apply(thisArg, args)
+            })
         }
     })
+
+    //替换掉官方的监听器
+
+
 }
 
 const srcPath=path.join(LiteLoader.path.plugins,"qq-anti-recall","")
@@ -27,3 +36,6 @@ ipcMain.handle("LiteLoader.encrypt_chat.messageDecrypter", (_, message) => messa
 ipcMain.handle("LiteLoader.encrypt_chat.decodeHex", (_, message) => decodeHex(message))
 ipcMain.handle("LiteLoader.encrypt_chat.getMenuHTML",()=> fs.readFileSync(path.join(__dirname, "menu.html"), "utf-8"))
 
+async function ipcMessage(args){
+    console.log('ipcMessage',args)
+}
