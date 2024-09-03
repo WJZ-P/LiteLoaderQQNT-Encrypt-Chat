@@ -1,6 +1,11 @@
 const {ipcMain, dialog, shell, clipboard} = require("electron");
 const {messageDecrypter, messageEncrypter, checkMsgElement, decodeHex} = require("./cryptoUtils");
 const path = require("path");
+
+const state = {
+    activeEC: false
+}
+
 // 运行在 Electron 主进程 下的插件入口
 
 // 创建窗口时触发
@@ -30,10 +35,13 @@ module.exports.onBrowserWindowCreated = window => {
 
 const srcPath = path.join(LiteLoader.path.plugins, "qq-anti-recall", "")
 
+
+ipcMain.on("LiteLoader.encrypt_chat.setActiveEC", (_, activeState) => {state.activeEC=activeState})
 ipcMain.handle("LiteLoader.encrypt_chat.messageEncrypter", (_, message) => messageEncrypter(message))
 ipcMain.handle("LiteLoader.encrypt_chat.messageDecrypter", (_, message) => messageDecrypter(message))
 ipcMain.handle("LiteLoader.encrypt_chat.decodeHex", (_, message) => decodeHex(message))
-ipcMain.handle("LiteLoader.encrypt_chat.getMenuHTML", () => fs.readFileSync(path.join(__dirname, "menu.html"), "utf-8"))
+ipcMain.handle("LiteLoader.encrypt_chat.getActiveEC",(_)=>state.activeEC)
+
 
 async function ipcMessage(args) {
     if (args[3][1][0] !== 'nodeIKernelMsgService/sendMsg') return args;
@@ -42,6 +50,11 @@ async function ipcMessage(args) {
     console.log('下面打印出具体的textElement')
     console.log(args[3][1][1].msgElements[0].textElement)
 
-    //args[3][1][1].msgElements[0].textElement.content='测试测试嘻嘻'
+    //下面判断加密是否启用，启用了就修改
+    const originalContent = args[3][1][1].msgElements[0].textElement.content
+    if (getActiveEC()) {
+        args[3][1][1].msgElements[0].textElement.content = messageEncrypter(originalContent)
+    }
+
     return args
 }

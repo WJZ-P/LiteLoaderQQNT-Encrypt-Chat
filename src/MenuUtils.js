@@ -155,31 +155,25 @@ export function addFuncBar() {
  * 启用/关闭加密聊天功能，同时修改svg元素样式
  * @param svg svg元素
  */
-function ECactivator(svg) {
-    let isActive = false
+async function ECactivator(svg) {
+    let isActive = await window.encrypt_chat.getActiveEC()//获取当前EC状态，默认关闭加密
     console.log('更改active')
     svg.classList.toggle('active');
-    isActive = !isActive
+
+    window.encrypt_chat.setActiveEC(!isActive)//设置开关状态
 
     //下面启用/关闭加密聊天功能
 
     //查找到发送按钮
     const sendElement = document.querySelector('.send')
 
-    console.log('下面打印的是window')
-    console.log(window)
-    console.log('下面打印的是window.webContents')
-    console.log(window.webContents)
-    console.log('下面打印的是window.webContents._events')
-    console.log(window.webContents._events)
+    // console.log('下面打印的是window')
+    // console.log(window)
+    // console.log('下面打印的是window.webContents')
+    // console.log(window.webContents)
+    // console.log('下面打印的是window.webContents._events')
+    // console.log(window.webContents._events)
 
-    //给发送按钮绑定事件
-    sendElement.addEventListener('click', () => {
-        //找到输入文本的input元素
-        //
-    })
-
-    //下面给发送消息的按钮加一个监听器
 
 }
 
