@@ -13,8 +13,8 @@ module.exports.onBrowserWindowCreated = window => {
     // window 为 Electron 的 BrowserWindow 实例
     console.log('[Encrypt-Chat]' + '启动！')
 
-    console.log('下面打印的是window.webContents._events')
-    console.log(window.webContents._events)//是一个匿名函数
+    // console.log('下面打印的是window.webContents._events')
+    // console.log(window.webContents._events)//是一个匿名函数
     //获取官方的消息监听器
     const ipcMessageProxy = window.webContents._events["-ipc-message"]
     //创建一个自己的代理
@@ -42,9 +42,14 @@ ipcMain.on("LiteLoader.encrypt_chat.setActiveEC", (_, activeState) => {
 ipcMain.handle("LiteLoader.encrypt_chat.messageEncrypter", (_, message) => messageEncrypter(message))
 ipcMain.handle("LiteLoader.encrypt_chat.messageDecrypter", (_, message) => messageDecrypter(message))
 ipcMain.handle("LiteLoader.encrypt_chat.decodeHex", (_, message) => decodeHex(message))
-ipcMain.handle("LiteLoader.encrypt_chat.getActiveEC", (_) => state.activeEC)
+ipcMain.handle("LiteLoader.encrypt_chat.getActiveEC", () => state.activeEC)
+ipcMain.handle("LiteLoader.encrypt_chat.getWindowID", (event) => event.sender.getOwnerBrowserWindow().id)
 
-
+/**
+ * 处理QQ消息
+ * @param args
+ * @returns {Promise<*>}
+ */
 async function ipcMessage(args) {
     //判断是否是nodeIKernelMsgService/sendMsg事件
     if (!args?.[3]?.[1]?.[0] || args[3][1][0] !== 'nodeIKernelMsgService/sendMsg') return args;
@@ -62,4 +67,11 @@ async function ipcMessage(args) {
     }
 
     return args
+}
+
+
+//设置相关方法————————————————————————————————————————————————————————————————————————————
+
+function getSettings() {
+
 }

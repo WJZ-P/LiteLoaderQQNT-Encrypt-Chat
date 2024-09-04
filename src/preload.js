@@ -7,4 +7,5 @@ contextBridge.exposeInMainWorld("encrypt_chat", {
     decodeHex: (message) => ipcRenderer.invoke("LiteLoader.encrypt_chat.decodeHex", message),
     getActiveEC:()=>ipcRenderer.invoke("LiteLoader.encrypt_chat.getActiveEC"),
     setActiveEC:(activeState)=>ipcRenderer.send("LiteLoader.encrypt_chat.setActiveEC", activeState),
+    getWindowID:()=>ipcRenderer.invoke("LiteLoader.encrypt_chat.getWindowID")
 });

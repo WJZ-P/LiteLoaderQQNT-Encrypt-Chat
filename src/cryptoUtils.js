@@ -46,36 +46,41 @@ function messageEncrypter(messageToBeEncrypted) {
 }
 
 /**
- *消息解密器
+ *消息解密器,解密失败会返回空字符串
  * @param {string} message 里面有一个十六进制格式的字符串
  * @returns {string}
  */
 function messageDecrypter(message) {
-    console.log('[EC] 解密器启动，message为' + message)
+    try {
+        console.log('[EC] 解密器启动，message为' + message)
 
-    //获得密文中的iv，为密文的前32位
-    const iv = CryptoJS.enc.Hex.parse(message.slice(0, 32))
+        //获得密文中的iv，为密文的前32位
+        const iv = CryptoJS.enc.Hex.parse(message.slice(0, 32))
 
-    // 创建 CipherParams 对象
-    const ciphertext = CryptoJS.enc.Hex.parse(message.substring(32));
+        // 创建 CipherParams 对象
+        const ciphertext = CryptoJS.enc.Hex.parse(message.substring(32));
 
-    // 进行解密
-    const decrypted = CryptoJS.AES.decrypt({ciphertext: ciphertext}, secretKey, {
-        iv: iv,
-        mode: CryptoJS.mode.CBC, // 设置模式为CBC
-        padding: CryptoJS.pad.Pkcs7 // 设置填充方式为PKCS#7
-    });
+        // 进行解密
+        const decrypted = CryptoJS.AES.decrypt({ciphertext: ciphertext}, secretKey, {
+            iv: iv,
+            mode: CryptoJS.mode.CBC, // 设置模式为CBC
+            padding: CryptoJS.pad.Pkcs7 // 设置填充方式为PKCS#7
+        });
 
-    // 尝试将解密的数据转换为 UTF-8 字符串
-    const decryptedText = decrypted.toString(CryptoJS.enc.Utf8);
+        // 尝试将解密的数据转换为 UTF-8 字符串
+        const decryptedText = decrypted.toString(CryptoJS.enc.Utf8);
 
-    // 检查是否解密成功
-    if (!decryptedText) {
-        console.error('解密失败，返回的结果为空或无效 UTF-8 数据');
-        return null; // 或其他处理
+        // 检查是否解密成功
+        if (!decryptedText) {
+            console.error('解密失败，返回的结果为空或无效 UTF-8 数据');
+            return null; // 或其他处理
+        }
+
+        return decryptedText;
+    }catch (e){
+        console.log(e)
+        return ""
     }
-
-    return decryptedText;
 }
 
 function encodeHex(result) {

@@ -305,8 +305,11 @@ async function render() {
 
         //解密消息并替换消息
         const originalText = innerChatElement.innerText//获取原本的密文
-        innerChatElement.innerText = await window.encrypt_chat.messageDecrypter(hexString)//文本内容修改为解密结果
+        const decryptedMsg=await window.encrypt_chat.messageDecrypter(hexString)
+
+        innerChatElement.innerText = decryptedMsg===""?"[EC]解密失败":decryptedMsg//文本内容修改为解密结果
         innerChatElement.classList.add('message-encrypted') //标记已修改
+
         appendEncreptedTag(msgContentContainer, originalText)//添加解密消息标记
 
     }

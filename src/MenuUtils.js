@@ -71,10 +71,12 @@ export function addMenuItemEC() {
                 qContextMenu,
                 `<svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#D9D9D9" onclick="">
 <path d="M240-399h313v-60H240v60Zm0-130h480v-60H240v60Zm0-130h480v-60H240v60ZM80-80v-740q0-24 18-42t42-18h680q24 0 42 18t18 42v520q0 24-18 42t-42 18H240L80-80Zm134-220h606v-520H140v600l74-80Zm-74 0v-520 520Z"/></svg>`,
-                "Encrypt-Chat",
+                "开关加密聊天(备用)",
                 async () => {
                     try {
-                        console.log('MenuUtils的MutationObserver方法，未设置')
+                        console.log('开关加密聊天，未完善，图标显示不会改变')
+                        let isActive = await window.encrypt_chat.getActiveEC()//获取当前EC状态，默认关闭加密
+                        window.encrypt_chat.setActiveEC(!isActive)//设置开关状态
                     } catch (e) {
 
                     }
@@ -89,7 +91,7 @@ export function addMenuItemEC() {
  * @param chatElement
  */
 function createFuncBarIcon(chatElement) {
-    new MutationObserver(() => {
+    new MutationObserver(async () => {
 
         const funcBarElement = chatElement.getElementsByClassName("func-bar")[1]//第二个就是右边的
         console.log('下面打印出右侧的funcbar')
@@ -120,10 +122,13 @@ height="24px" viewBox="0 -960 960 960" width="24px" fill="#D9D9D9" onclick="ECac
         innerContent.textContent = '开启/关闭信息加密';
         tipElement.appendChild(innerContent)
 
-        // 将新元素插入到目标元素内
+        // 将文字元素插入到提示元素内
         qToolTipsEl.appendChild(tipElement)
 
-        //把自己的新元素添加进去，并且是添加成为第一个子元素，显示在最左边。
+        //插入之前先检查一下目前的激活状态并对应修改颜色
+        if (await window.encrypt_chat.getActiveEC()) {imageElement.firstChild.classList.add('active')}
+
+        //把自己的新图标元素添加进去，并且是添加成为第一个子元素，显示在最左边。
         funcBarElement.insertBefore(barIconElement, funcBarElement.firstChild);
 
     }).observe(chatElement, {childList: true});//检测子元素的增删变化
@@ -132,8 +137,11 @@ height="24px" viewBox="0 -960 960 960" width="24px" fill="#D9D9D9" onclick="ECac
 /**
  * 为QQ添加一个EC的功能栏图标，位置在打字窗口的正上方
  */
-export function addFuncBar() {
+export async function addFuncBar() {
     console.log('addfuncbar启动辣！``````````````````````````````````````````````')
+    await window.encrypt_chat.getWindowID()
+
+
     let chatElement = null
 
     setTimeout(() => {
@@ -147,8 +155,7 @@ export function addFuncBar() {
 
         createFuncBarIcon(chatElement)
 
-
-    }, 4000)
+    }, 5000)
 }
 
 /**

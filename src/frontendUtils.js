@@ -2,6 +2,7 @@
  *添加解密消息标记，显示在QQ消息的下方，以小字的形式显示
  * @param msgElement
  * @param originaltext
+ * @param isSuccess
  */
 export function appendEncreptedTag(msgElement, originaltext) {
     console.log('[appendTag]' + '开始判断')
