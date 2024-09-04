@@ -126,7 +126,9 @@ height="24px" viewBox="0 -960 960 960" width="24px" fill="#D9D9D9" onclick="ECac
         qToolTipsEl.appendChild(tipElement)
 
         //插入之前先检查一下目前的激活状态并对应修改颜色
-        if (await window.encrypt_chat.getActiveEC()) {imageElement.firstChild.classList.add('active')}
+        if (await window.encrypt_chat.getActiveEC()) {
+            imageElement.firstChild.classList.add('active')
+        }
 
         //把自己的新图标元素添加进去，并且是添加成为第一个子元素，显示在最左边。
         funcBarElement.insertBefore(barIconElement, funcBarElement.firstChild);
@@ -139,23 +141,21 @@ height="24px" viewBox="0 -960 960 960" width="24px" fill="#D9D9D9" onclick="ECac
  */
 export async function addFuncBar() {
     console.log('addfuncbar启动辣！``````````````````````````````````````````````')
-    await window.encrypt_chat.getWindowID()
-
+    const currentWindowID = await window.encrypt_chat.getWindowID()
+    if (currentWindowID !== 2) {return}//ID二号是QQ主页面，不是就直接退出
 
     let chatElement = null
 
-    setTimeout(() => {
-        if (!document.querySelector(".chat-input-area")) {
-            console.log('没找到啊！')
-            return
-        }
+    const taskID = setInterval(() => {
+        if (!document.querySelector(".chat-input-area")) {return}
+
         //已经找到对应元素
         chatElement = document.querySelector(".chat-input-area")
-        console.log('找到啦！' + chatElement)
+        console.log('找到啦！' + chatElement + currentWindowID)
 
         createFuncBarIcon(chatElement)
-
-    }, 5000)
+        clearInterval(taskID)//关闭任务
+    }, 500)
 }
 
 /**
