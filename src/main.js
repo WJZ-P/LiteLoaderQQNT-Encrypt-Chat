@@ -36,23 +36,28 @@ module.exports.onBrowserWindowCreated = window => {
 const srcPath = path.join(LiteLoader.path.plugins, "qq-anti-recall", "")
 
 
-ipcMain.on("LiteLoader.encrypt_chat.setActiveEC", (_, activeState) => {state.activeEC=activeState})
+ipcMain.on("LiteLoader.encrypt_chat.setActiveEC", (_, activeState) => {
+    state.activeEC = activeState
+})
 ipcMain.handle("LiteLoader.encrypt_chat.messageEncrypter", (_, message) => messageEncrypter(message))
 ipcMain.handle("LiteLoader.encrypt_chat.messageDecrypter", (_, message) => messageDecrypter(message))
 ipcMain.handle("LiteLoader.encrypt_chat.decodeHex", (_, message) => decodeHex(message))
-ipcMain.handle("LiteLoader.encrypt_chat.getActiveEC",(_)=>state.activeEC)
+ipcMain.handle("LiteLoader.encrypt_chat.getActiveEC", (_) => state.activeEC)
 
 
 async function ipcMessage(args) {
-    if (args[3][1][0] !== 'nodeIKernelMsgService/sendMsg') return args;
+    //判断是否是nodeIKernelMsgService/sendMsg事件
+    if (!args?.[3]?.[1]?.[0] || args[3][1][0] !== 'nodeIKernelMsgService/sendMsg') return args;
+
     console.log('下面打印出nodeIKernelMsgService/sendMsg的内容')
     console.log(args[3][1][1])
     console.log('下面打印出具体的textElement')
-    console.log(args[3][1][1].msgElements[0].textElement)
+    console.log(args[3][1][1].msgElements?.[0].textElement)
 
     //下面判断加密是否启用，启用了就修改
-    const originalContent = args[3][1][1].msgElements[0].textElement.content
-    if (getActiveEC()) {
+    const originalContent = args[3][1][1].msgElements?.[0].textElement.content
+    if (state.activeEC) {
+        //修改原始消息
         args[3][1][1].msgElements[0].textElement.content = messageEncrypter(originalContent)
     }
 

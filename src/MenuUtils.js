@@ -161,7 +161,6 @@ async function ECactivator(svg) {
     svg.classList.toggle('active');
 
     window.encrypt_chat.setActiveEC(!isActive)//设置开关状态
-
     //下面启用/关闭加密聊天功能
 
     //查找到发送按钮
