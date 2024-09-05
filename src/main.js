@@ -1,8 +1,11 @@
-const {ipcMain, dialog, shell, clipboard} = require("electron");
-const {messageDecrypter, messageEncrypter, checkMsgElement, decodeHex} = require("./cryptoUtils");
+const {ipcMain} = require("electron");
+const {messageDecrypter, messageEncrypter, decodeHex} = require("./cryptoUtils");
 const path = require("path");
 
-const state = {
+const pluginPath = path.join(LiteLoader.path.plugins, "Encrypt-Chat");
+const configPath = path.join(pluginPath, "config.json");
+
+const config = {
     activeEC: false
 }
 
@@ -33,16 +36,15 @@ module.exports.onBrowserWindowCreated = window => {
     window.webContents._events["-ipc-message"] = proxyIpcMsg
 }
 
-const srcPath = path.join(LiteLoader.path.plugins, "qq-anti-recall", "")
 
 
 ipcMain.on("LiteLoader.encrypt_chat.setActiveEC", (_, activeState) => {
-    state.activeEC = activeState
+    config.activeEC = activeState
 })
 ipcMain.handle("LiteLoader.encrypt_chat.messageEncrypter", (_, message) => messageEncrypter(message))
 ipcMain.handle("LiteLoader.encrypt_chat.messageDecrypter", (_, message) => messageDecrypter(message))
 ipcMain.handle("LiteLoader.encrypt_chat.decodeHex", (_, message) => decodeHex(message))
-ipcMain.handle("LiteLoader.encrypt_chat.getActiveEC", () => state.activeEC)
+ipcMain.handle("LiteLoader.encrypt_chat.getActiveEC", () => config.activeEC)
 ipcMain.handle("LiteLoader.encrypt_chat.getWindowID", (event) => event.sender.getOwnerBrowserWindow().id)
 
 /**
@@ -58,38 +60,38 @@ async function ipcMessage(args) {
 
     console.log('下面打印出nodeIKernelMsgService/sendMsg的内容')
     console.log(args[3][1][1])
-    // console.log('下面打印出具体的textElement')
-    // for (let item of args[3][1][1].msgElements) {
-    //     console.log(item)
-    // }
+    console.log('下面打印出具体的textElement')
+    for (let item of args[3][1][1].msgElements) {
+        console.log(item)
+    }
 
     //console.log(args[3][1][1].msgElements?.[0].textElement)
 
     //下面判断加密是否启用，启用了就修改消息内容
-    if (state.activeEC) {
-        //修改原始消息
-        for (let item of args[3][1][1].msgElements) {
-            //连续艾特两个人，会多出一个空白content的msgElement夹在两次艾特中间。
-            //每艾特一次别人，会用一个msgElement存储。内容为@xxx。
+    if (!config.activeEC) return
 
-            //艾特别人的不需要解密
-            if (item.textElement.atUid !== '') {
-                continue;//艾特消息无法修改content，NTQQ似乎有别的措施防止。
-            }
-            item.textElement.content = messageEncrypter(item.textElement.content)
+    //修改原始消息
+    for (let item of args[3][1][1].msgElements) {
+        //连续艾特两个人，会多出一个空白content的msgElement夹在两次艾特中间。
+        //每艾特一次别人，会用一个msgElement存储。内容为@xxx。
+
+        //艾特别人的不需要解密
+        if (item.textElement.atUid !== '') {
+            continue;//艾特消息无法修改content，NTQQ似乎有别的措施防止。
         }
-        console.log('修改后的,msgElements为')
-        for (let item of args[3][1][1].msgElements) {
-            console.log(item)
-        }
+        item.textElement.content = messageEncrypter(item.textElement.content)
+    }
+    console.log('修改后的,msgElements为')
+    for (let item of args[3][1][1].msgElements) {
+        console.log(item)
     }
 
     return args
-}
-
-
-//设置相关方法————————————————————————————————————————————————————————————————————————————
-
-function getSettings() {
 
 }
+
+async function getConfig() {
+    const newConfig = await fs.readFile(configPath)
+
+}
+
