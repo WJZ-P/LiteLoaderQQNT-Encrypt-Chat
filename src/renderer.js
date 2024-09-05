@@ -302,7 +302,6 @@ async function render() {
         const hexString = await checkMsgElement(innerChatElement)
         if (!hexString) continue; //如果消息元素不符合加密解密条件，则不修改
 
-
         //解密消息并替换消息
         const originalText = innerChatElement.innerText//获取原本的密文
         const decryptedMsg=await window.encrypt_chat.messageDecrypter(hexString)

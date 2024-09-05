@@ -1,54 +1,55 @@
-function genEBridge(APIS) {
-
-
-    const channel = "__trigger"
-    const e_property = "__electron_api"
-
-    function getNestedProperty(obj, path) {
-        const keys = path.split('.');
-        return keys.reduce((acc, key) => {
-            return acc && acc[key] !== undefined ? acc[key] : undefined;
-        }, obj);
-    }
-
-    async function runElectronFunc(action, ...args) {
-        // noinspection JSUnresolvedReference
-        return await window[e_property]?.[channel]?.({
-            action,
-            args
-        })
-    }
-
-    function genApiProxy(callback, currentPath = null) {
-        const path = currentPath
-        return new Proxy((...args) => callback(path, args), {
-            get(target, key) {
-                let newPath = key
-                if (path) {
-                    newPath = path + '.' + key
-                }
-                return genApiProxy(callback, newPath)
-            }
-        })
-    }
-
-    return {
-        listener: [channel, async (event, data) => {
-            let {action, args} = data
-            return await getNestedProperty(APIS, action)?.(...args)
-        }],
-        eAPI: genApiProxy((path, args) => {
-            return runElectronFunc(path, args)
-        }),
-    }
-
+const test={
+  elementType: 1,
+  elementId: '',
+  textElement: {
+    content: '@机器人',
+    atType: 2,
+    atUid: '2452685038',
+    atTinyId: '',
+    atNtUid: 'u_Qi8T8Dd6ygp9mylHq71r8w'
+  }
 }
-
-const EBridge = genEBridge({
-    hh() {
-        console.log('我去 牛逼')
-        return '太牛逼了'
-    },
-})
-
-ipcMain.handle(...EBridge.listener)
+const test={
+  content: '@机器人',
+  atType: 2,
+  atUid: '2452685038',
+  atTinyId: '',
+  atNtUid: 'u_Qi8T8Dd6ygp9mylHq71r8w'
+}
+const test={
+  elementType: 1,
+  elementId: '',
+  textElement: { content: ' ', atType: 0, atUid: '', atTinyId: '', atNtUid: '' }
+}
+const test={ content: ' ', atType: 0, atUid: '', atTinyId: '', atNtUid: '' }
+const test={
+  elementType: 1,
+  elementId: '',
+  textElement: {
+    content: '@我是Kitty 喵！',
+    atType: 2,
+    atUid: '1916688982',
+    atTinyId: '',
+    atNtUid: 'u_OKgzKwkYZXSigxrJ5nyyYA'
+  }
+}
+const test={
+  content: '@我是Kitty 喵！',
+  atType: 2,
+  atUid: '1916688982',
+  atTinyId: '',
+  atNtUid: 'u_OKgzKwkYZXSigxrJ5nyyYA'
+}
+const test={
+  elementType: 1,
+  elementId: '',
+  textElement: { content: ' 测试', atType: 0, atUid: '', atTinyId: '', atNtUid: '' }
+}
+const test={ content: ' 测试', atType: 0, atUid: '', atTinyId: '', atNtUid: '' }
+const test={
+  content: '@机器人',
+  atType: 2,
+  atUid: '2452685038',
+  atTinyId: '',
+  atNtUid: 'u_Qi8T8Dd6ygp9mylHq71r8w'
+}
