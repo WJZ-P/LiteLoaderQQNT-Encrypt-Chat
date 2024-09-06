@@ -1,6 +1,9 @@
-let document=undefined
-export function setDocument(QQdocument){
-    document=QQdocument
+class SettingListeners{
+    constructor(doc) {//传入一个document对象
+        this.document= doc
+    }
+
+
 }
 
 export function keyInputListener() {

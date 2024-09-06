@@ -143,6 +143,7 @@ export function addFuncBar() {
     console.log('addfuncbar启动辣！``````````````````````````````````````````````')
     let currentWindowID=undefined
     window.encrypt_chat.getWindowID().then(res=>{currentWindowID=res})
+    console.log('当前窗口id是'+currentWindowID)
     if (currentWindowID !== 2) {return}//ID二号是QQ主页面，不是就直接退出
 
     let chatElement = null

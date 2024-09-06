@@ -1,6 +1,6 @@
 import {addFuncBar, addMenuItemEC} from "./MenuUtils.js";
 import {appendEncreptedTag} from "./frontendUtils.js";
-import {keyInputListener, setDocument} from "./elementListeners.js";
+import {keyInputListener, setDocument} from "./SettingListeners.js";
 
 const nowConfig = {
     mainColor: '#66ccff',
@@ -262,15 +262,8 @@ function onLoad() {
     addMenuItemEC()//添加鼠标右键时的菜单选项
     patchCss()//修改css
     addFuncBar()//添加功能栏的功能图标
-    addListeners()
 }
 
-/**
- * 添加插件设置界面的消息监听器，用来修改插件设置
- */
-function addListeners() {
-    keyInputListener()
-}
 
 //节流，防止多次渲染
 let observerRendering = false

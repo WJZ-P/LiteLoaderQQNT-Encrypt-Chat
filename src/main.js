@@ -18,10 +18,9 @@ module.exports.onBrowserWindowCreated = async window => {
     if (window.id !== 2) return//2是QQ主页面，此时才加载插件，id属性为number
 
     console.log(pluginName + '启动！')
-    onload()
+    await onload()
     console.log(pluginName + "main.js onLoad注入成功")
-    console.log(pluginName + '设置配置中')
-    await initConfig()
+
 
     // console.log('当前窗口ID为'+window.getOwnerBrowserWindow().id)
     // console.log('下面打印的是window.webContents._events')
@@ -44,7 +43,7 @@ module.exports.onBrowserWindowCreated = async window => {
     window.webContents._events["-ipc-message"] = proxyIpcMsg
 }
 
-function onload() {
+async function onload() {
     ipcMain.on("LiteLoader.encrypt_chat.setActiveEC", (_, activeState) => {
         config.activeEC = activeState
     })
@@ -53,6 +52,9 @@ function onload() {
     ipcMain.handle("LiteLoader.encrypt_chat.decodeHex", (_, message) => decodeHex(message))
     ipcMain.handle("LiteLoader.encrypt_chat.getActiveEC", () => config.activeEC)
     ipcMain.handle("LiteLoader.encrypt_chat.getWindowID", (event) => event.sender.getOwnerBrowserWindow().id)
+
+    console.log(pluginName + '设置配置中')
+    await initConfig()
 }
 
 /**
@@ -108,6 +110,7 @@ async function initConfig() {
         console.log(pluginName + '配置文件创建成功')
     }
     console.log(await getConfig())
+    console.log(pluginName+'配置初始化完毕')
 }
 
 async function getConfig() {
@@ -115,10 +118,17 @@ async function getConfig() {
     fs.readFile(configPath, "utf-8", (err, data) => {
         newConfig = JSON.parse(data)
         console.log(pluginName + '读取配置文件成功')
-        console.log(newConfig)
     })
-
     return newConfig
+}
+
+async function setConfig(newConfig) {
+    fs.writeFile(configPath, JSON.stringify(newConfig), 'utf-8', (err) => {
+        if (err) {
+            console.log(pluginName + '写入配置文件失败')
+        }
+    })
+    console.log(pluginName + '写入配置文件成功')
 }
 
 function hexToAnsi(hex) {
