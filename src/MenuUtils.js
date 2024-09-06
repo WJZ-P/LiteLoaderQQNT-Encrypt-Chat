@@ -139,9 +139,10 @@ height="24px" viewBox="0 -960 960 960" width="24px" fill="#D9D9D9" onclick="ECac
 /**
  * 为QQ添加一个EC的功能栏图标，位置在打字窗口的正上方
  */
-export async function addFuncBar() {
+export function addFuncBar() {
     console.log('addfuncbar启动辣！``````````````````````````````````````````````')
-    const currentWindowID = await window.encrypt_chat.getWindowID()
+    let currentWindowID=undefined
+    window.encrypt_chat.getWindowID().then(res=>{currentWindowID=res})
     if (currentWindowID !== 2) {return}//ID二号是QQ主页面，不是就直接退出
 
     let chatElement = null

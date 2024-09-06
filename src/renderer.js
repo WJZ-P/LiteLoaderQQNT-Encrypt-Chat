@@ -1,5 +1,6 @@
 import {addFuncBar, addMenuItemEC} from "./MenuUtils.js";
 import {appendEncreptedTag} from "./frontendUtils.js";
+import {keyInputListener, setDocument} from "./elementListeners.js";
 
 const nowConfig = {
     mainColor: '#66ccff',
@@ -31,7 +32,7 @@ export const onSettingWindowCreated = view => {
 
                 </div>
                 <input class="q-input__inner q-input__inner--clearable custom-input"
-                       type="text" placeholder="默认20040821">
+                       type="text" id="ec-key-input" placeholder="默认20040821">
             </div>
             <hr class="horizontal-dividing-line"/>
             <div class="vertical-list-item">
@@ -42,9 +43,9 @@ export const onSettingWindowCreated = view => {
     </section>
     
     <style>
-            .custom-input{
+          .custom-input{
             color: white;
-            }
+          }
     
           .q-input__inner{
           border-radius: 2px;
@@ -261,6 +262,14 @@ function onLoad() {
     addMenuItemEC()//添加鼠标右键时的菜单选项
     patchCss()//修改css
     addFuncBar()//添加功能栏的功能图标
+    addListeners()
+}
+
+/**
+ * 添加插件设置界面的消息监听器，用来修改插件设置
+ */
+function addListeners() {
+    keyInputListener()
 }
 
 //节流，防止多次渲染
@@ -304,9 +313,9 @@ async function render() {
 
         //解密消息并替换消息
         const originalText = innerChatElement.innerText//获取原本的密文
-        const decryptedMsg=await window.encrypt_chat.messageDecrypter(hexString)
+        const decryptedMsg = await window.encrypt_chat.messageDecrypter(hexString)
 
-        innerChatElement.innerText = decryptedMsg===""?"[EC]解密失败":decryptedMsg//文本内容修改为解密结果
+        innerChatElement.innerText = decryptedMsg === "" ? "[EC]解密失败" : decryptedMsg//文本内容修改为解密结果
         innerChatElement.classList.add('message-encrypted') //标记已修改
 
         appendEncreptedTag(msgContentContainer, originalText)//添加解密消息标记
