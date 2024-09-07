@@ -1,6 +1,6 @@
 import {addFuncBar, addMenuItemEC} from "./MenuUtils.js";
 import {appendEncreptedTag} from "./frontendUtils.js";
-import {keyInputListener, setDocument} from "./SettingListeners.js";
+import {SettingListeners} from "./SettingListeners.js"
 
 const nowConfig = {
     mainColor: '#66ccff',
@@ -8,16 +8,16 @@ const nowConfig = {
     secretKey: '20040821',//Kitten
 }
 
-onLoad();//注入
+await onLoad();//注入
 
 
 export const onSettingWindowCreated = view => {
     // view 为 Element 对象，修改将同步到插件设置界面
     // 这个函数导出之后在QQ设置里面可以直接看见插件页面
 
-
-    //整个插件主菜单
-    const pluginMenuHTML = `
+    try {
+        //整个插件主菜单
+        const pluginMenuHTML = `
 <div class="config-menu config_view">
     <section class="path">
     <h1>主要配置</h1>
@@ -250,14 +250,34 @@ export const onSettingWindowCreated = view => {
 
         </style>
 </div>
-
 `
-    const parser = new DOMParser()
-    view.appendChild(parser.parseFromString(pluginMenuHTML, "text/html").querySelector(".config-menu"));
+        const parser = new DOMParser()
+        const settingHTML = parser.parseFromString(pluginMenuHTML, "text/html").querySelector(".config-menu")
+
+        const myListener = new SettingListeners(settingHTML)
+        myListener.onLoad()
+
+        view.appendChild(settingHTML);
+
+
+        // myListener.onLoad()//调用监听器
+    } catch (e) {
+        setInterval(() => {
+            console.log(e)
+        }, 1000)
+    }
 }
 
 //注入函数
-function onLoad() {
+async function onLoad() {
+    const currentWindowID = await window.encrypt_chat.getWindowID()
+
+    console.log('当前窗口id是' + currentWindowID)
+    if (currentWindowID !== 2) {
+        console.log('不执行onload，退出')
+        return
+    }//ID二号是QQ主页面，不是就直接退出
+
     console.log('下面执行onLoad方法')
     addMenuItemEC()//添加鼠标右键时的菜单选项
     patchCss()//修改css

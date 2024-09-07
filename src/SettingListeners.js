@@ -1,16 +1,23 @@
-class SettingListeners{
+const ecAPI=window.encrypt_chat
+export class SettingListeners {
     constructor(doc) {//传入一个document对象
-        this.document= doc
+        this.document = doc
     }
 
+    keyInputListener() {
+        let keyValue = undefined
+        const keyInputEl = this.document.querySelector('#ec-key-input')
+        keyInputEl.addEventListener('change', async event => {
+            keyValue = event.target.value
 
-}
+            const config = await ecAPI.getConfig()
+            config.
 
-export function keyInputListener() {
-    let keyValue=undefined
-    const keyInputEl = document.getElementById('ec-key-input')
-    keyInputEl.addEventListener('change', event => {
-        keyValue=event.target.value
-        console.log('值为'+keyValue)
-    })
+            console.log('修改值为' + keyValue)
+        })
+    }
+
+    onLoad(){
+        this.keyInputListener()
+    }
 }

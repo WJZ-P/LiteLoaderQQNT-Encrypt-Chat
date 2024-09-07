@@ -7,5 +7,8 @@ contextBridge.exposeInMainWorld("encrypt_chat", {
     decodeHex: (message) => ipcRenderer.invoke("LiteLoader.encrypt_chat.decodeHex", message),
     getActiveEC:()=>ipcRenderer.invoke("LiteLoader.encrypt_chat.getActiveEC"),
     setActiveEC:(activeState)=>ipcRenderer.send("LiteLoader.encrypt_chat.setActiveEC", activeState),
-    getWindowID:()=>ipcRenderer.invoke("LiteLoader.encrypt_chat.getWindowID")
+    getWindowID:()=>ipcRenderer.invoke("LiteLoader.encrypt_chat.getWindowID"),
+    //设置相关
+    getConfig:()=>ipcRenderer.invoke("LiteLoader.encrypt_chat.getConfig"),
+    setConfig:(config)=>ipcRenderer.send("LiteLoader.encrypt_chat.setConfig", config)
 });

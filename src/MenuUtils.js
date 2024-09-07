@@ -119,7 +119,7 @@ height="24px" viewBox="0 -960 960 960" width="24px" fill="#D9D9D9" onclick="ECac
         // 创建内部内容,塞到这个新创建的子元素内
         const innerContent = document.createElement('div');
         innerContent.className = 'primary-content';
-        innerContent.textContent = '开启/关闭信息加密';
+        innerContent.textContent = '开启/关闭消息加密';
         tipElement.appendChild(innerContent)
 
         // 将文字元素插入到提示元素内
@@ -141,10 +141,6 @@ height="24px" viewBox="0 -960 960 960" width="24px" fill="#D9D9D9" onclick="ECac
  */
 export function addFuncBar() {
     console.log('addfuncbar启动辣！``````````````````````````````````````````````')
-    let currentWindowID=undefined
-    window.encrypt_chat.getWindowID().then(res=>{currentWindowID=res})
-    console.log('当前窗口id是'+currentWindowID)
-    if (currentWindowID !== 2) {return}//ID二号是QQ主页面，不是就直接退出
 
     let chatElement = null
 
@@ -153,7 +149,7 @@ export function addFuncBar() {
 
         //已经找到对应元素
         chatElement = document.querySelector(".chat-input-area")
-        console.log('找到啦！' + chatElement + currentWindowID)
+        console.log('找到啦！' + chatElement)
 
         createFuncBarIcon(chatElement)
         clearInterval(taskID)//关闭任务
