@@ -1,5 +1,5 @@
-import {addFuncBar, addMenuItemEC} from "./MenuUtils.js";
-import {appendEncreptedTag} from "./frontendUtils.js";
+import {addFuncBar, addMenuItemEC} from "./Utils/MenuUtils.js";
+import {appendEncreptedTag} from "./Utils/frontendUtils.js";
 import {SettingListeners} from "./SettingListeners.js"
 
 const nowConfig = {

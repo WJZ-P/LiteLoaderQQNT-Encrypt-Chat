@@ -1,6 +1,12 @@
 const CryptoJS = require("crypto-js");
-
+const Main = require('../main.js')
+const config = Main.config
 const replaceMap = {}
+console.log('~~~~~~~~~~~~~~~~~')
+console.log(require('../main.js'))
+console.log('~~~~~~~~~~~~~~~~~'+require('../main.js').config)
+const config1= require('../main.js').config
+console.log('~~~~~~~~~~~~~~~~~'+config1)
 
 for (let i = 0xfe00; i <= 0xfe0f; i++) {//型号选择器1-16
     const hex = (i - 0xfe00).toString(16)
@@ -10,12 +16,23 @@ for (let i = 0xfe00; i <= 0xfe0f; i++) {//型号选择器1-16
 const styles = {
     Bangboo: {
         length: [2, 5],
-        content: ['嗯呢，', '嗯！',"哇哒！", '...', '嗯呢哒', '嗯呐呐!', '嗯哒！', '嗯呢呢！']
+        content: ['嗯呢，', '嗯！', "哇哒！", '...', '嗯呢哒', '嗯呐呐!', '嗯哒！', '嗯呢呢！']
     }
 }
 
+//初始化一些函数的值
 let nowStyles = styles.Bangboo
-let secretKey = CryptoJS.MD5('20040821')
+
+
+function getKey() {
+    console.log('下面打印出require mainjs的内容')
+    console.log(Main)
+    console.log(Main.config)
+    console.log(config)
+    console.log(config1)
+    if (config.encryptionKey.trim() === "") return CryptoJS.MD5("20040821")//为空则返回默认值
+    else return CryptoJS.MD5(config.encryptionKey)
+}
 
 /**
  * 消息加密器
@@ -35,7 +52,7 @@ function messageEncrypter(messageToBeEncrypted) {
     }
     //加密明文
     const iv = CryptoJS.lib.WordArray.random(16)
-    let encryptedMessage = CryptoJS.AES.encrypt(messageToBeEncrypted, secretKey, {
+    let encryptedMessage = CryptoJS.AES.encrypt(messageToBeEncrypted, getKey(), {
         iv: iv,
         mode: CryptoJS.mode.CBC, // 设置模式为CBC
         padding: CryptoJS.pad.Pkcs7 // 设置填充方式为PKCS#7
@@ -61,7 +78,7 @@ function messageDecrypter(message) {
         const ciphertext = CryptoJS.enc.Hex.parse(message.substring(32));
 
         // 进行解密
-        const decrypted = CryptoJS.AES.decrypt({ciphertext: ciphertext}, secretKey, {
+        const decrypted = CryptoJS.AES.decrypt({ciphertext: ciphertext}, getKey(), {
             iv: iv,
             mode: CryptoJS.mode.CBC, // 设置模式为CBC
             padding: CryptoJS.pad.Pkcs7 // 设置填充方式为PKCS#7
@@ -77,7 +94,7 @@ function messageDecrypter(message) {
         }
 
         return decryptedText;
-    }catch (e){
+    } catch (e) {
         console.log(e)
         return ""
     }

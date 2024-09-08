@@ -1,5 +1,5 @@
 const {ipcMain} = require("electron");
-const {messageDecrypter, messageEncrypter, decodeHex} = require("./cryptoUtils");
+const {messageDecrypter, messageEncrypter, decodeHex} = require("./Utils/cryptoUtils");
 const path = require("path");
 const fs = require('fs');
 const fsAsync = require('fs').promises;
@@ -7,17 +7,17 @@ const pluginPath = path.join(LiteLoader.path.plugins, "Encrypt-Chat");
 const configPath = path.join(pluginPath, "config.json");
 const pluginName = hexToAnsi('#66ccff') + "[Encrypt-Chat] " + '\x1b[0m'
 
-let config = {
-    activeEC: false
-    encryptionKey:'20040821'
+const config = {
+    activeEC: false,                        //是否启用加密功能
+    encryptionKey: ''                       //加密密钥
 }
 
 // 运行在 Electron 主进程 下的插件入口
 
 // 创建窗口时触发
 module.exports.onBrowserWindowCreated = async window => {
-    if(window.id!==2){
-        console.log(pluginName+'当前窗口ID为'+window.id+'.退出')
+    if (window.id !== 2) {
+        console.log(pluginName + '当前窗口ID为' + window.id + '.退出')
         return
     }
     //window 为 Electron 的 BrowserWindow 实例
@@ -31,7 +31,7 @@ module.exports.onBrowserWindowCreated = async window => {
     // console.log(window.webContents._events)//是一个匿名函数
     //获取官方的消息监听器
     const ipcMessageProxy = window.webContents._events["-ipc-message"]
-    console.log(pluginName+'ipc监听器获取成功')
+    console.log(pluginName + 'ipc监听器获取成功')
     //创建一个自己的代理
     const proxyIpcMsg = new Proxy(ipcMessageProxy, {
         apply(target, thisArg, args) {
@@ -46,8 +46,11 @@ module.exports.onBrowserWindowCreated = async window => {
 
     //替换掉官方的监听器
     window.webContents._events["-ipc-message"] = proxyIpcMsg
-    console.log(pluginName+'ipc监听器修改成功')
+    console.log(pluginName + 'ipc监听器修改成功')
 }
+module.exports.getConfig = getConfig
+module.exports.setConfig = setConfig
+module.exports.config = config
 
 async function onload() {
     ipcMain.on("LiteLoader.encrypt_chat.setActiveEC", (_, activeState) => config.activeEC = activeState)
@@ -59,6 +62,7 @@ async function onload() {
 
     ipcMain.handle("LiteLoader.encrypt_chat.getConfig", () => config)
     ipcMain.on("LiteLoader.encrypt_chat.setConfig", (_, newConfig) => setConfig(newConfig))
+
 
     console.log(pluginName + '设置配置中')
     await initConfig()
@@ -117,7 +121,9 @@ async function initConfig() {
         fs.writeFileSync(configPath, JSON.stringify(config), 'utf-8')
         console.log(pluginName + '配置文件创建成功')
     }
-    console.log(await getConfig())
+    Object.assign(config, await getConfig())
+    console.log(pluginName+'当前的配置文件为')
+    console.log(config)
     console.log(pluginName + '配置初始化完毕')
 }
 
@@ -132,17 +138,18 @@ async function getConfig() {
 }
 
 async function setConfig(newConfig) {
-    config= newConfig//先替换掉
+    // 使用 Object.assign() 更新 config 对象的属性
+    Object.assign(config, newConfig);
+    // 写入配置文件
     fs.writeFile(configPath, JSON.stringify(newConfig), 'utf-8', (err) => {
         if (err) {
-            console.log(pluginName + '写入配置文件失败')
+            console.log(pluginName + '修改配置文件失败')
         }
     })
-    console.log(pluginName + '写入配置文件成功')
+    console.log(pluginName + '修改配置文件成功')
 }
-function setKey(key) {
-    config.key = key
-}
+
+
 
 function hexToAnsi(hex) {
     const r = parseInt(hex.slice(1, 3), 16);
@@ -150,7 +157,3 @@ function hexToAnsi(hex) {
     const b = parseInt(hex.slice(5, 7), 16);
     return `\x1b[38;2;${r};${g};${b}m`;
 }
-
-
-module.exports.getConfig=getConfig
-module.exports.setConfig=setConfig
