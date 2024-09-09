@@ -17,11 +17,11 @@
         "preload": "./src/preload.js"
     },
      "repository": {
-        "repo": "mo-jinran/chii-devtools",
-        "branch": "v4",
+        "repo": "WJZ-P/LiteLoaderQQNT-Encrypt-Chat",
+        "branch": "main",
         "release": {
-            "tag": "1.0.0",
-            "file": "chii-devtools.zip"
+            "tag": "v1.0.0",
+            "file": "Encrypt-Chat-1.0.0.zip"
         }
     }
 }
