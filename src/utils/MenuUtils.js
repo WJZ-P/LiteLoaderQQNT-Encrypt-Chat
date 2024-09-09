@@ -1,3 +1,5 @@
+const ecAPI = window.encrypt_chat
+
 /**
  * 右键菜单插入功能方法，
  * @param {Element} rightClickMenu 右键菜单元素
@@ -74,9 +76,7 @@ export function addMenuItemEC() {
                 "开关加密聊天(备用)",
                 async () => {
                     try {
-                        console.log('开关加密聊天，未完善，图标显示不会改变')
-                        let isActive = await window.encrypt_chat.getActiveEC()//获取当前EC状态，默认关闭加密
-                        window.encrypt_chat.setActiveEC(!isActive)//设置开关状态
+
                     } catch (e) {
 
                     }
@@ -126,7 +126,7 @@ height="24px" viewBox="0 -960 960 960" width="24px" fill="#D9D9D9" onclick="ECac
         qToolTipsEl.appendChild(tipElement)
 
         //插入之前先检查一下目前的激活状态并对应修改颜色
-        if (await window.encrypt_chat.getActiveEC()) {
+        if ((await ecAPI.getConfig()).activeEC) {
             imageElement.firstChild.classList.add('active')
         }
 
@@ -139,13 +139,15 @@ height="24px" viewBox="0 -960 960 960" width="24px" fill="#D9D9D9" onclick="ECac
 /**
  * 为QQ添加一个EC的功能栏图标，位置在打字窗口的正上方
  */
-export function addFuncBar() {
+export function addFuncBarIcon() {
     console.log('addfuncbar启动辣！``````````````````````````````````````````````')
 
     let chatElement = null
 
     const taskID = setInterval(() => {
-        if (!document.querySelector(".chat-input-area")) {return}
+        if (!document.querySelector(".chat-input-area")) {
+            return
+        }
 
         //已经找到对应元素
         chatElement = document.querySelector(".chat-input-area")
@@ -161,23 +163,15 @@ export function addFuncBar() {
  * @param svg svg元素
  */
 async function ECactivator(svg) {
-    let isActive = await window.encrypt_chat.getActiveEC()//获取当前EC状态，默认关闭加密
+    let isActive = (await ecAPI.getConfig()).activeEC//获取当前EC状态，默认关闭加密
     console.log('更改active')
     svg.classList.toggle('active');
 
-    window.encrypt_chat.setActiveEC(!isActive)//设置开关状态
+    await ecAPI.setConfig({activeEC: !isActive})//设置开关状态
     //下面启用/关闭加密聊天功能
 
     //查找到发送按钮
     const sendElement = document.querySelector('.send')
-
-    // console.log('下面打印的是window')
-    // console.log(window)
-    // console.log('下面打印的是window.webContents')
-    // console.log(window.webContents)
-    // console.log('下面打印的是window.webContents._events')
-    // console.log(window.webContents._events)
-
 
 }
 

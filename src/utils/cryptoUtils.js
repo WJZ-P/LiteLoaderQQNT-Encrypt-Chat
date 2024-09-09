@@ -1,12 +1,8 @@
 const CryptoJS = require("crypto-js");
-const Main = require('../main.js')
-const config = Main.config
+const {Config}=require("../Config.js")
 const replaceMap = {}
-console.log('~~~~~~~~~~~~~~~~~')
-console.log(require('../main.js'))
-console.log('~~~~~~~~~~~~~~~~~'+require('../main.js').config)
-const config1= require('../main.js').config
-console.log('~~~~~~~~~~~~~~~~~'+config1)
+
+const config = Config.config
 
 for (let i = 0xfe00; i <= 0xfe0f; i++) {//型号选择器1-16
     const hex = (i - 0xfe00).toString(16)
@@ -24,12 +20,11 @@ const styles = {
 let nowStyles = styles.Bangboo
 
 
+/**
+ * 写成函数是因为需要判断值是否为空，为空则返回默认值
+ * @returns {*}
+ */
 function getKey() {
-    console.log('下面打印出require mainjs的内容')
-    console.log(Main)
-    console.log(Main.config)
-    console.log(config)
-    console.log(config1)
     if (config.encryptionKey.trim() === "") return CryptoJS.MD5("20040821")//为空则返回默认值
     else return CryptoJS.MD5(config.encryptionKey)
 }

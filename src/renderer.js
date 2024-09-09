@@ -1,12 +1,8 @@
-import {addFuncBar, addMenuItemEC} from "./Utils/MenuUtils.js";
-import {appendEncreptedTag} from "./Utils/frontendUtils.js";
-import {SettingListeners} from "./SettingListeners.js"
-
-const nowConfig = {
-    mainColor: '#66ccff',
-    enableTip: true,
-    secretKey: '20040821',//Kitten
-}
+import {addFuncBarIcon, addMenuItemEC} from "./utils/MenuUtils.js";
+import {appendEncreptedTag} from "./utils/frontendUtils.js";
+import {SettingListeners} from "./utils/SettingListeners.js"
+const ecAPI=window.encrypt_chat
+const nowConfig = await ecAPI.getConfig()
 
 await onLoad();//注入
 
@@ -35,8 +31,10 @@ export const onSettingWindowCreated = view => {
                        type="text" id="ec-key-input" placeholder="默认20040821">
             </div>
             <hr class="horizontal-dividing-line"/>
-            <div class="vertical-list-item">
-            
+            <div class="vertical-list-item" style="display: flex; flex-direction: column">
+                <h1>使用方法：打开聊天窗口，点击输入栏上方右侧的加密图标即可切换是否加密。</h1>
+                <hr class="horizontal-dividing-line"/>
+                <h2>目前全局共用一个密钥，单独用户&群密钥开发中！后续也将增加主题色修改等功能。</h2>
             </div>
         </div>
     </div>
@@ -281,9 +279,8 @@ async function onLoad() {
     console.log('下面执行onLoad方法')
     addMenuItemEC()//添加鼠标右键时的菜单选项
     patchCss()//修改css
-    addFuncBar()//添加功能栏的功能图标
+    addFuncBarIcon()//添加功能栏的功能图标
 }
-
 
 //节流，防止多次渲染
 let observerRendering = false
