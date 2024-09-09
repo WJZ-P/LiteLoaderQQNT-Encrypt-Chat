@@ -10,7 +10,6 @@
 [![LinkedIn][linkedin-shield]][linkedin-url]
 
 <!-- PROJECT LOGO -->
-<br />
 
 <p align="center">
   <a href="https://github.com/WJZ-P/LiteLoaderQQNT-Encrypt-Chat/">
