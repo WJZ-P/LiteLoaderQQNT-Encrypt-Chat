@@ -2,9 +2,7 @@ import {addFuncBarIcon, addMenuItemEC} from "./utils/chatUtils.js";
 import {SettingListeners} from "./utils/SettingListeners.js"
 import {messageRenderer, patchCss} from "./utils/rendererUtils.js";
 import {pluginMenuHTML} from "./menu.js";
-const ecAPI=window.encrypt_chat
-const nowConfig = await ecAPI.getConfig()
-
+const ecAPI = window.encrypt_chat
 await onLoad();//注入
 
 
@@ -19,13 +17,11 @@ export const onSettingWindowCreated = view => {
 
         const myListener = new SettingListeners(settingHTML)
         myListener.onLoad()
-
         view.appendChild(settingHTML);
-
 
         // myListener.onLoad()//调用监听器
     } catch (e) {
-        setInterval(() => {
+        setInterval(() => {//防止调试未打开就已经输出，导致捕获不到错误
             console.log(e)
         }, 1000)
     }
@@ -33,13 +29,20 @@ export const onSettingWindowCreated = view => {
 
 //注入函数
 async function onLoad() {
-    const currentWindowID = await window.encrypt_chat.getWindowID()
-    if (currentWindowID !== 2) {return}//ID二号是QQ主页面，不是就直接退出
+    const currentWindowID = await ecAPI.getWindowID()
+    console.log('当前窗口ID为' + currentWindowID)
+    if (currentWindowID !== 2) {
+        return
+    }//ID二号是QQ主页面，不是就直接退出
 
-    console.log('下面执行onLoad方法')
-    addMenuItemEC()//添加鼠标右键时的菜单选项
-    patchCss()//修改css
-    addFuncBarIcon()//添加功能栏的功能图标
+    console.log('~~~~~~~~~~~~~~~~~~~~~~~~~~~~下面执行onLoad方法')
+    try {
+        addMenuItemEC()//添加鼠标右键时的菜单选项
+        patchCss()//修改css
+        addFuncBarIcon()//添加功能栏的功能图标
+    } catch (e) {
+        console.log(e)
+    }
 }
 
 //节流，防止多次渲染

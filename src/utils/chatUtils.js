@@ -39,7 +39,7 @@ function createMenuItemEC(rightClickMenu, icon, title, callback) {
  * 右键菜单监听
  */
 export function addMenuItemEC() {
-
+    console.log('现在执行addMenuItemEC方法')
     let isRightClick = false;
     let textElement = null;
     //监听鼠标点击，根据情况插入功能栏

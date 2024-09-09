@@ -1,5 +1,7 @@
 //添加css样式
-import {appendEncreptedTag} from "./frontendUtils";
+import {appendEncreptedTag} from "./frontendUtils.js";
+const ecAPI=window.encrypt_chat
+const nowConfig = await ecAPI.getConfig()
 
 export function patchCss() {
     console.log('[Encrypt-Chat]' + 'css加载中')
@@ -131,6 +133,11 @@ export async function checkMsgElement(msgElement) {
     return decodeRes    //直接返回解密的结果，是十六进制的字符串
 }
 
+/**
+ * 消息渲染器，把密文渲染成明文
+ * @param allChats
+ * @returns {Promise<void>}
+ */
 export async function messageRenderer(allChats){//下面对每条消息进行判断
     for (let chatElement of allChats) {
         const innerChatElement = chatElement.querySelector('.text-normal')
