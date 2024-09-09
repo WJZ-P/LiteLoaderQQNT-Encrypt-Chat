@@ -67,7 +67,7 @@
 ### 版权说明
 
 该项目签署了EPL-2.0 license
-授权许可，详情请参阅 [LICENSE.txt](https://github.com/WJZ-P/LiteLoaderQQNT-Encrypt-Chat/blob/main/LICENSE.txt)
+授权许可，详情请参阅 [LICENSE](https://github.com/WJZ-P/LiteLoaderQQNT-Encrypt-Chat/blob/main/LICENSE)
 
 ### 鸣谢
 
@@ -95,7 +95,7 @@
 
 [license-shield]: https://img.shields.io/github/license/WJZ-P/LiteLoaderQQNT-Encrypt-Chat.svg?style=flat-square
 
-[license-url]: https://github.com/WJZ-P/LiteLoaderQQNT-Encrypt-Chat/blob/main/LICENSE.txt
+[license-url]: https://github.com/WJZ-P/LiteLoaderQQNT-Encrypt-Chat/blob/main/LICENSE
 
 [linkedin-shield]: https://img.shields.io/badge/-LinkedIn-black.svg?style=flat-square&logo=linkedin&colorB=555
 
