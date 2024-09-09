@@ -3,17 +3,25 @@
     "type": "extension",
     "name": "Encrypt Chat",
     "slug": "encrypt_chat",
-    "description": "一个用于LiteLoaderQQNT的加密通话插件(*^_^*)",
-    "version": "0.1.0",
+    "description": "一个方便好用加密通话插件(*^_^*)",
+    "version": "1.0.0",
     "icon": "./chat.png",
     "authors": [{
         "name": "WJZ_P",
-        "link": "https://github.com/WJZ_P"
+        "link": "https://github.com/WJZ-P"
     }],
     "platform": ["win32", "linux", "darwin"],
     "injects": {
         "renderer": "./src/renderer.js",
         "main": "./src/main.js",
         "preload": "./src/preload.js"
+    },
+     "repository": {
+        "repo": "mo-jinran/chii-devtools",
+        "branch": "v4",
+        "release": {
+            "tag": "1.0.0",
+            "file": "chii-devtools.zip"
+        }
     }
 }
