@@ -108,7 +108,7 @@ function createFuncBarIcon(chatElement) {
         iconItem.id = "id-func-bar-EncryptChat"
         iconItem.ariaLabel = "加密聊天"
         imageElement.innerHTML = `<svg class="q-svg" xmlns="http://www.w3.org/2000/svg" 
-height="24px" viewBox="0 -960 960 960" width="24px" fill="#D9D9D9" onclick="ECactivator(this,document.querySelector('.chat-input-area'))">
+height="24px" viewBox="0 -960 960 960" width="24px" fill="#D9D9D9" onclick="ECactivator(this,document.querySelector('.send-btn-wrap'))">
 <path d="M240-399h313v-60H240v60Zm0-130h480v-60H240v60Zm0-130h480v-60H240v60ZM80-80v-740q0-24 18-42t42-18h680q24 0 42 18t18 42v520q0 24-18 42t-42 18H240L80-80Zm134-220h606v-520H140v600l74-80Zm-74 0v-520 520Z"/></svg>`
 
         //下面把提示字添加到子元素内
@@ -161,21 +161,19 @@ export function addFuncBarIcon() {
 /**
  * 启用/关闭加密聊天功能，同时修改svg元素样式和输入框的样式
  * @param svg svg元素
- * @param chatInputEl
+ * @param sendBtnEl 发送按钮的div元素
  */
-async function ECactivator(svg,chatInputEl) {
+async function ECactivator(svg, sendBtnWrapEl) {
     let isActive = (await ecAPI.getConfig()).activeEC//获取当前EC状态，默认关闭加密
-    console.log('更改active为'+!isActive)
-    console.log(chatInputEl)
-    chatInputEl.classList.toggle('active')
+    console.log('更改active为' + !isActive)
+
+    sendBtnWrapEl.classList.toggle('active')
+    const sendTextBtnEl = sendBtnWrapEl.querySelector('.send-msg')//带有“发送字样的按钮”
+    sendTextBtnEl.innerText=!isActive?"加密发送":"发送"
+
     svg.classList.toggle('active');
 
     await ecAPI.setConfig({activeEC: !isActive})//设置开关状态
-    //下面启用/关闭加密聊天功能
-
-    //查找到发送按钮
-    const sendElement = document.querySelector('.send')
-
 }
 
 window.ECactivator = ECactivator//给window对象添加一个方法，供其他地方调用
