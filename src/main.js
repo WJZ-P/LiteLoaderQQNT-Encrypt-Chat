@@ -5,7 +5,7 @@ const {ipcMessage} = require("./utils/ipcUtils");
 const {pluginLog} = require("./utils/logUtils")
 const {Config}=require("./Config.js")
 
-const pluginPath = path.join(LiteLoader.path.plugins, "Encrypt-Chat");
+const pluginPath = path.join(LiteLoader.plugins.encrypt_chat.path.plugin);//插件目录
 const configPath = path.join(pluginPath, "config.json");
 
 const config = Config.config
