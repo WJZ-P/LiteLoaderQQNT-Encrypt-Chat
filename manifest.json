@@ -5,7 +5,7 @@
     "slug": "encrypt_chat",
     "description": "一个方便好用加密通话插件(*^_^*)",
     "version": "1.0.0",
-    "icon": "./chat.png",
+    "icon": "./src/assests/chat_blue.svg",
     "authors": [{
         "name": "WJZ_P",
         "link": "https://github.com/WJZ-P"

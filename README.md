@@ -45,7 +45,7 @@
         - [鸣谢](#鸣谢)
         - [重要声明](#重要声明)
 
-### 上手指南
+## 上手指南
 
 ###### 开发前的配置要求
 
@@ -59,23 +59,26 @@
 2. 解压后把整个解压出来的文件夹拖动到Plugins目录下即可。
 3. 重启QQ，LiteLoader会自动加载Encrypt Chat插件。
 
-### 使用方法
+## 使用方法
 
 1. 打开QQ，随便选择一个聊天对象
 2. 在聊天界面的输入栏右上方会有插件图标，点击即可启用
 
-### 版权说明
+## 版权说明
 
 该项目签署了EPL-2.0 license
 授权许可，详情请参阅 [LICENSE](https://github.com/WJZ-P/LiteLoaderQQNT-Encrypt-Chat/blob/main/LICENSE)
 
-### 鸣谢
+## 鸣谢
 
 - [LiteLoader QQNT](https://github.com/LiteLoaderQQNT/LiteLoaderQQNT?tab=readme-ov-file)
 
-### 重要声明
+## 重要声明
 本项目仅供交流学习使用，禁止用于一切非法用途！(｡•́︿•̀｡)
 
+## ⭐ Star 历史
+
+[![Stargazers over time](https://starchart.cc/WJZ-P/LiteLoaderQQNT-Encrypt-Chat.svg?variant=adaptive)](https://starchart.cc/WJZ-P/LiteLoaderQQNT-Encrypt-Chat)
 <!-- links -->
 
 [your-project-path]:WJZ-P/LiteLoaderQQNT-Encrypt-Chat
