@@ -62,8 +62,26 @@
 ## 使用方法
 
 1. 打开QQ，随便选择一个聊天对象
-!
+<p align="center">
+  <a href="https://www.bilibili.com/video/BV12x411y7SN">
+    <img src="src/assests/markdown/chatWindow.png" alt="聊天界面">
+  </a>
+</p>
+
 2. 在聊天界面的输入栏右上方会有插件图标，点击即可启用
+
+<p align="center">
+  <a href="https://www.bilibili.com/video/BV12x411y7SN">
+    <img src="src/assests/markdown/funcBar.png" alt="功能窗口">
+  </a>
+</p>
+
+3. 打字，点击发送即可看到效果
+<p align="center">
+  <a href="https://www.bilibili.com/video/BV12x411y7SN">
+    <img src="src/assests/markdown/encryptedMessage.png" alt="消息">
+  </a>
+</p>
 
 ## 版权说明
 
