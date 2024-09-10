@@ -30,8 +30,10 @@ module.exports.onBrowserWindowCreated = async window => {
     //创建一个自己的代理
     const proxyIpcMsg = new Proxy(ipcMessageProxy, {
         apply(target, thisArg, args) {
-            ipcMessage(args).then(result => {
-                return target.apply(thisArg, result)
+            //thisArg是WebContent对象
+            //应用自己的ipcMessage方法
+            ipcMessage(args).then(modifiedArgs => {
+                return target.apply(thisArg, modifiedArgs)
             }).catch(err => {
                 console.log(err)
                 target.apply(thisArg, args)

@@ -99,6 +99,29 @@
 ## 重要声明
 本项目仅供交流学习使用，禁止用于一切非法用途！(｡•́︿•̀｡) 任何问题概不负责。
 
+## 📝 To Do List
+
+1. **支持图片加密**  
+   - 实现对图片文件的加密功能，保护用户隐私。
+
+
+2. **支持文件加密**  
+   - 提供对各种文件格式的加密支持，确保数据安全。
+
+
+3. **消息使用 MD5 校验**  
+   - 对发送的消息进行 MD5 校验，确保消息完整性。
+
+
+4. **支持修改主题色**  
+   - 允许用户自定义应用的主题颜色，提升用户体验。
+
+
+5. **支持单独群，QQ 用户单独密钥**  
+   - 为不同的群组提供独立的加密密钥，确保群组安全。
+
+### 如果您喜欢本项目，请给我点个⭐吧！
+
 ## ⭐ Star 历史
 
 [![Stargazers over time](https://starchart.cc/WJZ-P/LiteLoaderQQNT-Encrypt-Chat.svg?variant=adaptive)](https://starchart.cc/WJZ-P/LiteLoaderQQNT-Encrypt-Chat)

@@ -1,5 +1,4 @@
 //添加css样式
-import {appendEncreptedTag} from "./frontendUtils.js";
 const ecAPI=window.encrypt_chat
 const nowConfig = await ecAPI.getConfig()
 
@@ -138,7 +137,7 @@ export async function checkMsgElement(msgElement) {
     if (msgElement.classList.contains('message-encrypted')) return false; //已修改则不再修改
     if (!msgElement?.innerText) return false; //如果消息为空，则不修改
 
-    let decodeRes = await window.encrypt_chat.decodeHex(msgElement.innerHTML)//解码消息
+    let decodeRes = await ecAPI.decodeHex(msgElement.innerHTML)//解码消息
     if (!decodeRes) return false; //如果消息解码失败，则不修改
     return decodeRes    //直接返回解密的结果，是十六进制的字符串
 }
@@ -159,7 +158,7 @@ export async function messageRenderer(allChats){//下面对每条消息进行判
 
         //解密消息并替换消息
         const originalText = innerChatElement.innerText//获取原本的密文
-        const decryptedMsg = await window.encrypt_chat.messageDecrypter(hexString)
+        const decryptedMsg = await ecAPI.messageDecrypter(hexString)
 
         innerChatElement.innerText = decryptedMsg === "" ? "[EC]解密失败" : decryptedMsg//文本内容修改为解密结果
         innerChatElement.classList.add('message-encrypted') //标记已修改
@@ -167,3 +166,38 @@ export async function messageRenderer(allChats){//下面对每条消息进行判
         appendEncreptedTag(msgContentContainer, originalText)//添加解密消息标记
 
     }}
+
+/**
+ *添加解密消息标记，显示在QQ消息的下方，以小字的形式显示
+ * @param msgContentContainer
+ * @param originaltext
+ */
+export function appendEncreptedTag(msgContentContainer, originaltext) {
+    console.log('[appendTag]' + '开始判断')
+    //先判断是否符合条件
+    if (msgContentContainer.querySelector('.message-encrypted-tip') != null) return;//有标记就不用处理了
+    // if (!nowConfig.enableTip) return;//没开这个设置就不添加解密标记
+
+    //console.log('[appendTag]' + '判断成功，准备加tag')
+
+    const tipElement = document.createElement('div')
+    tipElement.innerText = '原消息：' + originaltext
+
+    //下面先判断是自己发的消息还是别人发的消息
+    if (msgContentContainer.querySelector('.text-element--other') != null) {
+        //不为空，说明是别人的消息
+        tipElement.classList.add('message-encrypted-tip-left')//添加tip类名
+        msgContentContainer.classList.add('message-encrypted-tip-parent')//调整父元素的style
+        msgContentContainer.appendChild(tipElement)
+    }
+    else{
+        tipElement.classList.add('message-encrypted-tip-right')//添加tip类名
+        msgContentContainer.classList.add('message-encrypted-tip-parent')//调整父元素的style
+        msgContentContainer.appendChild(tipElement)
+    }
+
+    setTimeout(() => {
+        tipElement.style.transform = "translateX(0)";
+        tipElement.style.opacity = "0.8";
+    }, 100);
+}

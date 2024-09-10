@@ -15,7 +15,7 @@ async function ipcMessage(args) {
 
     console.log('下面打印出nodeIKernelMsgService/sendMsg的内容')
     console.log(args[3][1][1])
-    console.log('下面打印出具体的textElement')
+    console.log('下面打印出具体的msgElement')
     for (let item of args[3][1][1].msgElements) {
         console.log(item)
     }
@@ -34,12 +34,15 @@ async function ipcMessage(args) {
         if (item.textElement.atUid !== '') {
             continue;//艾特消息无法修改content，NTQQ似乎有别的措施防止。
         }
+
+        //修改解密消息
         item.textElement.content = messageEncrypter(item.textElement.content)
     }
-    console.log('修改后的,msgElements为')
-    for (let item of args[3][1][1].msgElements) {
-        console.log(item)
-    }
+
+    // console.log('修改后的,msgElements为')
+    // for (let item of args[3][1][1].msgElements) {
+    //     console.log(item)
+    // }
 
     return args
 }
