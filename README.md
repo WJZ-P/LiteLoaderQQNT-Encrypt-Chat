@@ -76,12 +76,14 @@
   </a>
 </p>
 
-3. 打字，点击发送即可看到效果
+3. 打字，点击发送即可看到效果。目前采用bangboo语，日后会加入更多密文语种
 <p align="center">
   <a href="https://www.bilibili.com/video/BV12x411y7SN">
     <img src="src/assests/markdown/encryptedMessage.png" alt="消息">
   </a>
 </p>
+
+4.更多内容请在QQ设置中查看
 
 ## 版权说明
 
