@@ -76,7 +76,3 @@ async function render() {
     let allChats = document.querySelectorAll('.ml-item')
     await messageRenderer(allChats)
 }
-
-
-
-

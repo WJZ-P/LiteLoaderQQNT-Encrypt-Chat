@@ -111,9 +111,25 @@ export function patchCss() {
     transition-delay: 0.25s;
 }
 
+.group-chat .chat-input-area {
+    width: 100%; /* 确保输入框占满可用宽度 */
+    border: 2px solid transparent; /* 默认边框透明 */
+    background: #f2f2f2; /* 默认背景颜色 */
+    transition: all 0.3s ease; /* 过渡效果 */
+    position: relative; /* 为图标留出空间 */
+}
+
+.group-chat .chat-input-area.active {
+    background: linear-gradient(135deg, #e0f7fa, #66ccff); /* 渐变背景 */
+    border: 2px solid #66ccff; /* 激活时边框颜色 */
+    box-shadow: 0 4px 20px rgba(77, 181, 232, 0.5); /* 阴影效果 */
+    opacity: 0.9;
+}
+
 }`
 
     style.innerHTML = sHtml
+
     document.getElementsByTagName('head')[0].appendChild(style)
     console.log('[Encrypt-Chat]' + 'css加载完成')
 }

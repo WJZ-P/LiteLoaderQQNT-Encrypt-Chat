@@ -43,6 +43,7 @@
         - [**使用方法**](#使用方法)
         - [版权说明](#版权说明)
         - [鸣谢](#鸣谢)
+        - [重要声明](#重要声明)
 
 ### 上手指南
 
@@ -71,6 +72,9 @@
 ### 鸣谢
 
 - [LiteLoader QQNT](https://github.com/LiteLoaderQQNT/LiteLoaderQQNT?tab=readme-ov-file)
+
+### 重要声明
+本项目仅供交流学习使用，禁止用于一切非法用途！(｡•́︿•̀｡)
 
 <!-- links -->
 
