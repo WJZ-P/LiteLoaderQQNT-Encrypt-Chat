@@ -13,7 +13,7 @@
 
 <p align="center">
   <a href="https://github.com/WJZ-P/LiteLoaderQQNT-Encrypt-Chat/">
-    <img src="src/assests/chat.svg" alt="Logo" width="150" height="150" style="color: #66ccff;margin: 0">
+    <img src="src/assests/chat_blue.svg" alt="Logo" width="150" height="150" style="color: #66ccff;margin: 0">
   </a>
   <h1 align="center">Encrypt Chat</h1>
   <p align="center">
