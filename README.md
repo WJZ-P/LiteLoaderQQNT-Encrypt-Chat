@@ -50,7 +50,8 @@
 ###### 开发前的配置要求
 
 1. 请安装LiteLoader，项目地址为 https://github.com/LiteLoaderQQNT/LiteLoaderQQNT
-   下面是社区开发的LiteLoader快捷安装脚本项目，新手请直接下载下面的即可。
+   
+2. 下面是社区开发的LiteLoader快捷安装脚本项目，新手请直接下载下面的即可。
    https://github.com/Mzdyl/LiteLoaderQQNT_Install/
 
 ###### 安装步骤
@@ -119,6 +120,9 @@
 
 5. **支持单独群，QQ 用户单独密钥**  
    - 为不同的群组提供独立的加密密钥，确保群组安全。
+
+5. **支持更多的语种**  
+   - 当前仅为bangboo语，后续增加喵喵语等
 
 ### 如果您喜欢本项目，请给我点个⭐吧！
 

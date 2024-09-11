@@ -1,5 +1,5 @@
 //添加css样式
-const ecAPI=window.encrypt_chat
+const ecAPI = window.encrypt_chat
 const nowConfig = await ecAPI.getConfig()
 
 export function patchCss() {
@@ -133,13 +133,12 @@ export function patchCss() {
  * @returns {Promise}
  */
 export async function checkMsgElement(msgElement) {
-    if (!msgElement?.classList) return false; //如果元素没有classList属性，直接返回，因为右键的不一定是文字元素
-    if (msgElement.classList.contains('message-encrypted')) return false; //已修改则不再修改
+    if (!msgElement?.classList) return false; //如果元素没有classList属性，直接返回，因为可能是图片元素
     if (!msgElement?.innerText) return false; //如果消息为空，则不修改
 
     let decodeRes = await ecAPI.decodeHex(msgElement.innerHTML)//解码消息
-    if (!decodeRes) return false; //如果消息解码失败，则不修改
-    return decodeRes    //直接返回解密的结果，是十六进制的字符串
+
+    return decodeRes === "" ? false : decodeRes    //直接返回解密的结果，是十六进制的字符串,解码失败则不修改
 }
 
 /**
@@ -147,25 +146,47 @@ export async function checkMsgElement(msgElement) {
  * @param allChats
  * @returns {Promise<void>}
  */
-export async function messageRenderer(allChats){//下面对每条消息进行判断
-    for (let chatElement of allChats) {
-        const innerChatElement = chatElement.querySelector('.text-normal')
-        //包裹住消息内容的div msg-content-container
-        const msgContentContainer = chatElement.querySelector('.msg-content-container')
+export async function messageRenderer(allChats) {//下面对每条消息进行判断
+    for (const chatElement of allChats) {
+        try {
+            const msgContentContainer = chatElement.querySelector('.msg-content-container')
+            if (!msgContentContainer.classList || msgContentContainer.classList.contains('decrypted-msg-container')) continue//说明这条消息已经被修改过
 
-        const hexString = await checkMsgElement(innerChatElement)
-        if (!hexString) continue; //如果消息元素不符合加密解密条件，则不修改
+            let isECMsg = false
+            const msgContent = chatElement.querySelector('.message-content')//包裹着所有消息的div
+            let totalOriginalMsg = ""
 
-        //解密消息并替换消息
-        const originalText = innerChatElement.innerText//获取原本的密文
-        const decryptedMsg = await ecAPI.messageDecrypter(hexString)
+            //console.dir(msgContent)
+            for (const singalMsg of msgContent.children) {
+                let hexString = undefined
 
-        innerChatElement.innerText = decryptedMsg === "" ? "[EC]解密失败" : decryptedMsg//文本内容修改为解密结果
-        innerChatElement.classList.add('message-encrypted') //标记已修改
+                const normalText = singalMsg.querySelector('.text-normal')
+                const atText=singalMsg.querySelector('.text-element--at')
+                if (normalText) {//是普通文本
+                    hexString = await checkMsgElement(normalText)
+                    if (hexString) {
+                        totalOriginalMsg += normalText.innerText//获取原本的密文
+                        normalText.innerText = await ecAPI.messageDecrypter(hexString)
+                        isECMsg = true
+                    }//文本内容修改为解密结果
+                }
+                else if(atText){
+                    totalOriginalMsg+=atText.innerText
+                }
+                //...
 
-        appendEncreptedTag(msgContentContainer, originalText)//添加解密消息标记
 
-    }}
+            }
+            if (isECMsg) {
+                //包裹住消息内容的div msg-content-container
+                appendEncreptedTag(msgContentContainer, totalOriginalMsg)//全部处理完成添加已解密消息标记，同时修改样式
+            }
+        } catch (e) {
+            console.log(e)
+        }
+
+    }
+}
 
 /**
  *添加解密消息标记，显示在QQ消息的下方，以小字的形式显示
@@ -174,8 +195,7 @@ export async function messageRenderer(allChats){//下面对每条消息进行判
  */
 export function appendEncreptedTag(msgContentContainer, originaltext) {
     console.log('[appendTag]' + '开始判断')
-    //先判断是否符合条件
-    if (msgContentContainer.querySelector('.message-encrypted-tip') != null) return;//有标记就不用处理了
+
     // if (!nowConfig.enableTip) return;//没开这个设置就不添加解密标记
 
     //console.log('[appendTag]' + '判断成功，准备加tag')
@@ -189,13 +209,13 @@ export function appendEncreptedTag(msgContentContainer, originaltext) {
         tipElement.classList.add('message-encrypted-tip-left')//添加tip类名
         msgContentContainer.classList.add('message-encrypted-tip-parent')//调整父元素的style
         msgContentContainer.appendChild(tipElement)
-    }
-    else{
+    } else {
         tipElement.classList.add('message-encrypted-tip-right')//添加tip类名
         msgContentContainer.classList.add('message-encrypted-tip-parent')//调整父元素的style
         msgContentContainer.appendChild(tipElement)
     }
 
+    msgContentContainer.classList.add('decrypted-msg-container')//添加标记，用来检测是否为已修改过的元素
     setTimeout(() => {
         tipElement.style.transform = "translateX(0)";
         tipElement.style.opacity = "0.8";

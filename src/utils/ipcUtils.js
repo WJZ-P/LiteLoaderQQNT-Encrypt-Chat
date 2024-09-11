@@ -1,7 +1,8 @@
 const {messageEncrypter} = require("./cryptoUtils");
-const {Config}=require("../Config.js")
+const {Config} = require("../Config.js")
 
-const config=Config.config
+const config = Config.config
+
 /**
  * 处理QQ消息,对符合条件的msgElement的content进行加密再返回
  * @param args
@@ -25,24 +26,25 @@ async function ipcMessage(args) {
     //下面判断加密是否启用，启用了就修改消息内容
     if (!config.activeEC) return
 
+    //————————————————————————————————————————————————————————————————————
     //修改原始消息
     for (let item of args[3][1][1].msgElements) {
-        //连续艾特两个人，会多出一个空白content的msgElement夹在两次艾特中间。
-        //每艾特一次别人，会用一个msgElement存储。内容为@xxx。
+        if (item.elementType === 1) {//说明消息内容是文字类
 
-        //艾特别人的不需要解密
-        if (item.textElement.atUid !== '') {
-            continue;//艾特消息无法修改content，NTQQ似乎有别的措施防止。
+            //艾特别人的不需要解密
+            if (item.textElement?.atUid !== '') {
+                continue;//艾特消息无法修改content，NTQQ似乎有别的措施防止。
+            }
+            //修改解密消息
+            item.textElement.content = messageEncrypter(item.textElement.content)
         }
-
-        //修改解密消息
-        item.textElement.content = messageEncrypter(item.textElement.content)
+        else if(item.elementType===2){//说明消息内容是图片类，md5HexStr这个属性一定要对，会做校验
+        }
     }
-
-    // console.log('修改后的,msgElements为')
-    // for (let item of args[3][1][1].msgElements) {
-    //     console.log(item)
-    // }
+    console.log('修改后的,msgElements为')
+    for (let item of args[3][1][1].msgElements) {
+        console.log(item)
+    }
 
     return args
 }
