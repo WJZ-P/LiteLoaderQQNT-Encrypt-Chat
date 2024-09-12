@@ -52,7 +52,7 @@ function messageEncrypter(messageToBeEncrypted) {
         mode: CryptoJS.mode.CBC, // 设置模式为CBC
         padding: CryptoJS.pad.Pkcs7 // 设置填充方式为PKCS#7
     }).ciphertext.toString(CryptoJS.enc.Hex);
-    console.log('[EC] 加密后的密文' + encryptedMessage)
+    //console.log('[EC] 加密后的密文' + encryptedMessage)
     //密文转成空白符
     return encodeHex(iv.toString(CryptoJS.enc.Hex) + encryptedMessage) + result//加密后的密文
 }
@@ -111,4 +111,23 @@ function decodeHex(content) {
     return content
 }
 
-module.exports = {messageEncrypter, messageDecrypter, decodeHex}
+/**
+ * 图像加密器。不进行空字符转换。直接返回加密后的密文
+ * @param imgToBeEncrypted
+ * @returns {string}
+ */
+function imgEncryptor(imgToBeEncrypted) {
+
+    //加密明文
+    const iv = CryptoJS.lib.WordArray.random(16)
+    let encryptedMessage = CryptoJS.AES.encrypt(imgToBeEncrypted, getKey(), {
+        iv: iv,
+        mode: CryptoJS.mode.CBC, // 设置模式为CBC
+        padding: CryptoJS.pad.Pkcs7 // 设置填充方式为PKCS#7
+    }).ciphertext.toString(CryptoJS.enc.Hex);
+    //console.log('[EC] 加密后的密文' + encryptedMessage)
+
+    return encryptedMessage//加密后的密文
+}
+
+module.exports = {messageEncrypter, messageDecrypter, decodeHex,imgEncryptor}
