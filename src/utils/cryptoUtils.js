@@ -1,5 +1,5 @@
 const CryptoJS = require("crypto-js");
-const {Config}=require("../Config.js")
+const {Config} = require("../Config.js")
 const replaceMap = {}
 
 const config = Config.config
@@ -12,7 +12,7 @@ for (let i = 0xfe00; i <= 0xfe0f; i++) {//型号选择器1-16
 const styles = {
     Bangboo: {
         length: [2, 5],
-        content: ['嗯呢，', '嗯！', "哇哒！", '...', '嗯呢哒', '嗯呐呐!', '嗯哒！', '嗯呢呢！']
+        content: ['嗯呢...', '哇哒！', '嗯呢！', '嗯呢哒！', '嗯呐呐！', '嗯哒！', '嗯呢呢！']
     }
 }
 
@@ -110,6 +110,5 @@ function decodeHex(content) {
     }
     return content
 }
-
 
 module.exports = {messageEncrypter, messageDecrypter, decodeHex}

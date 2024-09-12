@@ -1,5 +1,6 @@
-const {messageEncrypter} = require("./cryptoUtils");
+const {messageEncrypter} = require("./cryptoUtils.js");
 const {Config} = require("../Config.js")
+const {uploadImage} = require("./imageUtils");
 
 const config = Config.config
 
@@ -8,7 +9,7 @@ const config = Config.config
  * @param args
  * @returns {Promise<*>}
  */
-async function ipcMessage(args) {
+async function ipcMessageHandler(args) {
     //判断是否是nodeIKernelMsgService/sendMsg事件
     // if(args[3][1][1]) console.log(args[3][1][1])
 
@@ -29,7 +30,8 @@ async function ipcMessage(args) {
     //————————————————————————————————————————————————————————————————————
     //修改原始消息
     for (let item of args[3][1][1].msgElements) {
-        if (item.elementType === 1) {//说明消息内容是文字类
+        //说明消息内容是文字类
+        if (item.elementType === 1) {
 
             //艾特别人的不需要解密
             if (item.textElement?.atUid !== '') {
@@ -38,7 +40,9 @@ async function ipcMessage(args) {
             //修改解密消息
             item.textElement.content = messageEncrypter(item.textElement.content)
         }
-        else if(item.elementType===2){//说明消息内容是图片类，md5HexStr这个属性一定要对，会做校验
+        //说明消息内容是图片类，md5HexStr这个属性一定要对，会做校验
+        else if (item.elementType === 2) {
+
         }
     }
     console.log('修改后的,msgElements为')
@@ -49,4 +53,4 @@ async function ipcMessage(args) {
     return args
 }
 
-module.exports = {ipcMessage}
+module.exports = {ipcMessage: ipcMessageHandler}
