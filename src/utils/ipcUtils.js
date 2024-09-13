@@ -43,17 +43,19 @@ async function ipcMessageHandler(args) {
         //说明消息内容是图片类，md5HexStr这个属性一定要对，会做校验
         else if (item.elementType === 2) {
             const result = await pictureEncrypt(item.picElement.sourcePath)
+            // const result = {
+            //     picPath: 'E:\\LiteloaderQQNT\\plugins\\Encrypt-Chat\\src\\assests\\encrypted.gif',
+            //     picMD5: 'ea58ae68db65df3a77653a6690e4ef20'
+            // }
             console.log(result)
             Object.assign(item.picElement, {
                 md5HexStr: result.picMD5,
                 sourcePath: result.picPath,
                 fileName: 'encrypted.gif',
-                picType:2000,                   //gif是2000，图片是1001
+                picType: 2000,                   //gif是2000，图片是1001
                 picSubType: 0,                  //设置为图片类型，1是表情包类型，不一样
-                picWidth:1,
-                picHeight:1,
-                // md5HexStr:'c5f4b707b1bced1940beeda7b14864d5',
-                // sourcePath: 'E:\\LiteloaderQQNT\\plugins\\Encrypt-Chat\\src\\assests\\test.gif',
+                picWidth: 1,
+                picHeight: 1,
             })
         }
     }
@@ -65,4 +67,7 @@ async function ipcMessageHandler(args) {
     return args
 }
 
+function sleep(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
 module.exports = {ipcMessage: ipcMessageHandler}
