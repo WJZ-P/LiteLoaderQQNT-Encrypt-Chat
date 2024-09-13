@@ -1,6 +1,5 @@
 const fs = require('fs');
 const crypto = require('crypto');
-
 // AES 加密函数
 function encrypt(text, key) {
     const iv = crypto.randomBytes(16);

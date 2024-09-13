@@ -25,8 +25,7 @@ let nowStyles = styles.Bangboo
  * @returns {*}
  */
 function getKey() {
-    if (config.encryptionKey.trim() === "") return CryptoJS.MD5("20040821")//为空则返回默认值
-    else return CryptoJS.MD5(config.encryptionKey)
+    return CryptoJS.MD5(config.encryptionKey.trim() || "20040821")
 }
 
 /**
@@ -71,7 +70,6 @@ function messageDecrypter(message) {
 
         // 创建 CipherParams 对象
         const ciphertext = CryptoJS.enc.Hex.parse(message.substring(32));
-
         // 进行解密
         const decrypted = CryptoJS.AES.decrypt({ciphertext: ciphertext}, getKey(), {
             iv: iv,
@@ -113,21 +111,21 @@ function decodeHex(content) {
 
 /**
  * 图像加密器。不进行空字符转换。直接返回加密后的密文
- * @param imgToBeEncrypted
- * @returns {string}
+ * @param bufferImg
+ * @returns {Buffer}
  */
-function imgEncryptor(imgToBeEncrypted) {
+function imgEncryptor(bufferImg) {
 
     //加密明文
     const iv = CryptoJS.lib.WordArray.random(16)
-    let encryptedMessage = CryptoJS.AES.encrypt(imgToBeEncrypted, getKey(), {
+    let encryptedMessage = CryptoJS.AES.encrypt(CryptoJS.lib.WordArray.create(bufferImg), getKey(), {
         iv: iv,
         mode: CryptoJS.mode.CBC, // 设置模式为CBC
         padding: CryptoJS.pad.Pkcs7 // 设置填充方式为PKCS#7
     }).ciphertext.toString(CryptoJS.enc.Hex);
     //console.log('[EC] 加密后的密文' + encryptedMessage)
 
-    return encryptedMessage//加密后的密文
+    return Buffer.from(encryptedMessage)//加密后的buffer格式的图片
 }
 
 module.exports = {messageEncrypter, messageDecrypter, decodeHex,imgEncryptor}
