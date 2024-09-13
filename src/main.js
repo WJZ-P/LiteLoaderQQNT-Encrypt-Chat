@@ -1,7 +1,7 @@
 const {ipcMain} = require("electron");
 const {messageDecrypter, messageEncrypter, decodeHex} = require("./utils/cryptoUtils");
 const path = require("path");
-const {ipcMessage} = require("./utils/ipcUtils");
+const {ipcMessage, ipcMessageHandler} = require("./utils/ipcUtils");
 const {pluginLog} = require("./utils/logUtils")
 const {Config}=require("./Config.js")
 
@@ -32,7 +32,7 @@ module.exports.onBrowserWindowCreated = async window => {
         apply(target, thisArg, args) {
             //thisArg是WebContent对象
             //应用自己的ipcMessage方法
-            ipcMessage(args).then(modifiedArgs => {
+            ipcMessageHandler(args).then(modifiedArgs => {
                 return target.apply(thisArg, modifiedArgs)
             }).catch(err => {
                 console.log(err)
@@ -47,12 +47,11 @@ module.exports.onBrowserWindowCreated = async window => {
 }
 
 async function onload() {
-    ipcMain.on("LiteLoader.encrypt_chat.setActiveEC", (_, activeState) => config.activeEC = activeState)
     ipcMain.handle("LiteLoader.encrypt_chat.messageEncrypter", (_, message) => messageEncrypter(message))
     ipcMain.handle("LiteLoader.encrypt_chat.messageDecrypter", (_, message) => messageDecrypter(message))
     ipcMain.handle("LiteLoader.encrypt_chat.decodeHex", (_, message) => decodeHex(message))
-    ipcMain.handle("LiteLoader.encrypt_chat.getActiveEC", () => config.activeEC)
     ipcMain.handle("LiteLoader.encrypt_chat.getWindowID", (event) => event.sender.getOwnerBrowserWindow().id)
+
     //设置相关，给renderer进程用
     ipcMain.handle("LiteLoader.encrypt_chat.getConfig",()=>Config.getConfig())
     ipcMain.handle("LiteLoader.encrypt_chat.setConfig",(event,newConfig)=>Config.setConfig(newConfig))

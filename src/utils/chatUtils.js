@@ -167,9 +167,10 @@ async function ECactivator(svg, sendBtnWrapEl) {
     let isActive = (await ecAPI.getConfig()).activeEC//获取当前EC状态，默认关闭加密
     console.log('更改active为' + !isActive)
 
+
     sendBtnWrapEl.classList.toggle('active')
     const sendTextBtnEl = sendBtnWrapEl.querySelector('.send-msg')//带有“发送字样的按钮”
-    sendTextBtnEl.innerText=!isActive?"加密发送":"发送"
+    sendTextBtnEl.innerText = !isActive ? "加密发送" : "发送"
 
     svg.classList.toggle('active');
 
