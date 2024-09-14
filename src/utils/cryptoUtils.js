@@ -33,7 +33,7 @@ function getKey() {
  * @param {string} messageToBeEncrypted
  * @returns {string}
  */
-function messageEncrypter(messageToBeEncrypted) {
+function messageEncryptor(messageToBeEncrypted) {
     let minLength = nowStyles.length[0];
     let maxLength = nowStyles.length[1];
     let content = nowStyles.content;
@@ -61,7 +61,7 @@ function messageEncrypter(messageToBeEncrypted) {
  * @param {string} message 里面有一个十六进制格式的字符串
  * @returns {string}
  */
-function messageDecrypter(message) {
+function messageDecryptor(message) {
     try {
         console.log('[EC] 解密器启动，message为' + message)
 
@@ -114,7 +114,7 @@ function decodeHex(content) {
  * @param bufferImg
  * @returns {Buffer}
  */
-function imgEncryptor(bufferImg) {
+function encryptImg(bufferImg) {
 
     //加密明文
     const iv = CryptoJS.lib.WordArray.random(16)
@@ -128,4 +128,21 @@ function imgEncryptor(bufferImg) {
     return Buffer.from(encryptedMessage)//加密后的buffer格式的图片
 }
 
-module.exports = {messageEncrypter, messageDecrypter, decodeHex,imgEncryptor}
+/**
+ * 图像解密器，输入和输入都是buffer
+ * @param bufferImg 需要解密的imgBuffer
+ * @returns {Buffer}    解密完成的imgBuffer
+ */
+function decryptImg(bufferImg) {
+    //获得密文中的iv，为密文的前32/2=16位，因为格式是buffer，buffer每个字节是两个16进制数
+    const iv = CryptoJS.enc.Hex.parse(bufferImg.slice(0, 16))
+    bufferImg = bufferImg.slice(16)
+    return Buffer.from(CryptoJS.AES.decrypt(CryptoJS.lib.WordArray.create(bufferImg), getKey(), {
+            iv: iv,
+            mode: CryptoJS.mode.CBC, // 设置模式为CBC
+            padding: CryptoJS.pad.Pkcs7 // 设置填充方式为PKCS#7
+        }).ciphertext.toString(CryptoJS.enc.Hex)
+    )
+}
+
+module.exports = {messageEncryptor, messageDecrypter: messageDecryptor, decodeHex, encryptImg, decryptImg}

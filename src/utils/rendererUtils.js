@@ -150,30 +150,34 @@ export async function messageRenderer(allChats) {//下面对每条消息进行�
     for (const chatElement of allChats) {
         try {
             const msgContentContainer = chatElement.querySelector('.msg-content-container')
-            if (!msgContentContainer.classList || msgContentContainer.classList.contains('decrypted-msg-container')) continue//说明这条消息已经被修改过
+            if (!msgContentContainer || msgContentContainer?.classList.contains('decrypted-msg-container')) continue//说明这条消息已经被修改过
 
-            let isECMsg = false
             const msgContent = chatElement.querySelector('.message-content')//包裹着所有消息的div
-            let totalOriginalMsg = ""
+            let isECMsg = false//判断是否是加密消息
+            let totalOriginalMsg = ""//总的原始消息
 
-            //console.dir(msgContent)
+            //接下来对所有的消息进行处理
             for (const singalMsg of msgContent.children) {
                 let hexString = undefined
 
                 const normalText = singalMsg.querySelector('.text-normal')
-                const atText=singalMsg.querySelector('.text-element--at')
+                const atText = singalMsg.querySelector('.text-element--at')
+                const picElement = singalMsg.querySelector('.image-content')
                 if (normalText) {//是普通文本
                     hexString = await checkMsgElement(normalText)
                     if (hexString) {
                         totalOriginalMsg += normalText.innerText//获取原本的密文
-                        normalText.innerText = await ecAPI.messageDecrypter(hexString)
+                        normalText.innerText = await ecAPI.messageDecryptor(hexString)
                         isECMsg = true
                     }//文本内容修改为解密结果
+                } else if (atText) {
+                    totalOriginalMsg += atText.innerText
+                } else if (picElement) {
+                    totalOriginalMsg += '[图片]'
+                    let picPath = decodeURIComponent(picElement.getAttribute('src')).substring(9)//前面一般是appimg://
+                    console.log('图片路径为')
+                    console.log(picPath)
                 }
-                else if(atText){
-                    totalOriginalMsg+=atText.innerText
-                }
-                //...
 
 
             }
@@ -194,7 +198,7 @@ export async function messageRenderer(allChats) {//下面对每条消息进行�
  * @param originaltext
  */
 export function appendEncreptedTag(msgContentContainer, originaltext) {
-    console.log('[appendTag]' + '开始判断')
+    // console.log('[appendTag]' + '开始判断')
 
     // if (!nowConfig.enableTip) return;//没开这个设置就不添加解密标记
 

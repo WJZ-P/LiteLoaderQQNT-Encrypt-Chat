@@ -94,11 +94,10 @@ function createFuncBarIcon(chatElement) {
     new MutationObserver(async () => {
 
         const funcBarElement = chatElement.getElementsByClassName("func-bar")[1]//第二个就是右边的
-        console.log('下面打印出右侧的funcbar')
-        console.log(funcBarElement)
+        // console.log('下面打印出右侧的funcbar')
+        // console.log(funcBarElement)
         if (!funcBarElement) return//为空就返回，说明当前不是聊天窗口
 
-        console.log('下面这里准备进行添加')
 
         const barIconElement = funcBarElement.querySelector(`.bar-icon`).cloneNode(true)
         const iconItem = barIconElement.querySelector('.icon-item')//内部的元素，需要修改成自己的值
@@ -140,7 +139,7 @@ height="24px" viewBox="0 -960 960 960" width="24px" fill="#D9D9D9" onclick="ECac
  * 为QQ添加一个EC的功能栏图标，位置在打字窗口的正上方
  */
 export function addFuncBarIcon() {
-    console.log('addfuncbar启动辣！``````````````````````````````````````````````')
+    // console.log('addfuncbar启动辣！``````````````````````````````````````````````')
 
     let chatElement = null
 
@@ -151,7 +150,7 @@ export function addFuncBarIcon() {
 
         //已经找到对应元素
         chatElement = document.querySelector(".chat-input-area")
-        console.log('找到啦！' + chatElement)
+        // console.log('找到啦！' + chatElement)
 
         createFuncBarIcon(chatElement)
         clearInterval(taskID)//关闭任务

@@ -1,7 +1,7 @@
 const {ipcMain} = require("electron");
 const {messageDecrypter, messageEncrypter, decodeHex} = require("./utils/cryptoUtils");
 const path = require("path");
-const {ipcMessage, ipcMessageHandler} = require("./utils/ipcUtils");
+const {ipcMessageHandler} = require("./utils/ipcUtils");
 const {pluginLog} = require("./utils/logUtils")
 const {Config}=require("./Config.js")
 
@@ -47,8 +47,8 @@ module.exports.onBrowserWindowCreated = async window => {
 }
 
 async function onload() {
-    ipcMain.handle("LiteLoader.encrypt_chat.messageEncrypter", (_, message) => messageEncrypter(message))
-    ipcMain.handle("LiteLoader.encrypt_chat.messageDecrypter", (_, message) => messageDecrypter(message))
+    ipcMain.handle("LiteLoader.encrypt_chat.messageEncryptor", (_, message) => messageEncrypter(message))
+    ipcMain.handle("LiteLoader.encrypt_chat.messageDecryptor", (_, message) => messageDecrypter(message))
     ipcMain.handle("LiteLoader.encrypt_chat.decodeHex", (_, message) => decodeHex(message))
     ipcMain.handle("LiteLoader.encrypt_chat.getWindowID", (event) => event.sender.getOwnerBrowserWindow().id)
 
