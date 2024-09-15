@@ -1,8 +1,6 @@
-const {createCipheriv, createDecipheriv, randomBytes} = require("crypto");
-const crypto = require("crypto")
-
+const {createCipheriv, createDecipheriv, randomBytes,createHash} = require("crypto");
 function hashMd5(data) {
-    const hash = crypto.createHash('md5');
+    const hash = createHash('md5');
 
 // 更新哈希对象与输入数据
     hash.update(data, 'utf-8');
@@ -12,6 +10,12 @@ function hashMd5(data) {
 }
 
 
+/**
+ * 加密函数
+ * @param data {string|Buffer}
+ * @param key {string} Hex格式的密钥
+ * @returns {Buffer}
+ */
 function encrypt(data, key) {
     // 生成随机的初始化向量（IV）
     const iv = randomBytes(16)
@@ -29,10 +33,10 @@ function encrypt(data, key) {
 }
 
 // AES-GCM 解密
-function decrypt(encrypted, key = hashMd5('123')) {
-    const iv = encrypted.slice(0, 16);
-    const authTag = encrypted.slice(encrypted.length - 16);
-    const ciphertext = encrypted.slice(16, encrypted.length - 16);
+function decrypt(encryptedData, key) {
+    const iv = encryptedData.slice(0, 16);
+    const authTag = encryptedData.slice(encryptedData.length - 16);
+    const ciphertext = encryptedData.slice(16, encryptedData.length - 16);
 
     const decipher = createDecipheriv('aes-128-gcm', key, iv);
     decipher.setAuthTag(authTag);
@@ -43,7 +47,10 @@ function decrypt(encrypted, key = hashMd5('123')) {
     ]);
 }
 
-const encrypted = encrypt(Buffer.from('123哈哈哈牛逼'))
-const decrypted = decrypt(Buffer.from('795e113d39dcf89020b192a4b79feefdb13090ae0239cebe5137d67128122c9b54f1f8fd9aba9ecfd4f74e927e49e31944ab', 'hex'))
-console.log('加密数据: ', encrypted.toString('hex'))
-console.log('解密数据: ', decrypted.toString())
+module.exports={encrypt,decrypt,hashMd5}
+
+
+// const encrypted = encrypt(Buffer.from('123哈哈哈牛逼'))
+// const decrypted = decrypt(Buffer.from('795e113d39dcf89020b192a4b79feefdb13090ae0239cebe5137d67128122c9b54f1f8fd9aba9ecfd4f74e927e49e31944ab', 'hex'))
+// console.log('加密数据: ', encrypted.toString('hex'))
+// console.log('解密数据: ', decrypted.toString())

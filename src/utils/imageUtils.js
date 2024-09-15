@@ -3,10 +3,11 @@ const FormData = require('form-data');
 const {encryptImg} = require("./cryptoUtils.js");
 const fs = require('fs')
 const config = require("../Config.js").Config.config;
-const CryptoJS = require("crypto-js");
+const sizeOf = require('image-size');
 const path = require('path')
 const {decryptImg} = require("./cryptoUtils.js");
 const {pluginLog} = require("./logUtils");
+const {hashMd5} = require("./aesUtils");
 const uploadUrl = 'https://chatbot.weixin.qq.com/weixinh5/webapp/pfnYYEumBeFN7Yb3TAxwrabYVOa4R9/cos/upload'
 let singlePixelBuffer = undefined
 //初始化像素缓存
@@ -35,14 +36,14 @@ async function imgEncryptor(imgPath) {
         const tempImg = fs.readFileSync(config.tempImgPath)//一共35个字节
         // console.log('tempImg')
         // console.log(tempImg)
-        const resultImage = Buffer.concat([tempImg, Buffer.from(encryptedBuffer)])
+        const resultImage = Buffer.concat([tempImg, encryptedBuffer])
         // console.log('resultImage')
         // console.log(resultImage)
         fs.writeFileSync(path.join(config.pluginPath, 'src/assests/encrypted.gif'), resultImage);
 
         return {
             picPath: path.join(config.pluginPath, 'src/assests/encrypted.gif'),
-            picMD5: CryptoJS.MD5(CryptoJS.lib.WordArray.create(resultImage)).toString(CryptoJS.enc.Hex)
+            picMD5: hashMd5(resultImage).toString('hex')
         }
     } catch (e) {
         console.log(e)
@@ -53,22 +54,28 @@ async function imgEncryptor(imgPath) {
 /**
  * 图片解密，把加密后的图片解密，保存到本地。
  * @param imgPath
- * @returns {Promise<string>}
+ * @returns {Object|false}
  */
 async function imgDecryptor(imgPath) {
     try {
-        pluginLog('下面输出加密图片的buffer')
-        console.log(fs.readFileSync(imgPath))
+        // pluginLog('下面输出加密图片的buffer')
+        // console.log(fs.readFileSync(imgPath))
         const bufferImg = fs.readFileSync(imgPath).slice(35);//需要解密的图片文件,前35个是固定值，表示1x1白色gif
-        pluginLog('用来解密的图片buffer为')
-        console.log(bufferImg)
+        // pluginLog('用来解密的图片buffer为')
+        // console.log(bufferImg)
 
         const decryptedBufImg = decryptImg(bufferImg);
+        if (!decryptedBufImg) return false//解密失败就不需要继续了
 
-        const imgMD5 = CryptoJS.MD5(CryptoJS.lib.WordArray.create(decryptedBufImg)).toString(CryptoJS.enc.Hex)
+        const imgMD5 = hashMd5(decryptedBufImg).toString('hex')
         const decryptedImgPath = path.join(config.pluginPath, `src/assests/decryptedImgs/${imgMD5}.png`)
         fs.writeFileSync(decryptedImgPath, decryptedBufImg);
-        return decryptedImgPath
+        const dimensions = sizeOf(decryptedBufImg)
+        return {decryptedImgPath: decryptedImgPath,
+            width:dimensions.width,
+            height:dimensions.height,
+            type:dimensions.type,
+        }
     } catch (e) {
         pluginLog(e)
     }

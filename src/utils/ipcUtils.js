@@ -59,10 +59,11 @@ async function ipcMessageHandler(args) {
                 md5HexStr: result.picMD5,
                 sourcePath: cachePath,
                 fileName: result.picMD5 + '.gif',
-                picType: 2000,                   //gif是2000，图片是1001
-                picSubType: 0,                  //设置为图片类型，1是表情包类型，不一样
                 picWidth: 1,
                 picHeight: 1,
+                //picType: 2000,                   //gif是2000，图片是1001，1000是表情包
+                //picSubType: 0,                  //设置为0是图片类型，1是表情包类型，会影响渲染大小
+
             })
         }
     }

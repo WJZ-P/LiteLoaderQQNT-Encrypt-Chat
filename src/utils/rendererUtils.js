@@ -162,7 +162,9 @@ export async function messageRenderer(allChats) {//下面对每条消息进行�
 
                 const normalText = singalMsg.querySelector('.text-normal')
                 const atText = singalMsg.querySelector('.text-element--at')
-                const picElement = singalMsg.querySelector('.image-content')
+                const imgElement = singalMsg.querySelector('.image-content')
+
+
                 if (normalText) {//是普通文本
                     hexString = await checkMsgElement(normalText)
                     if (hexString) {
@@ -170,18 +172,31 @@ export async function messageRenderer(allChats) {//下面对每条消息进行�
                         normalText.innerText = await ecAPI.messageDecryptor(hexString)
                         isECMsg = true
                     }//文本内容修改为解密结果
+
                 } else if (atText) {
                     totalOriginalMsg += atText.innerText
-                } else if (picElement) {
-                    totalOriginalMsg += '[图片]'
-                    if(picElement.getAttribute('src').includes('base64')) continue  //图片是base64格式的，直接跳过
+                } else if (imgElement) {
 
-                    let imgPath = decodeURIComponent(picElement.getAttribute('src')).substring(9)//前面一般是appimg://
-                    if(!(await ecAPI.imgChecker(imgPath))) continue //图片检测未通过
+                    if (imgElement.getAttribute('src').includes('base64')) continue  //图片是base64格式的，直接跳过
+
+                    let imgPath = decodeURIComponent(imgElement.getAttribute('src')).substring(9)//前面一般是appimg://
+                    if (!(await ecAPI.imgChecker(imgPath))) continue //图片检测未通过
                     console.log('[Encrypt-Chat] 图片检测通过！下面开始解密')
                     //下面进行图片解密
-                    const base64Img= await ecAPI.imgDecryptor(imgPath)
-                    console.log(base64Img)
+                    const decryptedObj= await ecAPI.imgDecryptor(imgPath)
+                    const decryptedImgPath = decryptedObj.decryptedImgPath
+                    console.log(decryptedObj)
+                    if (decryptedImgPath)  //解密成功才继续
+                    {
+                        //拿到解密后的图片的本地地址，进行替换。
+                        imgElement.setAttribute('src', decryptedImgPath)
+                        //更改父亲的宽高属性
+                        imgElement.parentElement.style.width = decryptedObj.width + 'px'
+                        imgElement.parentElement.style.height = decryptedObj.height + 'px'
+
+                        isECMsg = true
+                    }
+                    totalOriginalMsg += isECMsg?"[EC图片]":'[图片]'
                 }
 
 
@@ -190,7 +205,8 @@ export async function messageRenderer(allChats) {//下面对每条消息进行�
                 //包裹住消息内容的div msg-content-container
                 appendEncreptedTag(msgContentContainer, totalOriginalMsg)//全部处理完成添加已解密消息标记，同时修改样式
             }
-        } catch (e) {
+        } catch
+            (e) {
             console.log(e)
         }
 
