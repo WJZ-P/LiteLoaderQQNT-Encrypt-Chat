@@ -4,6 +4,8 @@ const {contextBridge, ipcRenderer} = require("electron");
 contextBridge.exposeInMainWorld("encrypt_chat", {
     messageEncryptor: (message) => ipcRenderer.invoke("LiteLoader.encrypt_chat.messageEncryptor", message),
     messageDecryptor: (message) => ipcRenderer.invoke("LiteLoader.encrypt_chat.messageDecryptor", message),
+    imgDecryptor: (imgPath) => ipcRenderer.invoke("LiteLoader.encrypt_chat.imgDecryptor", imgPath),
+    imgChecker: (imgPath) => ipcRenderer.invoke("LiteLoader.encrypt_chat.imgChecker", imgPath),
     decodeHex: (message) => ipcRenderer.invoke("LiteLoader.encrypt_chat.decodeHex", message),
     getWindowID: () => ipcRenderer.invoke("LiteLoader.encrypt_chat.getWindowID"),
     //设置相关，给renderer进程用

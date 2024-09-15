@@ -6,7 +6,17 @@ const config = require("../Config.js").Config.config;
 const CryptoJS = require("crypto-js");
 const path = require('path')
 const {decryptImg} = require("./cryptoUtils.js");
+const {pluginLog} = require("./logUtils");
 const uploadUrl = 'https://chatbot.weixin.qq.com/weixinh5/webapp/pfnYYEumBeFN7Yb3TAxwrabYVOa4R9/cos/upload'
+let singlePixelBuffer = undefined
+//初始化像素缓存
+const taskID = setInterval(() => {
+    if (!config.tempImgPath) return
+    singlePixelBuffer = fs.readFileSync(config.tempImgPath)
+    pluginLog('缓存图片加载成功！内容如下')
+    console.log(singlePixelBuffer)
+    clearInterval(taskID)
+}, 200)
 
 /**
  * 图片加密，把图片加密到1x1的gif里面。返回对象
@@ -39,10 +49,30 @@ async function imgEncryptor(imgPath) {
     }
 }
 
-async function imgDecryptor(imgPath){
-    const bufferImg = fs.readFileSync(imgPath).slice(35);//需要解密的图片文件,前35个是固定值，表示1x1白色gif
-    const decryptedBufImg = decryptImg(bufferImg);
-    console.log(decryptedBufImg)
+
+/**
+ * 图片解密，把加密后的图片解密，保存到本地。
+ * @param imgPath
+ * @returns {Promise<string>}
+ */
+async function imgDecryptor(imgPath) {
+    try {
+        pluginLog('下面输出加密图片的buffer')
+        console.log(fs.readFileSync(imgPath))
+        const bufferImg = fs.readFileSync(imgPath).slice(35);//需要解密的图片文件,前35个是固定值，表示1x1白色gif
+        pluginLog('用来解密的图片buffer为')
+        console.log(bufferImg)
+
+        const decryptedBufImg = decryptImg(bufferImg);
+
+        const imgMD5 = CryptoJS.MD5(CryptoJS.lib.WordArray.create(decryptedBufImg)).toString(CryptoJS.enc.Hex)
+        const decryptedImgPath = path.join(config.pluginPath, `src/assests/decryptedImgs/${imgMD5}.png`)
+        fs.writeFileSync(decryptedImgPath, decryptedBufImg);
+        return decryptedImgPath
+    } catch (e) {
+        pluginLog(e)
+    }
+
 }
 
 async function uploadImage(imgPath) {
@@ -58,4 +88,18 @@ async function uploadImage(imgPath) {
     }
 }
 
-module.exports = {uploadImage,imgEncryptor}
+/**
+ * 检查图片是否为加密过的图像
+ * @param imgPath
+ * @returns {Promise<boolean>}
+ */
+async function imgChecker(imgPath) {
+    try {
+        const bufferImg = fs.readFileSync(imgPath).slice(0, 35);
+        return bufferImg.equals(singlePixelBuffer)
+    } catch (e) {
+        return false
+    }
+}
+
+module.exports = {uploadImage, imgEncryptor, imgDecryptor, imgChecker}

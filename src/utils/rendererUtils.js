@@ -174,9 +174,14 @@ export async function messageRenderer(allChats) {//下面对每条消息进行�
                     totalOriginalMsg += atText.innerText
                 } else if (picElement) {
                     totalOriginalMsg += '[图片]'
-                    let picPath = decodeURIComponent(picElement.getAttribute('src')).substring(9)//前面一般是appimg://
-                    console.log('图片路径为')
-                    console.log(picPath)
+                    if(picElement.getAttribute('src').includes('base64')) continue  //图片是base64格式的，直接跳过
+
+                    let imgPath = decodeURIComponent(picElement.getAttribute('src')).substring(9)//前面一般是appimg://
+                    if(!(await ecAPI.imgChecker(imgPath))) continue //图片检测未通过
+                    console.log('[Encrypt-Chat] 图片检测通过！下面开始解密')
+                    //下面进行图片解密
+                    const base64Img= await ecAPI.imgDecryptor(imgPath)
+                    console.log(base64Img)
                 }
 
 

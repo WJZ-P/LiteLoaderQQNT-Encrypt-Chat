@@ -4,6 +4,7 @@ const path = require("path");
 const {ipcMessageHandler} = require("./utils/ipcUtils");
 const {pluginLog} = require("./utils/logUtils")
 const {Config}=require("./Config.js")
+const {imgDecryptor, imgChecker} = require("./utils/imageUtils");
 
 const pluginPath = path.join(LiteLoader.plugins.encrypt_chat.path.plugin);//插件目录
 const configPath = path.join(pluginPath, "config.json");
@@ -51,7 +52,8 @@ async function onload() {
     ipcMain.handle("LiteLoader.encrypt_chat.messageDecryptor", (_, message) => messageDecrypter(message))
     ipcMain.handle("LiteLoader.encrypt_chat.decodeHex", (_, message) => decodeHex(message))
     ipcMain.handle("LiteLoader.encrypt_chat.getWindowID", (event) => event.sender.getOwnerBrowserWindow().id)
-
+    ipcMain.handle("LiteLoader.encrypt_chat.imgDecryptor", (_, imgPath) => imgDecryptor(imgPath))
+    ipcMain.handle("LiteLoader.encrypt_chat.imgChecker", (_, imgPath) => imgChecker(imgPath))
     //设置相关，给renderer进程用
     ipcMain.handle("LiteLoader.encrypt_chat.getConfig",()=>Config.getConfig())
     ipcMain.handle("LiteLoader.encrypt_chat.setConfig",(event,newConfig)=>Config.setConfig(newConfig))
