@@ -3,7 +3,7 @@ const {messageDecrypter, messageEncrypter, decodeHex} = require("./utils/cryptoU
 const path = require("path");
 const {ipcMessageHandler} = require("./utils/ipcUtils");
 const {pluginLog} = require("./utils/logUtils")
-const {Config}=require("./Config.js")
+const {Config} = require("./Config.js")
 const {imgDecryptor, imgChecker} = require("./utils/imageUtils");
 
 const pluginPath = path.join(LiteLoader.plugins.encrypt_chat.path.plugin);//插件目录
@@ -15,40 +15,52 @@ const config = Config.config
 
 // 创建窗口时触发
 module.exports.onBrowserWindowCreated = async window => {
-    pluginLog('当前窗口的title如下：')
-    console.dir(window, { showHidden: true });   //打印出窗口的所有信息
-    pluginLog(window.title)
+    // pluginLog('当前窗口的title如下：')
+    // console.dir(window, { showHidden: true });   //打印出窗口的所有信息
+    // pluginLog(window.title)                      //恒为QQ
+    // pluginLog(window.accessibleTitle)            //空的
+    // pluginLog(window.representedFilename)        //空的
+    // pluginLog('当前窗口的contentView如下：')
+    // console.log(window.contentView)                 //一个空对象{}
 
-    if (window.id !== 2) {
-        pluginLog('当前窗口ID为' + window.id + '.退出')
-        return
+    // pluginLog('当前窗口的devToolsWebContents如下：')
+    // console.log(window.devToolsWebContents)
+    // pluginLog('当前窗口的webContents如下：')
+    // console.log(window.webContents)
+    // pluginLog('webcontents的ipc为')
+    // console.log(window.webContents.ipc)
+
+
+    //是主窗口才修改
+    if (window.id === 2) {
+        //window 为 Electron 的 BrowserWindow 实例
+        pluginLog('启动！')
+        await onload()
+        pluginLog("main.js onLoad注入成功")
+
+        //获取官方的消息监听器
+        const ipcMessageProxy = window.webContents._events["-ipc-message"]
+        pluginLog('ipc监听器获取成功')
+        //创建一个自己的代理
+        const proxyIpcMsg = new Proxy(ipcMessageProxy, {
+            apply(target, thisArg, args) {
+                //thisArg是WebContent对象
+                //应用自己的ipcMessage方法
+                ipcMessageHandler(args).then(modifiedArgs => {
+                    return target.apply(thisArg, modifiedArgs)
+                }).catch(err => {
+                    console.log(err)
+                    target.apply(thisArg, args)
+                })
+            }
+        })
+
+        //替换掉官方的监听器
+        window.webContents._events["-ipc-message"] = proxyIpcMsg
+        pluginLog('ipc监听器修改成功')
     }
 
-    //window 为 Electron 的 BrowserWindow 实例
-    pluginLog('启动！')
-    await onload()
-    pluginLog("main.js onLoad注入成功")
 
-    //获取官方的消息监听器
-    const ipcMessageProxy = window.webContents._events["-ipc-message"]
-    pluginLog('ipc监听器获取成功')
-    //创建一个自己的代理
-    const proxyIpcMsg = new Proxy(ipcMessageProxy, {
-        apply(target, thisArg, args) {
-            //thisArg是WebContent对象
-            //应用自己的ipcMessage方法
-            ipcMessageHandler(args).then(modifiedArgs => {
-                return target.apply(thisArg, modifiedArgs)
-            }).catch(err => {
-                console.log(err)
-                target.apply(thisArg, args)
-            })
-        }
-    })
-
-    //替换掉官方的监听器
-    window.webContents._events["-ipc-message"] = proxyIpcMsg
-    pluginLog('ipc监听器修改成功')
 }
 
 async function onload() {
@@ -59,10 +71,10 @@ async function onload() {
     ipcMain.handle("LiteLoader.encrypt_chat.imgDecryptor", (_, imgPath) => imgDecryptor(imgPath))
     ipcMain.handle("LiteLoader.encrypt_chat.imgChecker", (_, imgPath) => imgChecker(imgPath))
     //设置相关，给renderer进程用
-    ipcMain.handle("LiteLoader.encrypt_chat.getConfig",()=>Config.getConfig())
-    ipcMain.handle("LiteLoader.encrypt_chat.setConfig",(event,newConfig)=>Config.setConfig(newConfig))
+    ipcMain.handle("LiteLoader.encrypt_chat.getConfig", () => Config.getConfig())
+    ipcMain.handle("LiteLoader.encrypt_chat.setConfig", (event, newConfig) => Config.setConfig(newConfig))
 
-    await Config.initConfig(pluginPath,configPath)
+    await Config.initConfig(pluginPath, configPath)
 }
 
 
