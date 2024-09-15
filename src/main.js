@@ -15,6 +15,10 @@ const config = Config.config
 
 // 创建窗口时触发
 module.exports.onBrowserWindowCreated = async window => {
+    pluginLog('当前窗口的title如下：')
+    console.dir(window, { showHidden: true });   //打印出窗口的所有信息
+    pluginLog(window.title)
+
     if (window.id !== 2) {
         pluginLog('当前窗口ID为' + window.id + '.退出')
         return

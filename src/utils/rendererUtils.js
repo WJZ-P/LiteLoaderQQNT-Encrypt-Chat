@@ -157,7 +157,7 @@ export async function messageRenderer(allChats) {//下面对每条消息进行�
             let totalOriginalMsg = ""//总的原始消息
 
             //接下来对所有的消息进行处理
-            for (const singalMsg of msgContent.children) {
+            for (const singalMsg of msgContent?.children) {
                 let hexString = undefined
 
                 const normalText = singalMsg.querySelector('.text-normal')
@@ -180,23 +180,29 @@ export async function messageRenderer(allChats) {//下面对每条消息进行�
                     if (imgElement.getAttribute('src').includes('base64')) continue  //图片是base64格式的，直接跳过
 
                     let imgPath = decodeURIComponent(imgElement.getAttribute('src')).substring(9)//前面一般是appimg://
-                    if (!(await ecAPI.imgChecker(imgPath))) continue //图片检测未通过
-                    console.log('[Encrypt-Chat] 图片检测通过！下面开始解密')
+                    if (imgPath.includes('Thumb')) {
+                        imgPath = imgPath.replace(/\/Thumb\//, '/Ori/').replace(/_0\.gif/, '.gif')//替换成原图地址
+                        console.log('检测到缩略图！索引到原图地址为'+imgPath)
+                    }
+                    if (!(await ecAPI.imgChecker(imgPath))) {
+                        console.log('图片校验未通过！')
+                        continue //图片检测未通过
+                    }
                     //下面进行图片解密
-                    const decryptedObj= await ecAPI.imgDecryptor(imgPath)
+                    console.log('图片校验通过！')
+                    const decryptedObj = await ecAPI.imgDecryptor(imgPath)
                     const decryptedImgPath = decryptedObj.decryptedImgPath
-                    console.log(decryptedObj)
                     if (decryptedImgPath)  //解密成功才继续
                     {
                         //拿到解密后的图片的本地地址，进行替换。
                         imgElement.setAttribute('src', decryptedImgPath)
                         //更改父亲的宽高属性
                         imgElement.parentElement.style.width = decryptedObj.width + 'px'
-                        imgElement.parentElement.style.height = decryptedObj.height + 'px'
+                        imgElement.parentElement.style.height = 'auto'
 
                         isECMsg = true
                     }
-                    totalOriginalMsg += isECMsg?"[EC图片]":'[图片]'
+                    totalOriginalMsg += isECMsg ? "[EC图片]" : '[图片]'
                 }
 
 
@@ -229,7 +235,7 @@ export function appendEncreptedTag(msgContentContainer, originaltext) {
     tipElement.innerText = '原消息：' + originaltext
 
     //下面先判断是自己发的消息还是别人发的消息
-    if (msgContentContainer.querySelector('.text-element--other') != null) {
+    if (msgContentContainer?.classList.contains('container--others')) {
         //不为空，说明是别人的消息
         tipElement.classList.add('message-encrypted-tip-left')//添加tip类名
         msgContentContainer.classList.add('message-encrypted-tip-parent')//调整父元素的style

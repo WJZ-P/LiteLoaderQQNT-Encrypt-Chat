@@ -11,8 +11,8 @@ const {messageEncryptor} = require("./cryptoUtils.js");
  * @returns {Promise<*>}
  */
 async function ipcMessageHandler(args) {
-    //判断是否是nodeIKernelMsgService/sendMsg事件
-    // if(args[3][1][1]) console.log(args[3][1][1])
+    //nodeIKernelMsgService/getABatchOfContactMsgBoxInfo
+    //nodeIKernelMsgService/enterOrExitAio
 
     if (!args?.[3]?.[1]?.[0] || args[3][1][0] !== 'nodeIKernelMsgService/sendMsg') return args;
 
@@ -61,6 +61,8 @@ async function ipcMessageHandler(args) {
                 fileName: result.picMD5 + '.gif',
                 picWidth: 1,
                 picHeight: 1,
+                //fileSize: '520',                  //没效果
+                // thumbPath:cachePath,             //这么写会报错
                 //picType: 2000,                   //gif是2000，图片是1001，1000是表情包
                 //picSubType: 0,                  //设置为0是图片类型，1是表情包类型，会影响渲染大小
 

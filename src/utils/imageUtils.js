@@ -103,6 +103,7 @@ async function uploadImage(imgPath) {
 async function imgChecker(imgPath) {
     try {
         const bufferImg = fs.readFileSync(imgPath).slice(0, 35);
+        console.log(bufferImg)
         return bufferImg.equals(singlePixelBuffer)
     } catch (e) {
         return false

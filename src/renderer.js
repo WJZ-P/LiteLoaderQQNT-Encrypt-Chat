@@ -2,6 +2,7 @@ import {addFuncBarIcon, addMenuItemEC} from "./utils/chatUtils.js";
 import {SettingListeners} from "./utils/SettingListeners.js"
 import {messageRenderer, patchCss} from "./utils/rendererUtils.js";
 import {pluginMenuHTML} from "./menu.js";
+
 const ecAPI = window.encrypt_chat
 await onLoad();//注入
 
@@ -30,16 +31,18 @@ export const onSettingWindowCreated = view => {
 //注入函数
 async function onLoad() {
     const currentWindowID = await ecAPI.getWindowID()
-    console.log('当前窗口ID为' + currentWindowID)
+    // console.log('当前窗口ID为' + currentWindowID)
+
     if (currentWindowID !== 2) {
         return
     }//ID二号是QQ主页面，不是就直接退出
 
-    console.log('~~~~~~~~~~~~~~~~~~~~~~~~~~~~下面执行onLoad方法')
+    console.log('[EC]下面执行onLoad方法')
     try {
         addMenuItemEC()//添加鼠标右键时的菜单选项
         patchCss()//修改css
         addFuncBarIcon()//添加功能栏的功能图标
+
     } catch (e) {
         console.log(e)
     }
@@ -76,3 +79,4 @@ async function render() {
     let allChats = document.querySelectorAll('.ml-item')
     await messageRenderer(allChats)
 }
+
