@@ -71,7 +71,7 @@
   </a>
 </p>
 
-2. 在聊天界面的输入栏右上方会有插件图标，点击即可启用
+2. 在聊天界面的输入栏右上方会有插件图标，点击即可启用，可以按Ctrl+E快速开关加密功能
 
 <p align="center">
   <a href="https://www.bilibili.com/video/BV12x411y7SN">
@@ -80,12 +80,16 @@
 </p>
 
 3. 打字，点击发送即可看到效果。目前采用bangboo语，日后会加入更多密文语种
-<p align="center">
-  <a href="https://www.bilibili.com/video/BV12x411y7SN">
-    <img src="src/assests/markdown/encryptedMessage.png" alt="消息">
-  </a>
-</p>
 
+### 加密对比图如下：
+<div style="display: flex; justify-content: center; align-items: center;">
+  <a href="https://www.bilibili.com/video/BV12x411y7SN">
+    <img src="src/assests/markdown/encryptedMessage.png" alt="消息" style="margin-right: 10px;">
+  </a>
+  <a href="https://www.bilibili.com/video/BV12x411y7SN">
+    <img src="src/assests/markdown/normalMessage.png" alt="消息">
+  </a>
+</div>
 4.更多内容请在QQ设置中查看
 
 ## 版权说明
@@ -124,8 +128,8 @@
 6. **支持更多的语种**  
    - 当前仅为bangboo语，后续增加喵喵语等
 
-7. **增加开启快捷键**
-   - ctrl+e比较合适
+7. ~~**增加开启快捷键**~~  (已完成,Ctrl+E)
+   - ~~ctrl+e比较合适~~
 
 ## 待修复bug
 
