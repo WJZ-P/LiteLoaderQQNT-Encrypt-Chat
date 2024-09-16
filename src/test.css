@@ -1,8 +1,0 @@
-.send-btn-wrap {
-    transition: all 0.25s ease-in-out !important; /* 过渡效果 */
-    box-sizing: border-box;
-}
-
-.send-btn-wrap.active {
-    border: 1px solid #66ccff; /* 激活时边框颜色 */
-}
