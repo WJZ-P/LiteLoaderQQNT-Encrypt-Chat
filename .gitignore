@@ -1,3 +1,4 @@
 .idea
 src/assests/encrypted.gif
 src/test
+src/assests/decryptedImgs/*.png
