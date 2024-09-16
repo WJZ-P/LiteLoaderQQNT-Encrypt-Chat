@@ -1,13 +1,12 @@
 const {Config} = require("../Config.js")
 const {pluginLog} = require("./logUtils");
 const {encrypt, decrypt, hashSha256} = require("./aesUtils.js");
-const replaceMap = {}
+const {encoder} =require("basex-encoder")
+
 const config = Config.config
 
-for (let i = 0xfe00; i <= 0xfe0f; i++) {//型号选择器1-16
-    const hex = (i - 0xfe00).toString(16)
-    replaceMap[hex] = String.fromCodePoint(i)//根据Unicode码替换成对应的字符
-}
+const alphabet = new Array(16).fill(0).map((value,index)=> String.fromCharCode(index + 0xfe00)).join("")
+const baseZero=encoder(alphabet,'utf-8')
 
 const styles = {
     Bangboo: {
@@ -19,6 +18,10 @@ const styles = {
 //初始化一些函数的值
 let nowStyles = styles.Bangboo
 
+function countLeadingZeros(str) {
+    const match = str.match(/^0+/);
+    return match ? match[0].length : 0;
+}
 
 /**
  * 写成函数是因为需要判断值是否为空，为空则返回默认值
@@ -79,19 +82,13 @@ function messageDecryptor(hexStr) {
 }
 
 function encodeHex(result) {
-    for (const key in replaceMap) {
-        result = result.replaceAll(key, replaceMap[key])
-    }
-    return result
+    return baseZero.encode(result,'hex')
 }
 
 function decodeHex(content) {
     // console.log('decodeHex启动，content为' + content)
-    content = [...content].filter((it) => Object.values(replaceMap).includes(it)).join("").trim()
-    for (const key in replaceMap) {
-        content = content.replaceAll(replaceMap[key], key)
-    }
-    return content
+    content = [...content].filter((it) => alphabet.includes(it)).join("").trim()
+    return baseZero.decode(content,'hex')
 }
 
 /**

@@ -1,4 +1,4 @@
-const {ipcMain} = require("electron");
+const {ipcMain, globalShortcut} = require("electron");
 const {messageDecrypter, messageEncrypter, decodeHex} = require("./utils/cryptoUtils");
 const path = require("path");
 const {ipcMessageHandler} = require("./utils/ipcUtils");
@@ -34,34 +34,43 @@ module.exports.onBrowserWindowCreated = async window => {
 
     //是主窗口才修改
     if (window.id === 2) {
-        //window 为 Electron 的 BrowserWindow 实例
-        pluginLog('启动！')
-        await onload()
-        pluginLog("main.js onLoad注入成功")
+        try {
+            //window 为 Electron 的 BrowserWindow 实例
+            pluginLog('启动！')
+            await onload()
+            pluginLog("main.js onLoad注入成功")
 
-        //获取官方的消息监听器
-        const ipcMessageProxy = window.webContents._events["-ipc-message"]
-        pluginLog('ipc监听器获取成功')
-        //创建一个自己的代理
-        const proxyIpcMsg = new Proxy(ipcMessageProxy, {
-            apply(target, thisArg, args) {
-                //thisArg是WebContent对象
-                //应用自己的ipcMessage方法
-                ipcMessageHandler(args).then(modifiedArgs => {
-                    return target.apply(thisArg, modifiedArgs)
-                }).catch(err => {
-                    console.log(err)
-                    target.apply(thisArg, args)
-                })
-            }
-        })
+            //获取官方的消息监听器
+            const ipcMessageProxy = window.webContents._events["-ipc-message"]
+            pluginLog('ipc监听器获取成功')
 
-        //替换掉官方的监听器
-        window.webContents._events["-ipc-message"] = proxyIpcMsg
-        pluginLog('ipc监听器修改成功')
+            //替换掉官方的监听器
+            window.webContents._events["-ipc-message"] = new Proxy(ipcMessageProxy, {
+                apply(target, thisArg, args) {
+                    //thisArg是WebContent对象
+                    //应用自己的ipcMessage方法
+                    ipcMessageHandler(args).then(modifiedArgs => {
+                        return target.apply(thisArg, modifiedArgs)
+                    }).catch(err => {
+                        console.log(err);
+                        target.apply(thisArg, args)
+                    })
+                }
+            })
+            pluginLog('ipc监听器修改成功')
+
+            //这里添加一个快捷键
+            globalShortcut.register('Control+E', () => {
+                if (window.isFocused()) {
+                    pluginLog('快捷键触发,更改EC状态')
+                    window.webContents.send('LiteLoader.encrypt_chat.ECactivator');
+                } else pluginLog('窗口未聚焦，不更改')
+            })
+
+        } catch (e) {
+            console.log(e)
+        }
     }
-
-
 }
 
 async function onload() {
@@ -77,7 +86,6 @@ async function onload() {
 
     await Config.initConfig(pluginPath, configPath)
 }
-
 
 // const ipcInvokeProxy = window.webContents._events["-ipc-invoke"]
 // const proxyIpcInvoke = new Proxy(ipcInvokeProxy, {

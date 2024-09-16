@@ -99,9 +99,9 @@ async function uploadImage(imgPath) {
 /**
  * 检查图片是否为加密过的图像
  * @param imgPath
- * @returns {Promise<boolean>}
+ * @returns {boolean}
  */
-async function imgChecker(imgPath) {
+function imgChecker(imgPath) {
     try {
         const bufferImg = fs.readFileSync(imgPath).slice(0, 35);
         // console.log(bufferImg)

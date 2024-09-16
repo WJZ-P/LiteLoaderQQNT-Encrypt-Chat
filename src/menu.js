@@ -18,8 +18,15 @@ export const pluginMenuHTML = `
             <hr class="horizontal-dividing-line"/>
             <div class="vertical-list-item" style="display: flex; flex-direction: column">
                 <h1>使用方法：打开聊天窗口，点击输入栏上方右侧的加密图标即可切换是否加密。</h1>
-                <hr class="horizontal-dividing-line"/>
                 <h2>目前全局共用一个密钥，单独用户&群密钥开发中！后续也将增加主题色修改等功能。</h2>
+            </div>
+            <hr class="horizontal-dividing-line"/>
+            <div class="vertical-list-item">
+                <h1>目前加密图片的缓存在插件目录/src/assests/decryptedImgs内。</h1>
+            </div>
+            <hr class="horizontal-dividing-line"/>
+            <div class="vertical-list-item" style="display: flex; flex-direction: column">
+                <h1>按Ctrl+E可快捷切换EC状态</h1>
             </div>
         </div>
     </div>

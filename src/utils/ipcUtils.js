@@ -4,6 +4,7 @@ const {pluginLog} = require("./logUtils");
 const config = Config.config
 const fs = require('fs')
 const {messageEncryptor} = require("./cryptoUtils.js");
+const {imgChecker} = require("./imageUtils");
 
 /**
  * 处理QQ消息,对符合条件的msgElement的content进行加密再返回
@@ -41,8 +42,13 @@ async function ipcMessageHandler(args) {
             //修改解密消息
             item.textElement.content = messageEncryptor(item.textElement.content)
         }
+
+
+
         //说明消息内容是图片类，md5HexStr这个属性一定要对，会做校验
         else if (item.elementType === 2) {
+            if(imgChecker(item.picElement.sourcePath)) return//要发送的是加密图片，不进行二次加密
+
             const result = await imgEncryptor(item.picElement.sourcePath)
             console.log(result)
 
@@ -77,8 +83,5 @@ async function ipcMessageHandler(args) {
     return args
 }
 
-function sleep(ms) {
-    return new Promise(resolve => setTimeout(resolve, ms));
-}
 
 module.exports = {ipcMessageHandler}

@@ -1,20 +1,18 @@
 const {createCipheriv, createDecipheriv, randomBytes,createHash} = require("crypto");
 function hashSha256(data) {
     const hash = createHash('sha256');
-
 // 更新哈希对象与输入数据
     hash.update(data, 'utf-8');
-
 // 计算哈希值并以十六进制（hex）字符串形式输出
     return hash.digest();
 }
 
+
+
 function hashMd5(data) {
     const hash = createHash('md5');
-
 // 更新哈希对象与输入数据
     hash.update(data, 'utf-8');
-
 // 计算哈希值并以十六进制（hex）字符串形式输出
     return hash.digest();
 }

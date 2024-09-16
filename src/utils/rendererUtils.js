@@ -134,7 +134,7 @@ export function patchCss() {
  */
 export async function checkMsgElement(msgElement) {
     if (!msgElement?.classList) return false; //如果元素没有classList属性，直接返回，因为可能是图片元素
-    if (!msgElement?.innerText) return false; //如果消息为空，则不修改
+    if (!msgElement?.innerText.trim()) return false; //如果消息为空，则不修改
 
     let decodeRes = await ecAPI.decodeHex(msgElement.innerHTML)//解码消息
 
@@ -182,7 +182,7 @@ export async function messageRenderer(allChats) {//下面对每条消息进行�
                     let imgPath = decodeURIComponent(imgElement.getAttribute('src')).substring(9)//前面一般是appimg://
                     if (imgPath.includes('Thumb') && imgPath.includes('.gif')) {
                         imgPath = imgPath.replace(/\/Thumb\//, '/Ori/').replace(/_0\.gif/, '.gif')//替换成原图地址
-                        console.log('检测到缩略图！索引到原图地址为'+imgPath)
+                        console.log('检测到缩略图！索引到原图地址为' + imgPath)
                     }
                     if (!(await ecAPI.imgChecker(imgPath))) {
                         continue //图片检测未通过
@@ -200,6 +200,13 @@ export async function messageRenderer(allChats) {//下面对每条消息进行�
                         imgElement.parentElement.style.height = 'auto'
 
                         isECMsg = true
+
+                        //添加一个监听器。保持宽高不变
+                        new MutationObserver((imgEl) => {
+                            imgElement.parentElement.style.width = decryptedObj.width + 'px'
+                            imgElement.parentElement.style.height = 'auto'
+                        }).observe(imgElement.parentElement, {attributes: true, attributeFilter: ['style']})
+                        
                     }
                     totalOriginalMsg += isECMsg ? "[EC图片]" : '[图片]'
                 }

@@ -4,8 +4,11 @@ import {messageRenderer, patchCss} from "./utils/rendererUtils.js";
 import {pluginMenuHTML} from "./menu.js";
 import {imgViewHandler} from "./utils/imgViewerUtils.js";
 
+
 const ecAPI = window.encrypt_chat
 await onLoad();//注入
+
+ecAPI.addEventListener('LiteLoader.encrypt_chat.ECactivator', window.ECactivator);
 
 
 export const onSettingWindowCreated = view => {
@@ -63,7 +66,7 @@ const chatObserver = new MutationObserver(mutationsList => {
 })
 
 //聊天列表，所有聊天都显示在这里
-const finder = setInterval(() => {
+const finder = setInterval(async () => {
     if (document.querySelector(".ml-list.list")) {
         clearInterval(finder);
         console.log("[Encrypt-Chat]", "已检测到聊天区域");
@@ -71,16 +74,22 @@ const finder = setInterval(() => {
         //只检测childList就行了
         const config = {attributes: false, childList: true, subtree: false,};
         chatObserver.observe(targetNode, config);
+
+    } else if (document.querySelector('.main-area__image')) {//有这个元素，说明当前窗口是imgViewer
+        console.log("[Encrypt-Chat]", "已检测到imgViewerWindow");
+        await render()
+        clearInterval(finder)
     }
 }, 100);
 
-//渲染函数，修改文本
+//渲染函数
 async function render() {
-    console.log('[Encrypt-Chat]' + '准备加载render方法(renderer进程)')
-    const allChats = document.querySelectorAll('.ml-item')
-    if (allChats) await messageRenderer(allChats)
+    setTimeout(async () => {
+        console.log('[Encrypt-Chat]' + '准备加载render方法(renderer进程)')
+        const allChats = document.querySelectorAll('.ml-item')
+        if (allChats) await messageRenderer(allChats)
 
-    const imgViewerElement = document.querySelector('.main-area__image')//有这个元素，说明当前窗口是imgViewer
-    if (imgViewerElement) await imgViewHandler(imgViewerElement)
+        const imgViewerElement = document.querySelector('.main-area__image')
+        if (imgViewerElement) await imgViewHandler(imgViewerElement)
+    },50)
 }
-

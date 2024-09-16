@@ -5,7 +5,8 @@ const ecAPI = window.encrypt_chat
  * @param imgElement
  */
 export async function imgViewHandler(imgElement) {
-    const imgPath = decodeURIComponent(imgElement.getAttribute('src')).substring(9)
+    console.log(imgElement.src)
+    const imgPath = decodeURIComponent(imgElement.src).substring(9)
     if (!(await ecAPI.imgChecker(imgPath))) {
         console.log('图片校验未通过！')
         return
@@ -19,9 +20,34 @@ export async function imgViewHandler(imgElement) {
     {
         //拿到解密后的图片的本地地址，进行替换。
         imgElement.setAttribute('src', decryptedImgPath)
+        //给父亲元素加类名
+        imgElement.parentElement.classList.add('fix-size')
+
         //更改父亲的宽高属性
-        imgElement.parentElement.style.width = decryptedObj.width + 'px'
-        imgElement.parentElement.style.height = decryptedObj.height + 'px'
+        patchCss(decryptedObj.width, decryptedObj.height)
 
     }
+}
+
+/**
+ * 传入宽高，设置图片
+ * @param width
+ * @param height
+ */
+function patchCss(width, height) {
+    console.log('[Encrypt-Chat]' + '用于固定图片宽高的css加载中')
+
+    let style = document.createElement('style')
+    style.type = "text/css";
+    style.id = "encrypt-chat-css";
+
+    style.innerHTML = `
+.fix-size {
+    width: ${width + 'px !important'};
+    height: ${height + 'px !important'};
+}
+`
+
+    document.getElementsByTagName('head')[0].appendChild(style)
+    console.log('[Encrypt-Chat]' + 'imgViewerWindow css加载完成')
 }
