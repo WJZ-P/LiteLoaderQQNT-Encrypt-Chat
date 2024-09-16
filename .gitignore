@@ -2,6 +2,6 @@
 src/assests/encrypted.gif
 src/test
 # 忽略 decryptedImgs 文件夹中的所有文件
-src/assests/decryptedImgs/*
+/src/assets/decryptedImgs/*
 # 但不忽略 decryptedImgs 文件夹本身
-!src/assests/decryptedImgs/
+!/src/assets/decryptedImgs/
