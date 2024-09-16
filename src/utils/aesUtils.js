@@ -1,4 +1,14 @@
 const {createCipheriv, createDecipheriv, randomBytes,createHash} = require("crypto");
+function hashSha256(data) {
+    const hash = createHash('sha256');
+
+// 更新哈希对象与输入数据
+    hash.update(data, 'utf-8');
+
+// 计算哈希值并以十六进制（hex）字符串形式输出
+    return hash.digest();
+}
+
 function hashMd5(data) {
     const hash = createHash('md5');
 
@@ -9,11 +19,10 @@ function hashMd5(data) {
     return hash.digest();
 }
 
-
 /**
  * 加密函数
  * @param data {string|Buffer}
- * @param key {string} Hex格式的密钥
+ * @param key {Buffer} Hex格式的密钥
  * @returns {Buffer}
  */
 function encrypt(data, key) {
@@ -21,7 +30,7 @@ function encrypt(data, key) {
     const iv = randomBytes(16)
 
     // 创建加密器
-    const cipher = createCipheriv('aes-128-gcm', key, iv);
+    const cipher = createCipheriv('aes-256-gcm', key, iv);
 
     const encrypted = Buffer.concat([
         cipher.update(data),
@@ -38,7 +47,7 @@ function decrypt(encryptedData, key) {
     const authTag = encryptedData.slice(encryptedData.length - 16);
     const ciphertext = encryptedData.slice(16, encryptedData.length - 16);
 
-    const decipher = createDecipheriv('aes-128-gcm', key, iv);
+    const decipher = createDecipheriv('aes-256-gcm', key, iv);
     decipher.setAuthTag(authTag);
 
     return Buffer.concat([
@@ -47,7 +56,7 @@ function decrypt(encryptedData, key) {
     ]);
 }
 
-module.exports={encrypt,decrypt,hashMd5}
+module.exports={encrypt,decrypt,hashSha256,hashMd5}
 
 
 // const encrypted = encrypt(Buffer.from('123哈哈哈牛逼'))

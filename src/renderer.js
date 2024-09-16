@@ -2,6 +2,7 @@ import {addFuncBarIcon, addMenuItemEC} from "./utils/chatUtils.js";
 import {SettingListeners} from "./utils/SettingListeners.js"
 import {messageRenderer, patchCss} from "./utils/rendererUtils.js";
 import {pluginMenuHTML} from "./menu.js";
+import {imgViewHandler} from "./utils/imgViewerUtils.js";
 
 const ecAPI = window.encrypt_chat
 await onLoad();//注入
@@ -75,8 +76,11 @@ const finder = setInterval(() => {
 
 //渲染函数，修改文本
 async function render() {
-    //console.log('[Encrypt-Chat]'+'尝试渲染消息')
-    let allChats = document.querySelectorAll('.ml-item')
-    await messageRenderer(allChats)
+    console.log('[Encrypt-Chat]' + '准备加载render方法(renderer进程)')
+    const allChats = document.querySelectorAll('.ml-item')
+    if (allChats) await messageRenderer(allChats)
+
+    const imgViewerElement = document.querySelector('.main-area__image')//有这个元素，说明当前窗口是imgViewer
+    if (imgViewerElement) await imgViewHandler(imgViewerElement)
 }
 

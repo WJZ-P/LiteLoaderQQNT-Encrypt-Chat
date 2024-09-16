@@ -7,7 +7,7 @@ const sizeOf = require('image-size');
 const path = require('path')
 const {decryptImg} = require("./cryptoUtils.js");
 const {pluginLog} = require("./logUtils");
-const {hashMd5} = require("./aesUtils");
+const {hashMd5} = require("./aesUtils.js");
 const uploadUrl = 'https://chatbot.weixin.qq.com/weixinh5/webapp/pfnYYEumBeFN7Yb3TAxwrabYVOa4R9/cos/upload'
 let singlePixelBuffer = undefined
 //初始化像素缓存
@@ -69,7 +69,8 @@ async function imgDecryptor(imgPath) {
 
         const imgMD5 = hashMd5(decryptedBufImg).toString('hex')
         const decryptedImgPath = path.join(config.pluginPath, `src/assests/decryptedImgs/${imgMD5}.png`)
-        fs.writeFileSync(decryptedImgPath, decryptedBufImg);
+        if(!fs.existsSync(decryptedImgPath)) //目录不存在才写入
+            fs.writeFileSync(decryptedImgPath, decryptedBufImg);
         const dimensions = sizeOf(decryptedBufImg)
         return {decryptedImgPath: decryptedImgPath,
             width:dimensions.width,
@@ -103,7 +104,7 @@ async function uploadImage(imgPath) {
 async function imgChecker(imgPath) {
     try {
         const bufferImg = fs.readFileSync(imgPath).slice(0, 35);
-        console.log(bufferImg)
+        // console.log(bufferImg)
         return bufferImg.equals(singlePixelBuffer)
     } catch (e) {
         return false

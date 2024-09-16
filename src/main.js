@@ -23,12 +23,13 @@ module.exports.onBrowserWindowCreated = async window => {
     // pluginLog('当前窗口的contentView如下：')
     // console.log(window.contentView)                 //一个空对象{}
 
-    // pluginLog('当前窗口的devToolsWebContents如下：')
-    // console.log(window.devToolsWebContents)
     // pluginLog('当前窗口的webContents如下：')
     // console.log(window.webContents)
-    // pluginLog('webcontents的ipc为')
-    // console.log(window.webContents.ipc)
+
+    pluginLog('[主进程]当前窗口ID ' + window.id)
+    // 监听窗口加载完成事件
+    // const currentURL = window.webContents.getURL();
+    // pluginLog('当前加载的 URL:', currentURL);
 
 
     //是主窗口才修改
@@ -78,3 +79,52 @@ async function onload() {
 }
 
 
+// const ipcInvokeProxy = window.webContents._events["-ipc-invoke"]
+// const proxyIpcInvoke = new Proxy(ipcInvokeProxy, {
+//     apply(target, thisArg, args) {
+//         pluginLog('proxyIpcInvoke收到的消息如下')
+//         console.log(args)
+//         return target.apply(thisArg, args)
+//     }
+// })
+// window.webContents._events["-ipc-invoke"] = proxyIpcInvoke
+//
+// const ipcMsgSyncProxy = window.webContents._events['-ipc-message-sync']
+// const proxyIpcMsgSync = new Proxy(ipcMsgSyncProxy, {
+//     apply(target, thisArg, args) {
+//         pluginLog('proxyIpcMsgSync收到的消息如下')
+//         console.log(args)
+//         return target.apply(thisArg, args)
+//     }
+// })
+// window.webContents._events['-ipc-message-sync'] = proxyIpcMsgSync
+//
+// const ipcPortsProxy = window.webContents._events['-ipc-ports']
+// const proxyIpcPorts = new Proxy(ipcPortsProxy, {
+//     apply(target, thisArg, args) {
+//         pluginLog('ipcPortsProxy收到的消息如下')
+//         console.log(args)
+//         return target.apply(thisArg, args)
+//     }
+// })
+// window.webContents._events['-ipc-ports'] = proxyIpcPorts
+//
+// const ipcAddNewContentsProxy = window.webContents._events['-add-new-contents']
+// const proxyAddNewContents = new Proxy(ipcAddNewContentsProxy, {
+//     apply(target, thisArg, args) {
+//         pluginLog('proxyAddNewContents收到的消息如下')
+//         console.log(args)
+//         return target.apply(thisArg, args)
+//     }
+// })
+// window.webContents._events['-add-new-contents'] = proxyAddNewContents
+//
+// const ipcBeforeUnloadFiredProxy = window.webContents._events['-before-unload-fired']
+// const proxyBeUnFired = new Proxy(ipcBeforeUnloadFiredProxy, {
+//     apply(target, thisArg, args) {
+//         pluginLog('ipcBeforeUnloadFiredProxy收到的消息如下')
+//         console.log(args)
+//         return target.apply(thisArg, args)
+//     }
+// })
+// window.webContents._events['-add-new-contents'] = proxyBeUnFired

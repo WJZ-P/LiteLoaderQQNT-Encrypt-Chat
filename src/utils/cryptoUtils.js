@@ -1,6 +1,6 @@
 const {Config} = require("../Config.js")
 const {pluginLog} = require("./logUtils");
-const {encrypt, decrypt, hashMd5} = require("./aesUtils.js");
+const {encrypt, decrypt, hashSha256} = require("./aesUtils.js");
 const replaceMap = {}
 const config = Config.config
 
@@ -25,7 +25,7 @@ let nowStyles = styles.Bangboo
  * @returns {Buffer}
  */
 function getKey() {
-    return hashMd5(config.encryptionKey.trim() || "20040821")
+    return hashSha256(config.encryptionKey.trim() || "20040821")
 }
 
 /**

@@ -1,9 +1,5 @@
 // Electron 主进程 与 渲染进程 交互的桥梁
 const {contextBridge, ipcRenderer} = require("electron");
-let {webContentsId} = ipcRenderer.sendSync('___!boot');
-if (!webContentsId) {
-    webContentsId = 2;
-}
 
 // 在window对象下导出只读对象
 contextBridge.exposeInMainWorld("encrypt_chat", {
@@ -52,11 +48,3 @@ function subscribeEvent(cmdName, handler) {
 function unsubscribeEvent(handler) {
     ipcRenderer.off(`IPC_DOWN_${webContentsId}`, handler);
 }
-
-// 获取已添加的监听器
-const listeners = ipcRenderer.rawListeners(`IPC_DOWN_${ webContentsId }`);  // 使用 rawListeners 来获取监听器
-
-console.log(`Number of listeners for 'my-event': ${listeners.length}`);
-listeners.forEach((listener, index) => {
-    console.log(`Listener ${index + 1}:`, listener.toString());
-});
