@@ -52,44 +52,62 @@ async function onLoad() {
     }
 }
 
-//节流，防止多次渲染
-let observerRendering = false
-//聊天窗口监听器
-const chatObserver = new MutationObserver(mutationsList => {
-    if (observerRendering) return;
+//下面的方案有bug,MutationObserver有概率不触发，所以选择直接写死循环
 
-    observerRendering = true
-    setTimeout(async () => {
+// //节流，防止多次渲染
+// let observerRendering = false
+// //聊天窗口监听器
+// const chatObserver = new MutationObserver(mutationsList => {
+//     if (observerRendering) return;
+//
+//     observerRendering = true
+//     setTimeout(async () => {
+//         await render()
+//         observerRendering = false
+//     }, 50)
+// })
+//
+// //聊天列表，所有聊天都显示在这里
+// const finder = setInterval(async () => {
+//     if (document.querySelector(".ml-list.list")) {
+//         clearInterval(finder);
+//         console.log("[Encrypt-Chat]", "已检测到聊天区域");
+//         const targetNode = document.querySelector(".ml-list.list");
+//         //只检测childList就行了
+//         const config = {attributes: false, childList: true, subtree: false,};
+//         chatObserver.observe(targetNode, config);
+//
+//     } else if (document.querySelector('.main-area__image')) {//有这个元素，说明当前窗口是imgViewer
+//         console.log("[Encrypt-Chat]", "已检测到imgViewerWindow");
+//         await render()
+//         clearInterval(finder)
+//     }
+// }, 100);
+
+while (true) {
+    try {
+        await sleep(50)
         await render()
-        observerRendering = false
-    }, 50)
-})
-
-//聊天列表，所有聊天都显示在这里
-const finder = setInterval(async () => {
-    if (document.querySelector(".ml-list.list")) {
-        clearInterval(finder);
-        console.log("[Encrypt-Chat]", "已检测到聊天区域");
-        const targetNode = document.querySelector(".ml-list.list");
-        //只检测childList就行了
-        const config = {attributes: false, childList: true, subtree: false,};
-        chatObserver.observe(targetNode, config);
-
-    } else if (document.querySelector('.main-area__image')) {//有这个元素，说明当前窗口是imgViewer
-        console.log("[Encrypt-Chat]", "已检测到imgViewerWindow");
-        await render()
-        clearInterval(finder)
+    } catch (e) {
+        console.log(e)
     }
-}, 100);
+}
 
 //渲染函数
 async function render() {
     setTimeout(async () => {
-        console.log('[Encrypt-Chat]' + '准备加载render方法(renderer进程)')
+        //console.log('[Encrypt-Chat]' + '准备加载render方法(renderer进程)')
         const allChats = document.querySelectorAll('.ml-item')
         if (allChats) await messageRenderer(allChats)
 
         const imgViewerElement = document.querySelector('.main-area__image')
         if (imgViewerElement) await imgViewHandler(imgViewerElement)
-    },50)
+    }, 50)
+}
+
+
+async function sleep(ms) {
+    return new Promise(resolve => {
+        setTimeout(resolve, ms)
+    })
 }

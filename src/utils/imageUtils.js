@@ -68,7 +68,7 @@ async function imgDecryptor(imgPath) {
         if (!decryptedBufImg) return false//解密失败就不需要继续了
 
         const imgMD5 = hashMd5(decryptedBufImg).toString('hex')
-        const decryptedImgPath = path.join(config.pluginPath, `src/assests/decryptedImgs/${imgMD5}.png`)
+        const decryptedImgPath = path.join(config.pluginPath, `decryptedImgs/${imgMD5}.png`)
         if(!fs.existsSync(decryptedImgPath)) //目录不存在才写入
             fs.writeFileSync(decryptedImgPath, decryptedBufImg);
         const dimensions = sizeOf(decryptedBufImg)

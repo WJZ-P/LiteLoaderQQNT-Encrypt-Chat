@@ -39,15 +39,18 @@ class Config {
     }
 
     static async setConfig(newConfig) {
+        try{
         // 使用 Object.assign() 更新 config 对象的属性
         Object.assign(this.config, newConfig);
         // 写入配置文件
-        fs.writeFile(this.configPath, JSON.stringify(newConfig), 'utf-8', (err) => {
+        fs.writeFile(this.config.configPath, JSON.stringify(newConfig), 'utf-8', (err) => {
             if (err) {
                 pluginLog('修改配置文件失败')
             }
         })
-        pluginLog('修改配置文件成功')
+        pluginLog('修改配置文件成功')}catch (e) {
+            console.log(e)
+        }
     }
 }
 
