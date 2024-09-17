@@ -5,15 +5,19 @@ const ecAPI = window.encrypt_chat
  * @param imgElement
  */
 export async function imgViewHandler(imgElement) {
-    console.log(imgElement.src)
+
+    //if(imgElement.classList.contains('modified-img')) return//图片已经更改完成，不需要再次修改
+
+    imgElement.classList.add('modified-img')
     const imgPath = decodeURIComponent(imgElement.src).substring(9)
     if (!(await ecAPI.imgChecker(imgPath))) {
-        console.log('图片校验未通过！')
+        //console.log('图片校验未通过！')
         return
     }
 
+
     //下面进行图片解密
-    console.log('图片校验通过！')
+    //console.log('图片校验通过！')
     const decryptedObj = await ecAPI.imgDecryptor(imgPath)
     const decryptedImgPath = decryptedObj.decryptedImgPath
     if (decryptedImgPath)  //解密成功才继续

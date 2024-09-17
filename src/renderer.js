@@ -84,29 +84,29 @@ async function onLoad() {
 //     }
 // }, 100);
 
-while (true) {
+render()    //这里绝对不能加await!否则会导致设置界面左侧的插件设置全部消失！！
+//
+//渲染函数
+async function render() {
     try {
-        await sleep(50)
-        await render()
+        while (true) {
+            await sleep(100)
+            setTimeout(async () => {
+                //console.log('[Encrypt-Chat]' + '准备加载render方法(renderer进程)')
+                const allChats = document.querySelectorAll('.ml-item')
+                if (allChats) await messageRenderer(allChats)
+
+                const imgViewerElement = document.querySelector('.main-area__image')
+                if (imgViewerElement) await imgViewHandler(imgViewerElement)
+            }, 50)
+        }
     } catch (e) {
         console.log(e)
     }
 }
 
-//渲染函数
-async function render() {
-    setTimeout(async () => {
-        //console.log('[Encrypt-Chat]' + '准备加载render方法(renderer进程)')
-        const allChats = document.querySelectorAll('.ml-item')
-        if (allChats) await messageRenderer(allChats)
 
-        const imgViewerElement = document.querySelector('.main-area__image')
-        if (imgViewerElement) await imgViewHandler(imgViewerElement)
-    }, 50)
-}
-
-
-async function sleep(ms) {
+export async function sleep(ms) {
     return new Promise(resolve => {
         setTimeout(resolve, ms)
     })

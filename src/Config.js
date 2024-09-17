@@ -24,7 +24,7 @@ class Config {
             fs.writeFileSync(this.config.configPath, JSON.stringify(this.config), 'utf-8')
             pluginLog('配置文件创建成功')
         }
-        Object.assign(this.config, await this.getConfig())
+        Object.assign(this.config, JSON.parse(fs.readFileSync(this.config.configPath, 'utf-8')))
         pluginLog('当前的配置文件为')
         console.log(this.config)
         pluginLog('配置初始化完毕')
@@ -43,7 +43,7 @@ class Config {
         // 使用 Object.assign() 更新 config 对象的属性
         Object.assign(this.config, newConfig);
         // 写入配置文件
-        fs.writeFile(this.config.configPath, JSON.stringify(newConfig), 'utf-8', (err) => {
+        fs.writeFile(this.config.configPath, JSON.stringify(this.config), 'utf-8', (err) => {
             if (err) {
                 pluginLog('修改配置文件失败')
             }

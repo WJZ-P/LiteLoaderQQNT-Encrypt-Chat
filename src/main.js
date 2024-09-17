@@ -5,6 +5,7 @@ const {ipcMessageHandler} = require("./utils/ipcUtils");
 const {pluginLog} = require("./utils/logUtils")
 const {Config} = require("./Config.js")
 const {imgDecryptor, imgChecker} = require("./utils/imageUtils");
+const {deleteFiles} = require("./utils/fsUtils");
 
 const pluginPath = path.join(LiteLoader.plugins.encrypt_chat.path.plugin);//插件目录
 const configPath = path.join(pluginPath, "config.json");
@@ -31,7 +32,6 @@ module.exports.onBrowserWindowCreated = async window => {
     // const currentURL = window.webContents.getURL();
     // pluginLog('当前加载的 URL:', currentURL);
 
-
     //是主窗口才修改
     if (window.id === 2) {
         try {
@@ -42,7 +42,6 @@ module.exports.onBrowserWindowCreated = async window => {
 
             //获取官方的消息监听器
             const ipcMessageProxy = window.webContents._events["-ipc-message"]
-            pluginLog('ipc监听器获取成功')
 
             //替换掉官方的监听器
             window.webContents._events["-ipc-message"] = new Proxy(ipcMessageProxy, {
@@ -57,6 +56,25 @@ module.exports.onBrowserWindowCreated = async window => {
                     })
                 }
             })
+
+
+
+            //这里修改关闭窗口时候的函数，用来在关闭QQ时清空加密图片缓存
+            const ipcUnloadProxy = window.webContents._events['-before-unload-fired']
+            window.webContents._events['-before-unload-fired'] = new Proxy(ipcUnloadProxy, {
+                apply(target, thisArg, args) {
+                    try {
+                        //下面删除掉加密图片缓存
+                        console.log('unload事件触发辣')
+                        const cachePath = path.join(config.pluginPath, 'decryptedImgs')
+                        deleteFiles(cachePath)
+                    } catch (e) {
+                        console.log(e)
+                    }
+                    return target.apply(thisArg, args)
+                }
+            })
+
             pluginLog('ipc监听器修改成功')
 
             //这里添加一个快捷键

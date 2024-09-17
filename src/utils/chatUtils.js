@@ -124,14 +124,18 @@ height="24px" viewBox="0 -960 960 960" width="24px" fill="#D9D9D9" onclick="ECac
         // 将文字元素插入到提示元素内
         qToolTipsEl.appendChild(tipElement)
 
-        //插入之前先检查一下目前的激活状态并对应修改颜色
-        if ((await ecAPI.getConfig()).activeEC) {
-            imageElement.firstChild.classList.add('active')
-        }
 
         //把自己的新图标元素添加进去，并且是添加成为第一个子元素，显示在最左边。
         funcBarElement.insertBefore(barIconElement, funcBarElement.firstChild);
 
+        //检查一下目前的激活状态并对应修改颜色
+        if ((await ecAPI.getConfig()).activeEC) {
+            imageElement.firstChild.classList.add('active')
+            const sendBtnWrapEl = document.querySelector('.send-btn-wrap')
+            sendBtnWrapEl.classList.toggle('active')
+            const sendTextBtnEl = sendBtnWrapEl.querySelector('.send-msg')//带有“发送字样的按钮”
+            sendTextBtnEl.innerText ="加密发送"
+        }
     }).observe(chatElement, {childList: true});//检测子元素的增删变化
 }
 
@@ -162,13 +166,13 @@ export function addFuncBarIcon() {
  * @param svg svg元素
  * @param sendBtnWrapEl
  */
-export async function ECactivator(svg=null, sendBtnWrapEl=null) {
+export async function ECactivator(svg = null, sendBtnWrapEl = null) {
     let isActive = (await ecAPI.getConfig()).activeEC//获取当前EC状态，默认关闭加密
     console.log('更改active为' + !isActive)
 
     //没传入就自己找
-    if(!svg) svg=document.querySelector('.ec-svg')
-    if(!sendBtnWrapEl) sendBtnWrapEl=document.querySelector('.send-btn-wrap')
+    if (!svg) svg = document.querySelector('.ec-svg')
+    if (!sendBtnWrapEl) sendBtnWrapEl = document.querySelector('.send-btn-wrap')
 
     sendBtnWrapEl.classList.toggle('active')
     const sendTextBtnEl = sendBtnWrapEl.querySelector('.send-msg')//带有“发送字样的按钮”
