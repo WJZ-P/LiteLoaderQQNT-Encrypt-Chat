@@ -170,13 +170,19 @@ export async function messageRenderer(allChats) {//下面对每条消息进行�
                 if (normalText) {//是普通文本
                     hexString = await checkMsgElement(normalText)
                     if (hexString) {
+                        const decryptedMsg= await ecAPI.messageDecryptor(hexString)
+
+                        if(!decryptedMsg) continue//解密后如果消息是空的，那就直接忽略，进入下次循环
+
                         totalOriginalMsg += normalText.innerText//获取原本的密文
-                        normalText.innerText = await ecAPI.messageDecryptor(hexString)
+                        normalText.innerText = decryptedMsg
                         isECMsg = true
                     }//文本内容修改为解密结果
 
                 } else if (atText) {
                     totalOriginalMsg += atText.innerText
+
+
                 } else if (imgElement) {
 
                     if (imgElement.getAttribute('src').includes('base64')) continue  //图片是base64格式的，直接跳过

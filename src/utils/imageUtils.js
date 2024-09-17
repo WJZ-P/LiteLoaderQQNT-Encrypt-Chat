@@ -9,15 +9,7 @@ const {decryptImg} = require("./cryptoUtils.js");
 const {pluginLog} = require("./logUtils");
 const {hashMd5} = require("./aesUtils.js");
 const uploadUrl = 'https://chatbot.weixin.qq.com/weixinh5/webapp/pfnYYEumBeFN7Yb3TAxwrabYVOa4R9/cos/upload'
-let singlePixelBuffer = undefined
-//初始化像素缓存
-const taskID = setInterval(() => {
-    if (!config.tempImgPath) return
-    singlePixelBuffer = fs.readFileSync(config.tempImgPath)
-    pluginLog('缓存图片加载成功！内容如下')
-    console.log(singlePixelBuffer)
-    clearInterval(taskID)
-}, 200)
+const singlePixelBuffer = Buffer.from('R0lGODdhAQABAIABAP///wAAACwAAAAAAQABAAACAkQBADs=', 'base64')
 
 /**
  * 图片加密，把图片加密到1x1的gif里面。返回对象
@@ -69,13 +61,18 @@ async function imgDecryptor(imgPath) {
 
         const imgMD5 = hashMd5(decryptedBufImg).toString('hex')
         const decryptedImgPath = path.join(config.pluginPath, `decryptedImgs/${imgMD5}.png`)
-        if(!fs.existsSync(decryptedImgPath)) //目录不存在才写入
+
+        if (!fs.existsSync(decryptedImgPath)) //目录不存在才写入
+        {
+            fs.mkdirSync(decryptedImgPath, {recursive: true}); // 递归创建文件夹
             fs.writeFileSync(decryptedImgPath, decryptedBufImg);
+        }
         const dimensions = sizeOf(decryptedBufImg)
-        return {decryptedImgPath: decryptedImgPath,
-            width:dimensions.width,
-            height:dimensions.height,
-            type:dimensions.type,
+        return {
+            decryptedImgPath: decryptedImgPath,
+            width: dimensions.width,
+            height: dimensions.height,
+            type: dimensions.type,
         }
     } catch (e) {
         pluginLog(e)

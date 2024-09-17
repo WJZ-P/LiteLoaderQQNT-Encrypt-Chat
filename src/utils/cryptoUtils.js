@@ -69,7 +69,7 @@ function messageDecryptor(hexStr) {
         const decryptedText = decrypt(bufferMsg, getKey()).toString('utf-8')
 
         // 检查是否解密成功
-        if (!decryptedText) {
+        if (!decryptedText.trim()) {
             console.error('解密失败，返回的结果为空或无效 UTF-8 数据');
             return null; // 或其他处理
         }
@@ -77,7 +77,7 @@ function messageDecryptor(hexStr) {
         return decryptedText;
     } catch (e) {
         // console.log(e)
-        return ""
+        return null
     }
 }
 
