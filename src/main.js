@@ -1,4 +1,5 @@
 const {ipcMain, globalShortcut} = require("electron");
+const fs = require("fs")
 const {messageDecrypter, messageEncrypter, decodeHex} = require("./utils/cryptoUtils");
 const path = require("path");
 const {ipcMessageHandler} = require("./utils/ipcUtils");
@@ -58,7 +59,6 @@ module.exports.onBrowserWindowCreated = async window => {
             })
 
 
-
             //这里修改关闭窗口时候的函数，用来在关闭QQ时清空加密图片缓存
             const ipcUnloadProxy = window.webContents._events['-before-unload-fired']
             window.webContents._events['-before-unload-fired'] = new Proxy(ipcUnloadProxy, {
@@ -101,6 +101,7 @@ async function onload() {
     //设置相关，给renderer进程用
     ipcMain.handle("LiteLoader.encrypt_chat.getConfig", () => Config.getConfig())
     ipcMain.handle("LiteLoader.encrypt_chat.setConfig", (event, newConfig) => Config.setConfig(newConfig))
+    ipcMain.handle("LiteLoader.encrypt_chat.getMenuHTML", () => fs.readFileSync(path.join(config.pluginPath, 'src/pluginMenu.html'),'utf-8'))
 
     await Config.initConfig(pluginPath, configPath)
 }
