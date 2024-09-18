@@ -109,7 +109,7 @@ async function onload() {
 
     ipcMain.handle("LiteLoader.encrypt_chat.setConfig", (event, newConfig) => {
         pluginLog('主进程收到setConfig消息，更新设置。')
-        const oldMainColor=config.mainColor//先保存下当前的主题色
+        const oldMainColor = config.mainColor//先保存下当前的主题色
         const newestConfig = Config.setConfig(newConfig)//更新配置，并且返回新的配置
 
         if (newConfig?.mainColor !== oldMainColor) //说明改变了主题色

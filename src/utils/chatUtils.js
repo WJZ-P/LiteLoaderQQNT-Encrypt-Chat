@@ -146,12 +146,12 @@ export function addFuncBarIcon() {
     // console.log('addfuncbar启动辣！``````````````````````````````````````````````')
 
     let chatElement = null
-
+    let findCnt=0
     const taskID = setInterval(() => {
         if (!document.querySelector(".chat-input-area")) {
+            if(findCnt++>=20) clearInterval(taskID)
             return
         }
-
         //已经找到对应元素
         chatElement = document.querySelector(".chat-input-area")
         // console.log('找到啦！' + chatElement)
@@ -184,3 +184,6 @@ export async function ECactivator(svg = null, sendBtnWrapEl = null) {
 }
 
 window.ECactivator = ECactivator//给window对象添加一个方法，供其他地方调用
+
+//ecAPI.addEventListener('LiteLoader.encrypt_chat.changeAllECactivator',ECactivator)
+//这样写会存在不同窗口的同步问题。

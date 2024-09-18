@@ -33,8 +33,8 @@ export const onSettingWindowCreated = async view => {
 
 //注入函数
 async function onLoad() {
-    //const currentWindowID = await ecAPI.getWindowID()
-    // console.log('当前窗口ID为' + currentWindowID)
+    const currentWindowID = await ecAPI.getWindowID()
+    console.log('当前窗口ID为' + currentWindowID)
 
     //if (currentWindowID !== 2) {return}//ID二号是QQ主页面，不是就直接退出
     // console.log(await ecAPI.isChatWindow())

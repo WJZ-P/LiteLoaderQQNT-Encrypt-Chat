@@ -2,3 +2,4 @@
 src/assests/encrypted.gif
 src/test
 decryptedImgs/*.png
+config.json
