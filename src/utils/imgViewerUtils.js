@@ -6,7 +6,7 @@ const ecAPI = window.encrypt_chat
  */
 export async function imgViewHandler(imgElement) {
 
-    //if(imgElement.classList.contains('modified-img')) return//图片已经更改完成，不需要再次修改
+    if(imgElement.classList.contains('modified-img')) return//图片已经更改完成，不需要再次修改
 
     imgElement.classList.add('modified-img')
     const imgPath = decodeURIComponent(imgElement.src).substring(9)

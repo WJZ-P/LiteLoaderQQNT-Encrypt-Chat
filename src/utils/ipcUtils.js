@@ -11,7 +11,7 @@ const {imgChecker} = require("./imageUtils");
  * @param args
  * @returns {Promise<*>}
  */
-async function ipcMessageHandler(args) {
+function ipcMessageHandler(args) {
     //nodeIKernelMsgService/getABatchOfContactMsgBoxInfo
     //nodeIKernelMsgService/enterOrExitAio
     //nodeIKernelUnitedConfigService/loadUnitedConfig
@@ -47,9 +47,9 @@ async function ipcMessageHandler(args) {
 
         //说明消息内容是图片类，md5HexStr这个属性一定要对，会做校验
         else if (item.elementType === 2) {
-            if(imgChecker(item.picElement.sourcePath)) return//要发送的是加密图片，不进行二次加密
+            if (imgChecker(item.picElement.sourcePath)) return//要发送的是加密图片，不进行二次加密
 
-            const result = await imgEncryptor(item.picElement.sourcePath)
+            const result = imgEncryptor(item.picElement.sourcePath)
             console.log(result)
 
             //获取缓存路径

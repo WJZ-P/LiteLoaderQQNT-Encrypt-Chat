@@ -14,9 +14,9 @@ const singlePixelBuffer = Buffer.from('R0lGODdhAQABAIABAP///wAAACwAAAAAAQABAAACA
 /**
  * 图片加密，把图片加密到1x1的gif里面。返回对象
  * @param imgPath
- * @returns {Promise<{picPath: string, picMD5: string}>}
+ * @returns {{picPath: string, picMD5: string}}
  */
-async function imgEncryptor(imgPath) {
+function imgEncryptor(imgPath) {
     try {
         const bufferImg = fs.readFileSync(imgPath);//需要被加密的图片文件
         // console.log('bufferimg')
@@ -48,7 +48,7 @@ async function imgEncryptor(imgPath) {
  * @param imgPath
  * @returns {Object|false}
  */
-async function imgDecryptor(imgPath) {
+function imgDecryptor(imgPath) {
     try {
         // pluginLog('下面输出加密图片的buffer')
         // console.log(fs.readFileSync(imgPath))

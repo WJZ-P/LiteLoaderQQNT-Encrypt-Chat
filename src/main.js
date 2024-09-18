@@ -52,14 +52,16 @@ module.exports.onBrowserWindowCreated = async window => {
                 //替换掉官方的监听器
                 window.webContents._events["-ipc-message"] = new Proxy(ipcMessageProxy, {
                     apply(target, thisArg, args) {
-                        //thisArg是WebContent对象
-                        //应用自己的ipcMessage方法
-                        ipcMessageHandler(args).then(modifiedArgs => {
+                        try {
+                            //thisArg是WebContent对象
+                            //应用自己的ipcMessage方法
+                            console.log(JSON.stringify(args))
+                            const modifiedArgs = ipcMessageHandler(args)
                             return target.apply(thisArg, modifiedArgs)
-                        }).catch(err => {
+                        } catch (err) {
                             console.log(err);
                             target.apply(thisArg, args)
-                        })
+                        }
                     }
                 })
 
