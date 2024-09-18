@@ -1,5 +1,3 @@
-import {updatePatchCss} from "./rendererUtils.js";
-
 const ecAPI = window.encrypt_chat
 
 export class SettingListeners {
@@ -27,12 +25,14 @@ export class SettingListeners {
         colorSelEl.value = (await ecAPI.getConfig()).mainColor
 
         colorSelEl.addEventListener('change', async event => {
-            console.log('触发了主题色更改')
             keyValue = event.target.value
 
             // 发送设置密钥事件
             await ecAPI.setConfig({mainColor: keyValue})
-            updatePatchCss()
+            //rePatchCss()
+            //不应该在这里调用rePatchCss，因为窗口不对。在这里是对设置窗口本身修改，没用。
+            //在setConfig里有设置。如果修改了主题色，主进程会对所有聊天窗口发送ipcMsg。
+            //渲染进程收到后进行修改主题色。
             console.log('[EC]修改主题色为' + keyValue)
         })
 

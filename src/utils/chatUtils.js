@@ -92,7 +92,7 @@ export function addMenuItemEC() {
  */
 function createFuncBarIcon(chatElement) {
     new MutationObserver(async () => {
-
+        if(document.querySelector('#id-func-bar-EncryptChat')) return //已经有了就不添加了
         const funcBarElement = chatElement.getElementsByClassName("func-bar")[1]//第二个就是右边的
         // console.log('下面打印出右侧的funcbar')
         // console.log(funcBarElement)

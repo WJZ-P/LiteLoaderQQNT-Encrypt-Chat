@@ -1,6 +1,6 @@
 //添加css样式
 const ecAPI = window.encrypt_chat
-const nowConfig = await ecAPI.getConfig()
+let nowConfig = await ecAPI.getConfig()
 
 export function patchCss() {
     console.log('[Encrypt-Chat]' + 'css加载中')
@@ -127,17 +127,13 @@ export function patchCss() {
     console.log('[Encrypt-Chat]' + 'css加载完成')
 }
 
-export function updatePatchCss() {
-    const styleElement = document.getElementById('encrypt-chat-css');
-    console.dir(document.querySelectorAll('style'))
-    console.log(document)
-    console.log(styleElement)
-    if (styleElement) {
-        styleElement.remove();
-        console.log('删除旧的ECcss成功！')
-    }//先删掉原来的
+export async function rePatchCss() {
+    console.log("[EC]调用rePatchCss")
 
+    nowConfig = await ecAPI.getConfig()
     patchCss()//重新插入
+    document.getElementById('encrypt-chat-css').remove()
+    //原理：搜索元素只会搜索到第一个，而我们插入的是新的，第二个，没问题
 }
 
 /**

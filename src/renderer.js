@@ -1,13 +1,12 @@
 import {addFuncBarIcon, addMenuItemEC} from "./utils/chatUtils.js";
 import {SettingListeners} from "./utils/SettingListeners.js"
-import {messageRenderer, patchCss} from "./utils/rendererUtils.js";
+import {messageRenderer, patchCss, rePatchCss} from "./utils/rendererUtils.js";
 import {imgViewHandler} from "./utils/imgViewerUtils.js";
 
 
 const ecAPI = window.encrypt_chat
 await onLoad();//注入
 
-ecAPI.addEventListener('LiteLoader.encrypt_chat.ECactivator', window.ECactivator);
 
 render()    //这里绝对不能加await!否则会导致设置界面左侧的插件设置全部消失！！
 
@@ -34,12 +33,15 @@ export const onSettingWindowCreated = async view => {
 
 //注入函数
 async function onLoad() {
-    const currentWindowID = await ecAPI.getWindowID()
+    //const currentWindowID = await ecAPI.getWindowID()
     // console.log('当前窗口ID为' + currentWindowID)
 
-    if (currentWindowID !== 2) {
-        return
-    }//ID二号是QQ主页面，不是就直接退出
+    //if (currentWindowID !== 2) {return}//ID二号是QQ主页面，不是就直接退出
+    // console.log(await ecAPI.isChatWindow())
+    // if(!(await ecAPI.isChatWindow())) return //不是聊天窗口，则不渲染
+
+    ecAPI.addEventListener('LiteLoader.encrypt_chat.ECactivator', window.ECactivator);//监听功能开关
+    ecAPI.addEventListener('LiteLoader.encrypt_chat.rePatchCss',rePatchCss) //监听设置被修改后，从主进程发过来的重新修改css请求
 
     console.log('[EC]下面执行onLoad方法')
     try {

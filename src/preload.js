@@ -13,7 +13,8 @@ contextBridge.exposeInMainWorld("encrypt_chat", {
     //设置相关，给renderer进程用
     getConfig: () => ipcRenderer.invoke("LiteLoader.encrypt_chat.getConfig"),
     setConfig: (newConfig) => ipcRenderer.invoke("LiteLoader.encrypt_chat.setConfig", newConfig),
-    addEventListener:(channel,func)=>ipcRenderer.on(channel,(event,...args)=>{func(...args)})
+    addEventListener:(channel,func)=>ipcRenderer.on(channel,(event,...args)=>{func(...args)}),
+    isChatWindow:()=>ipcRenderer.invoke("LiteLoader.encrypt_chat.isChatWindow")
 });
 
 
