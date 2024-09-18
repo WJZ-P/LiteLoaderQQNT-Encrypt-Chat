@@ -12,9 +12,9 @@ const {imgChecker} = require("./imageUtils");
  * @returns {Promise<*>}
  */
 function ipcMessageHandler(args) {
-    //nodeIKernelMsgService/getABatchOfContactMsgBoxInfo
-    //nodeIKernelMsgService/enterOrExitAio
-    //nodeIKernelUnitedConfigService/loadUnitedConfig
+
+
+
     if (!args?.[3]?.[1]?.[0] || args[3][1][0] !== 'nodeIKernelMsgService/sendMsg') return args;
 
     console.log('下面打印出nodeIKernelMsgService/sendMsg的内容')

@@ -28,8 +28,8 @@ export async function imgViewHandler(imgElement) {
         imgElement.parentElement.classList.add('fix-size')
 
         //更改父亲的宽高属性
-        patchCss(decryptedObj.width, decryptedObj.height)
-
+        //patchCss(decryptedObj.width, decryptedObj.height)
+        //注：现在可以直接修改IPC了。
     }
 }
 
