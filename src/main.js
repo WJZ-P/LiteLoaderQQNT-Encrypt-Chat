@@ -2,7 +2,7 @@ const {ipcMain, globalShortcut} = require("electron");
 const fs = require("fs")
 const {messageDecrypter, messageEncrypter, decodeHex} = require("./utils/cryptoUtils");
 const path = require("path");
-const {ipcMessageHandler} = require("./utils/ipcUtils");
+const {ipcModifyer} = require("./utils/ipcUtils");
 const {pluginLog} = require("./utils/logUtils")
 const {Config} = require("./Config.js")
 const {imgDecryptor, imgChecker} = require("./utils/imageUtils");
@@ -46,38 +46,18 @@ module.exports.onBrowserWindowCreated = async window => {
                 await onload()
                 pluginLog("main.js onLoad注入成功")
 
-                //获取官方的消息监听器
-                const ipcMessageProxy = window.webContents._events["-ipc-message"]
-
-                //替换掉官方的监听器
-                window.webContents._events["-ipc-message"] = new Proxy(ipcMessageProxy, {
-                    apply(target, thisArg, args) {
-                        try {
-                            //thisArg是WebContent对象
-                            //应用自己的ipcMessage方法
-                            console.log(JSON.stringify(args))
-                            const modifiedArgs = ipcMessageHandler(args)
-                            return target.apply(thisArg, modifiedArgs)
-                        } catch (err) {
-                            console.log(err);
-                            target.apply(thisArg, args)
-                        }
-                    }
-                })
+                //替换掉官方的ipc监听器
+                window.webContents._events["-ipc-message"] = ipcModifyer(window.webContents._events["-ipc-message"])
 
 
                 //这里修改关闭窗口时候的函数，用来在关闭QQ时清空加密图片缓存
-                const ipcUnloadProxy = window.webContents._events['-before-unload-fired']
-                window.webContents._events['-before-unload-fired'] = new Proxy(ipcUnloadProxy, {
+                window.webContents._events['-before-unload-fired'] = new Proxy(window.webContents._events['-before-unload-fired'], {
                     apply(target, thisArg, args) {
                         try {
                             //下面删除掉加密图片缓存
-                            console.log('unload事件触发辣')
                             const cachePath = path.join(config.pluginPath, 'decryptedImgs')
                             deleteFiles(cachePath)
-                        } catch (e) {
-                            console.log(e)
-                        }
+                        } catch (e) {console.log(e)}
                         return target.apply(thisArg, args)
                     }
                 })

@@ -46,7 +46,12 @@ function imgEncryptor(imgPath) {
 /**
  * 图片解密，把加密后的图片解密，保存到本地。
  * @param imgPath
- * @returns {Object|false}
+ * @returns {{
+ *             decryptedImgPath: String,
+ *             width: Number,
+ *             height: Number,
+ *             type: String,
+ *         }|false}
  */
 function imgDecryptor(imgPath) {
     try {

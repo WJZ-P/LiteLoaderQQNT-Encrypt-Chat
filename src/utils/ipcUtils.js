@@ -4,17 +4,40 @@ const {pluginLog} = require("./logUtils");
 const config = Config.config
 const fs = require('fs')
 const {messageEncryptor} = require("./cryptoUtils.js");
-const {imgChecker} = require("./imageUtils");
+const {imgChecker, imgDecryptor} = require("./imageUtils");
+
+
+/**
+ * 修改消息ipc
+ * @param ipcProxy
+ * @returns {function}
+ */
+function ipcModifyer(ipcProxy){
+        return new Proxy(ipcProxy, {
+        apply(target, thisArg, args) {
+            let modifiedArgs =args;
+            //console.log(JSON.stringify(args))//调试的时候用
+            try {//thisArg是WebContent对象
+                //设置ipc通道名
+                const ipcName=args?.[3]?.[1]?.[0]
+                if (ipcName === 'nodeIKernelMsgService/sendMsg') modifiedArgs = ipcMsgModify(args);
+                if (ipcName === 'openMediaViewer') modifiedArgs = ipcOpenImgModify(args);
+
+                return target.apply(thisArg, modifiedArgs)
+            } catch (err) {
+                console.log(err);
+                target.apply(thisArg, args)
+            }
+        }
+    })
+}
 
 /**
  * 处理QQ消息,对符合条件的msgElement的content进行加密再返回
  * @param args
- * @returns {Promise<*>}
+ * @returns {args}
  */
-function ipcMessageHandler(args) {
-
-
-
+function ipcMsgModify(args) {
     if (!args?.[3]?.[1]?.[0] || args[3][1][0] !== 'nodeIKernelMsgService/sendMsg') return args;
 
     console.log('下面打印出nodeIKernelMsgService/sendMsg的内容')
@@ -79,9 +102,32 @@ function ipcMessageHandler(args) {
     for (let item of args[3][1][1].msgElements) {
         console.log(item)
     }
-
     return args
 }
 
 
-module.exports = {ipcMessageHandler}
+/**
+ * 处理打开图片的ipc消息，如果打开的是密文图片，那么切换成自己的解密后的图片。
+ * @param args
+ * @returns {args}
+ */
+function ipcOpenImgModify(args){
+    const mediaList=args[3][1][1].mediaList
+    const imgPath=decodeURIComponent(mediaList[0].originPath).substring(9)//获取原始路径
+    if (!imgChecker(imgPath)) {
+        console.log('[EC]图片校验未通过！渲染原图')
+        return args
+    }
+    //下面开始解密图片
+    const decryptedObj = imgDecryptor(imgPath)
+    if (!decryptedObj) return args; //解密失败直接返回
+    console.log(decryptedObj)
+    //decryptedImgPath: 'E:\\LiteloaderQQNT\\plugins\\Encrypt-Chat\\decryptedImgs\\54dcd5689b10debf8a718d30f6b0691a.png',
+    mediaList[0].originPath="appimg://"+encodeURI(decryptedObj.decryptedImgPath.replace("\\", "/"))
+    mediaList[0].size={width:decryptedObj.width,height:decryptedObj.height}
+    pluginLog('修改后的图片路径：'+mediaList[0].originPath)
+    return args
+}
+
+
+module.exports = {ipcModifyer}

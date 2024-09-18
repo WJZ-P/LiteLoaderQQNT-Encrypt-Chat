@@ -1,8 +1,6 @@
 import {addFuncBarIcon, addMenuItemEC} from "./utils/chatUtils.js";
 import {SettingListeners} from "./utils/SettingListeners.js"
 import {messageRenderer, patchCss, rePatchCss} from "./utils/rendererUtils.js";
-import {imgViewHandler} from "./utils/imgViewerUtils.js";
-
 
 const ecAPI = window.encrypt_chat
 await onLoad();//注入
@@ -65,8 +63,6 @@ async function render() {
                 const allChats = document.querySelectorAll('.ml-item')
                 if (allChats) await messageRenderer(allChats)
 
-                const imgViewerElement = document.querySelector('.main-area__image')
-                if (imgViewerElement) await imgViewHandler(imgViewerElement)
             }, 50)
         }
     } catch (e) {
