@@ -43,7 +43,7 @@ async function onLoad() {
 
     console.log('[EC]下面执行onLoad方法')
     try {
-        addMenuItemEC()//添加鼠标右键时的菜单选项
+        //addMenuItemEC()//添加鼠标右键时的菜单选项
         patchCss()//修改css
         addFuncBarIcon()//添加功能栏的功能图标
 

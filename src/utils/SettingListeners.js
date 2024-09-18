@@ -1,3 +1,5 @@
+import {updatePatchCss} from "./rendererUtils.js";
+
 const ecAPI = window.encrypt_chat
 
 export class SettingListeners {
@@ -25,12 +27,15 @@ export class SettingListeners {
         colorSelEl.value = (await ecAPI.getConfig()).mainColor
 
         colorSelEl.addEventListener('change', async event => {
+            console.log('触发了主题色更改')
             keyValue = event.target.value
+
+            // 发送设置密钥事件
+            await ecAPI.setConfig({mainColor: keyValue})
+            updatePatchCss()
+            console.log('[EC]修改主题色为' + keyValue)
         })
 
-        // 发送设置密钥事件
-        await ecAPI.setConfig({mainColor: keyValue})
-        console.log('[EC]修改主题色为' + keyValue)
     }
 
     onLoad() {

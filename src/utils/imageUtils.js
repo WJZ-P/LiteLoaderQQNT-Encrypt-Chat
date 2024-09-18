@@ -60,12 +60,15 @@ async function imgDecryptor(imgPath) {
         if (!decryptedBufImg) return false//解密失败就不需要继续了
 
         const imgMD5 = hashMd5(decryptedBufImg).toString('hex')
+
+        const filePath=path.join(config.pluginPath,'decryptedImgs')
         const decryptedImgPath = path.join(config.pluginPath, `decryptedImgs/${imgMD5}.png`)
 
         if (!fs.existsSync(decryptedImgPath)) //目录不存在才写入
-        {
-            fs.mkdirSync(decryptedImgPath, {recursive: true}); // 递归创建文件夹
-            fs.writeFileSync(decryptedImgPath, decryptedBufImg);
+        {   //连文件夹都没有，就创建文件夹
+            if(!fs.existsSync(filePath)) fs.mkdirSync(filePath, {recursive: true}); // 递归创建文件夹
+
+            fs.writeFileSync(decryptedImgPath, decryptedBufImg);//写入图片
         }
         const dimensions = sizeOf(decryptedBufImg)
         return {

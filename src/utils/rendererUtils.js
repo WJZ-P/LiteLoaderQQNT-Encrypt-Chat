@@ -127,6 +127,19 @@ export function patchCss() {
     console.log('[Encrypt-Chat]' + 'css加载完成')
 }
 
+export function updatePatchCss() {
+    const styleElement = document.getElementById('encrypt-chat-css');
+    console.dir(document.querySelectorAll('style'))
+    console.log(document)
+    console.log(styleElement)
+    if (styleElement) {
+        styleElement.remove();
+        console.log('删除旧的ECcss成功！')
+    }//先删掉原来的
+
+    patchCss()//重新插入
+}
+
 /**
  * 检查消息元素是否需要修改，不能进程间通讯，因为只能传朴素值
  * @param msgElement
@@ -156,7 +169,7 @@ export async function messageRenderer(allChats) {//下面对每条消息进行�
             let isECMsg = false//判断是否是加密消息
             let totalOriginalMsg = ""//总的原始消息
 
-            if(!msgContent?.children) continue;
+            if (!msgContent?.children) continue;
 
             //接下来对所有的消息进行处理
             for (const singalMsg of msgContent?.children) {
@@ -170,9 +183,9 @@ export async function messageRenderer(allChats) {//下面对每条消息进行�
                 if (normalText) {//是普通文本
                     hexString = await checkMsgElement(normalText)
                     if (hexString) {
-                        const decryptedMsg= await ecAPI.messageDecryptor(hexString)
+                        const decryptedMsg = await ecAPI.messageDecryptor(hexString)
 
-                        if(!decryptedMsg) continue//解密后如果消息是空的，那就直接忽略，进入下次循环
+                        if (!decryptedMsg) continue//解密后如果消息是空的，那就直接忽略，进入下次循环
 
                         totalOriginalMsg += normalText.innerText//获取原本的密文
                         normalText.innerText = decryptedMsg
@@ -189,7 +202,7 @@ export async function messageRenderer(allChats) {//下面对每条消息进行�
 
                     let imgPath = decodeURIComponent(imgElement.getAttribute('src')).substring(9)//前面一般是appimg://
                     if (imgPath.includes('Thumb') && imgPath.includes('.gif')) {
-                        imgPath = imgPath.replace(/\/Thumb\//, '/Ori/').replace(/_0\.gif/, '.gif')//替换成原图地址
+                        imgPath = imgPath.replace(/\/Thumb\//, '/Ori/').replace(/_\d+\.gif/, '.gif')//替换成原图地址
                         //console.log('检测到缩略图！索引到原图地址为' + imgPath)
                     }
                     if (!(await ecAPI.imgChecker(imgPath))) {
@@ -214,7 +227,7 @@ export async function messageRenderer(allChats) {//下面对每条消息进行�
                             imgElement.parentElement.style.width = decryptedObj.width + 'px'
                             imgElement.parentElement.style.height = 'auto'
                         }).observe(imgElement.parentElement, {attributes: true, attributeFilter: ['style']})
-                        
+
                     }
                     totalOriginalMsg += isECMsg ? "[EC图片]" : '[图片]'
                 }
@@ -243,7 +256,7 @@ export function appendEncreptedTag(msgContentContainer, originaltext) {
     // if (!nowConfig.enableTip) return;//没开这个设置就不添加解密标记
     //console.log('[appendTag]' + '判断成功，准备加tag')
 
-    if(msgContentContainer.classList.contains('decrypted-msg-container')) return//添加标记，用来检测是否为已修改过的元素
+    if (msgContentContainer.classList.contains('decrypted-msg-container')) return//添加标记，用来检测是否为已修改过的元素
 
     const tipElement = document.createElement('div')
     tipElement.innerText = '原消息：' + originaltext
