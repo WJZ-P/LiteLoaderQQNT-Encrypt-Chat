@@ -1,5 +1,4 @@
 const fs = require('fs');
-const fsAsync = require('fs').promises;
 const {pluginLog} = require("./utils/logUtils")
 const path = require('path');
 
@@ -12,11 +11,39 @@ class Config {
         activeEC: false,                        //是否启用加密功能
         encryptionKey: '',                      //加密密钥
         styles: {
-            Bangboo: {
+            Bangboo: {//邦布语
                 length: [2, 5],
                 content: ['嗯呢...', '哇哒！', '嗯呢！', '嗯呢哒！', '嗯呐呐！', '嗯哒！', '嗯呢呢！']
-            }
-        }
+            },
+            Hilichurl: {//丘丘语
+                length: [2, 5],
+                content: ['Muhe ye!', 'Ye dada!', 'Ya yika!', 'Biat ye！', 'Dala si？', 'Yaya ika！', 'Mi? Dada!', 'ye pupu!', 'gusha dada!']
+            },
+            Nier: {//Nier: AutoMata，尼尔语, is that the price I'm paying for my past mistakes?
+                length: [5, 8],
+                content: [
+                    "Ee ", "ser ", "les ", "hii ", "san ", "mia ", "ni ", "Escalei ", "lu ", "push ", "to ", "lei ",
+                    "Schmosh ", "juna ", "wu ", "ria ", "e ", "je ", "cho ", "no ",
+                    "Nasico ", "whosh ", "pier ", "wa ", "nei ", "Wananba ", "he ", "na ", "qua ", "lei ",
+                    "Sila ", "schmer ", "ya ", "pi ", "pa ", "lu ", "Un ", "schen ", "ta ", "tii ", "pia ", "pa ", "ke ", "lo "
+                ]
+            },
+            Neko: {//猫娘语
+                length: [3, 5],
+                content: ["嗷呜!", "咕噜~", "喵~", "喵咕~", "喵喵~", "喵?", "喵喵！", "呜嗷咕?", "喵呜...", "咪咪喵！", "咕咪?"]
+            },
+            Doggo: { // 小狗语
+                length: [2, 5],
+                content: ["汪汪！", "汪呜~", "嗷呜~", "呜汪？", "汪汪呜！", "汪呜呜~", "嗷嗷！"]
+            },
+
+            Birdie: { // 小鸟语
+                length: [2, 5],
+                content: ["啾啾~", "咕咕！", "叽叽~", "啾啾啾！", "叽咕？", "啾啾？", "咕啾~"]
+            },
+
+        },
+        currentStyleName: 'Neko',     //默认使用喵喵语
     }
 
     static async initConfig(pluginPath, configPath) {

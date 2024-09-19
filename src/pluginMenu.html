@@ -8,13 +8,35 @@
                     <div class="left-part">
                         <h2>配置密钥</h2>
                         <div style="display: flex; flex-direction: column">
-                            <span class="secondary-text">密钥用于加密和解密信息，必须双方密钥一致才可以正常通信</span>
+                            <span class="secondary-text">密钥用于加密和解密信息，必须双方密钥一致才可以正常通信。</span>
                         </div>
-
                     </div>
                     <input data-type="primary" class="q-input__inner q-input__inner--clearable custom-input"
                            type="text" id="ec-key-input" placeholder="默认20040821">
                 </div>
+
+                <hr class="horizontal-dividing-line"/>
+                <div class="vertical-list-item">
+                    <div class="left-part">
+                        <h2>选择语种</h2>
+                        <div style="display: flex; flex-direction: column">
+                            <span class="secondary-text">语种与加密内容无关，仅作为表面上的文本混淆视听。有可爱的喵喵语、邦布语等哦！</span>
+                        </div>
+                    </div>
+                    <div>
+                        <label>
+                            <select id="ec-style-selector">
+                                <option value="Neko">喵喵语</option>
+                                <option value="Bangboo">邦布语</option>
+                                <option value="Hilichurl">丘丘语</option>
+                                <option value="Birdie">小鸟语</option>
+                                <option value="Doggo">小狗语</option>
+                                <option value="Nier">尼尔语</option>
+                            </select>
+                        </label>
+                    </div>
+                </div>
+
                 <hr class="horizontal-dividing-line"/>
                 <div class="vertical-list-item" style="display: flex; flex-direction: column">
                     <h1>使用方法：打开聊天窗口，点击输入栏上方右侧的加密图标即可切换是否加密。</h1>
@@ -53,8 +75,40 @@
     </section>
 
     <style>
+        #ec-style-selector {
+            color:gray;
+            width: 180px;
+            font-size: 15px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            background-color: var(--background-color-05);/*跟随主题色*/
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            cursor: pointer;
+            outline: none;
+            padding: 5px;
+
+        }
+
+        #ec-style-selector option {
+            background-color: var(--background-color-05); /* 修改选项的背景色 */
+            opacity: 0.8;
+            color: #333;
+            padding: 10px;
+            font-size: 16px;
+        }
+
+        #ec-style-selector option:hover {
+            background-color: #66ccff; /* 当鼠标悬停时的背景色 */
+            color: #fff; /* 改变文字颜色 */
+        }
+
+        #ec-style-selector:focus {
+            border-color: #007BFF;
+            box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+        }
+
         .custom-input {
-            /*color: white;*/
+            color: gray;
             /*background-color: #abbbbb; !* 暗色背景 *!*/
         }
 
@@ -83,11 +137,7 @@
         .left-part {
             display: flex;
             flex-direction: column;
-        }
-
-        .bq-icon {
-            height: 16px;
-            width: 16px;
+            margin-right: 10px;
         }
 
         /* 通用 */
@@ -116,7 +166,7 @@
         }
 
         .config_view .vertical-list-item {
-            margin: 12px 0px;
+            margin: 10px 0px;
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -129,37 +179,11 @@
             background-color: rgba(127, 127, 127, 0.15);
         }
 
-        .config_view .vertical-dividing-line {
-            border: unset;
-            margin: unset;
-            width: 1px;
-            background-color: rgba(127, 127, 127, 0.15);
-        }
-
-        .config_view .ops-btns {
-            display: flex;
-        }
-
-        .config_view .hidden {
-            display: none !important;
-        }
-
-        .config_view .disabled {
-            pointer-events: none;
-            opacity: 0.5;
-        }
-
         .config_view .secondary-text {
             color: var(--text_secondary);
             font-size: min(var(--font_size_2), 16px);
             line-height: min(var(--line_height_2), 22px);
             margin-top: 4px;
-        }
-
-        .config_view .wrap .title {
-            cursor: pointer;
-            font-size: min(var(--font_size_3), 18px);
-            line-height: min(var(--line_height_3), 24px);
         }
 
         .config_view .wrap .title svg {
@@ -170,32 +194,6 @@
             transition-timing-function: ease;
             transition-delay: 0s;
             transition-property: transform;
-        }
-
-        .config_view .wrap .title svg.is-fold {
-            transform: rotate(0deg);
-        }
-
-
-        /* 模态框 */
-        .config_view .modal-window {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            position: fixed;
-            top: 0;
-            right: 0;
-            bottom: 0;
-            left: 0;
-            z-index: 999;
-            background-color: rgba(0, 0, 0, 0.5);
-        }
-
-        .config_view .modal-dialog {
-            width: 480px;
-            border-radius: 8px;
-            /* Linux样式兼容：--fg_white */
-            background-color: var(--bg_bottom_standard, var(--fg_white));
         }
 
         .config_view .modal-dialog header {
@@ -220,12 +218,6 @@
             align-items: center;
         }
 
-        .config_view .modal-dialog .q-icon {
-            width: 22px;
-            height: 22px;
-            margin: 8px;
-        }
-
 
         /* 版本号 */
         .config_view .versions .wrap {
@@ -239,27 +231,6 @@
             margin: 0px 10px;
             border-radius: 8px;
             text-align: center;
-        }
-
-
-        /* 数据目录 */
-        .config_view .path .path-input {
-            align-self: normal;
-            flex: 1;
-            border-radius: 4px;
-            margin-right: 16px;
-            transition: all 100ms ease-out;
-        }
-
-        .config_view .path .path-input:focus {
-            padding-left: 5px;
-            background-color: rgba(127, 127, 127, 0.1);
-        }
-
-        /* 选择框容器 */
-        .config_view .list-ctl .ops-selects {
-            display: flex;
-            gap: 8px;
         }
 
 

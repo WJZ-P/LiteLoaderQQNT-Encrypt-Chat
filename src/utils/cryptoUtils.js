@@ -8,19 +8,9 @@ const config = Config.config
 const alphabet = new Array(16).fill(0).map((value,index)=> String.fromCharCode(index + 0xfe00)).join("")
 const baseZero=encoder(alphabet,'utf-8')
 
-const styles = {
-    Bangboo: {
-        length: [2, 5],
-        content: ['嗯呢...', '哇哒！', '嗯呢！', '嗯呢哒！', '嗯呐呐！', '嗯哒！', '嗯呢呢！']
-    }
-}
-
-//初始化一些函数的值
-let nowStyles = styles.Bangboo
-
-function countLeadingZeros(str) {
-    const match = str.match(/^0+/);
-    return match ? match[0].length : 0;
+const styles = config.styles
+function getCurrentStyle(){
+    return styles[config.currentStyleName]
 }
 
 /**
@@ -38,9 +28,9 @@ function getKey() {
  */
 function messageEncryptor(messageToBeEncrypted) {
     //随机生成密语
-    let minLength = nowStyles.length[0];
-    let maxLength = nowStyles.length[1];
-    let content = nowStyles.content;
+    let minLength = getCurrentStyle().length[0];
+    let maxLength = getCurrentStyle().length[1];
+    let content = getCurrentStyle().content;
     let randomLength = Math.floor(Math.random() * (maxLength - minLength + 1)) + minLength;
     let randomMsg = ''
     //拼接随机字符
@@ -53,7 +43,7 @@ function messageEncryptor(messageToBeEncrypted) {
     const encryptedMessage = encrypt(Buffer.from(messageToBeEncrypted), getKey()).toString('hex')
     // console.log('[EC] 加密后的密文' + encryptedMessage)
     //密文转成空白符
-    return encodeHex(encryptedMessage) + randomMsg//加密后的密文
+    return encodeHex(encryptedMessage) + randomMsg.trim()//加密后的密文
 }
 
 /**
