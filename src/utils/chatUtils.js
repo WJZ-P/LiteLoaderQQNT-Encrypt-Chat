@@ -146,10 +146,10 @@ export function addFuncBarIcon() {
     // console.log('addfuncbar启动辣！``````````````````````````````````````````````')
 
     let chatElement = null
-    let findCnt=0
+    //let findCnt=0
     const taskID = setInterval(() => {
         if (!document.querySelector(".chat-input-area")) {
-            if(findCnt++>=20) clearInterval(taskID)
+            //if(findCnt++>=20) clearInterval(taskID)
             return
         }
         //已经找到对应元素

@@ -6,7 +6,7 @@ const {ipcModifyer} = require("./utils/ipcUtils");
 const {pluginLog} = require("./utils/logUtils")
 const {Config} = require("./Config.js")
 const {imgDecryptor, imgChecker} = require("./utils/imageUtils");
-const {deleteFiles} = require("./utils/fsUtils");
+const {deleteFiles} = require("./utils/fileUtils");
 
 const pluginPath = path.join(LiteLoader.plugins.encrypt_chat.path.plugin);//插件目录
 const configPath = path.join(pluginPath, "config.json");

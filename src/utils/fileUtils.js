@@ -29,4 +29,19 @@ function deleteFiles(filePath) {
     });
 }
 
-module.exports = {deleteFiles}
+/**
+ * 获取文件buffer
+ * @param filePath
+ * @returns {Promise<Buffer>}
+ */
+function getFileBuffer(filePath) {
+    return new Promise((resolve, reject) => {
+        fs.readFile(filePath, (err, data) => {
+            if (err) reject(err)
+            else resolve(data)
+        })
+    })
+}
+
+
+module.exports = {deleteFiles,getFileBuffer}

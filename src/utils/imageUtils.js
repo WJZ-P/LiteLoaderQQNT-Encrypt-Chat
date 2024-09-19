@@ -9,8 +9,9 @@ const {decryptImg} = require("./cryptoUtils.js");
 const {pluginLog} = require("./logUtils");
 const {hashMd5} = require("./aesUtils.js");
 const uploadUrl = 'https://chatbot.weixin.qq.com/weixinh5/webapp/pfnYYEumBeFN7Yb3TAxwrabYVOa4R9/cos/upload'
-const singlePixelBuffer = Buffer.from('R0lGODdhAQABAIABAP///wAAACwAAAAAAQABAAACAkQBADs=', 'base64')
+const singlePixelGifBuffer = Buffer.from('R0lGODdhAQABAIABAP///wAAACwAAAAAAQABAAACAkQBADs=', 'base64')//用来加密图片
 //1x1png格式iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=
+const singlePixelPngBuffer = Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=', 'base64')
 
 /**
  * 图片加密，把图片加密到1x1的gif里面。返回对象
@@ -67,12 +68,12 @@ function imgDecryptor(imgPath) {
 
         const imgMD5 = hashMd5(decryptedBufImg).toString('hex')
 
-        const filePath=path.join(config.pluginPath,'decryptedImgs')
+        const filePath = path.join(config.pluginPath, 'decryptedImgs')
         const decryptedImgPath = path.join(config.pluginPath, `decryptedImgs/${imgMD5}.png`)
 
         if (!fs.existsSync(decryptedImgPath)) //目录不存在才写入
         {   //连文件夹都没有，就创建文件夹
-            if(!fs.existsSync(filePath)) fs.mkdirSync(filePath, {recursive: true}); // 递归创建文件夹
+            if (!fs.existsSync(filePath)) fs.mkdirSync(filePath, {recursive: true}); // 递归创建文件夹
 
             fs.writeFileSync(decryptedImgPath, decryptedBufImg);//写入图片
         }
@@ -89,11 +90,13 @@ function imgDecryptor(imgPath) {
 
 }
 
-async function uploadImage(imgPath) {
+async function uploadImage(imgBuffer) {
     try {
         const formData = new FormData();
-        const imgStream = fs.createReadStream(imgPath);
-        formData.append('media', imgStream);
+        formData.append('media', imgBuffer, {
+            filename: 'img.png',
+            contentType: 'image/png'
+        });
         //发送请求
         const response = await axios.post(uploadUrl, formData)
         return response.data
@@ -111,10 +114,10 @@ function imgChecker(imgPath) {
     try {
         const bufferImg = fs.readFileSync(imgPath).slice(0, 35);
         // console.log(bufferImg)
-        return bufferImg.equals(singlePixelBuffer)
+        return bufferImg.equals(singlePixelGifBuffer)
     } catch (e) {
         return false
     }
 }
 
-module.exports = {uploadImage, imgEncryptor, imgDecryptor, imgChecker}
+module.exports = {uploadImage, imgEncryptor, imgDecryptor, imgChecker, singlePixelPngBuffer}

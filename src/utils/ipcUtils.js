@@ -4,7 +4,9 @@ const {pluginLog} = require("./logUtils");
 const config = Config.config
 const fs = require('fs')
 const {messageEncryptor} = require("./cryptoUtils.js");
-const {imgChecker, imgDecryptor} = require("./imageUtils");
+const {imgChecker, imgDecryptor, uploadImage, singlePixelPngBuffer} = require("./imageUtils");
+const {getFileBuffer} = require("./fileUtils");
+const {encryptImg} = require("./cryptoUtils");
 
 
 /**
@@ -14,13 +16,13 @@ const {imgChecker, imgDecryptor} = require("./imageUtils");
  */
 function ipcModifyer(ipcProxy) {
     return new Proxy(ipcProxy, {
-        apply(target, thisArg, args) {
+        async apply(target, thisArg, args) {
             let modifiedArgs = args;
             //console.log(JSON.stringify(args))//调试的时候用
             try {//thisArg是WebContent对象
                 //设置ipc通道名
                 const ipcName = args?.[3]?.[1]?.[0]
-                if (ipcName === 'nodeIKernelMsgService/sendMsg') modifiedArgs = ipcMsgModify(args);
+                if (ipcName === 'nodeIKernelMsgService/sendMsg') modifiedArgs = await ipcMsgModify(args);
                 if (ipcName === 'openMediaViewer') modifiedArgs = ipcOpenImgModify(args);
 
                 return target.apply(thisArg, modifiedArgs)
@@ -37,7 +39,7 @@ function ipcModifyer(ipcProxy) {
  * @param args
  * @returns {args}
  */
-function ipcMsgModify(args) {
+async function ipcMsgModify(args) {
     if (!args?.[3]?.[1]?.[0] || args[3][1][0] !== 'nodeIKernelMsgService/sendMsg') return args;
 
     console.log('下面打印出nodeIKernelMsgService/sendMsg的内容')
@@ -50,7 +52,7 @@ function ipcMsgModify(args) {
     //console.log(args[3][1][1].msgElements?.[0].textElement)
 
     //下面判断加密是否启用，启用了就修改消息内容
-    if (!config.activeEC) return
+    if (!config.activeEC) return args
 
     //————————————————————————————————————————————————————————————————————
     //修改原始消息
@@ -96,36 +98,38 @@ function ipcMsgModify(args) {
                 //picSubType: 0,                  //设置为0是图片类型，1是表情包类型，会影响渲染大小
 
             })
-        } else if (item.elementType === 3)//3是发送文件
-        {
+        }
 
+
+        //下面处理加密文件
+        else if (item.elementType === 3)//3是发送文件
+        {
+            const fileName = item.fileElement.fileName
+            const filePath = item.fileElement.filePath
+            const fileSize = item.fileElement.fileSize
+            //获取文件的buffer后对buffer进行加密
+            pluginLog('获取到文件buffer，加密中')
+            const encryptedFileBuffer = encryptImg((await getFileBuffer(filePath)))//和图片加密的方法是一样的，都是二进制
+
+            //把文件buffer插入1x1的png里面后发送文件请求
+            pluginLog('发送上传请求中')
+            const result=await uploadImage(Buffer.concat([singlePixelPngBuffer,encryptedFileBuffer]))
+            pluginLog('上传成功')
+            pluginLog(JSON.stringify(result))
+
+            const fileObj={
+                type:'ec-encrypted-file',
+                fileName: fileName,
+                fileUrl:result.url,
+                fileSize: fileSize,
+                encryptionKey:config.encryptionKey  //直接放上加密文件的key
+            }
+
+            //把加密文件插入到消息元素中
+            textElement.textElement.content = messageEncryptor(JSON.stringify(fileObj))
+            args[3][1][1].msgElements=[textElement]
         }
     }
-
-    //插入一个卡片消息
-    // args[3][1][1].msgElements.push({
-    //     elementType: 10,
-    //     elementId: '',
-    //     arkElement: {
-    //         bytesData: JSON.stringify({
-    //             "app": "com.tencent.tdoc.qqpush",
-    //             "desc": "",
-    //             "bizsrc": "",
-    //             "view": "pic",
-    //             "ver": "1.0.0.15",
-    //             "prompt": "[QQ红包]恭喜发财",
-    //             "meta": {
-    //                 "pic": {
-    //                     "jumpUrl": "",
-    //                     "preview": "http:\/\/p.qlogo.cn\/homework\/0\/hw_h_4xknus6xi70gkck66c88b25f1298\/0\/25632286"
-    //                 }
-    //             },
-    //             "config": {"ctime": 1714214660, "forward": 1, "token": "f1245530d59bccad2b1c695544e98efb"}
-    //         }),
-    //         linkInfo: null,
-    //         subElementType: null
-    //     }
-    // })
 
     console.log('修改后的,msgElements为')
     for (let item of args[3][1][1].msgElements) {
@@ -166,3 +170,27 @@ const textElement = {
 
 
 module.exports = {ipcModifyer}
+//插入一个卡片消息
+// args[3][1][1].msgElements.push({
+//     elementType: 10,
+//     elementId: '',
+//     arkElement: {
+//         bytesData: JSON.stringify({
+//             "app": "com.tencent.tdoc.qqpush",
+//             "desc": "",
+//             "bizsrc": "",
+//             "view": "pic",
+//             "ver": "1.0.0.15",
+//             "prompt": "[QQ红包]恭喜发财",
+//             "meta": {
+//                 "pic": {
+//                     "jumpUrl": "",
+//                     "preview": "http:\/\/p.qlogo.cn\/homework\/0\/hw_h_4xknus6xi70gkck66c88b25f1298\/0\/25632286"
+//                 }
+//             },
+//             "config": {"ctime": 1714214660, "forward": 1, "token": "f1245530d59bccad2b1c695544e98efb"}
+//         }),
+//         linkInfo: null,
+//         subElementType: null
+//     }
+// })
