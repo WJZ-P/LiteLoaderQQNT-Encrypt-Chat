@@ -176,22 +176,33 @@ export async function messageRenderer(allChats) {//下面对每条消息进行�
                 const imgElement = singalMsg.querySelector('.image-content')
 
 
-                if (normalText) {//是普通文本
+                //是文本消息。需要具体判断是文件还是普通图片
+                if (normalText) {
                     hexString = await checkMsgElement(normalText)
+
+
                     if (hexString) {
                         const decryptedMsg = await ecAPI.messageDecryptor(hexString)
-
                         if (!decryptedMsg) continue//解密后如果消息是空的，那就直接忽略，进入下次循环
 
-                        totalOriginalMsg += normalText.innerText//获取原本的密文
-                        normalText.innerText = decryptedMsg
+                        //这里开始判断是否是文件
+                        if (decryptedMsg.includes('ec-encrypted-file')) {
+                            totalOriginalMsg = '[EC文件]'//注意这里是直接=，因为如果是文件只可能有一个Msg。
+
+                            //建立个函数进行fileDiv处理
+                            fileDivCreater(msgContent, JSON.parse(decryptedMsg))
+
+                        } else {
+                            totalOriginalMsg += normalText.innerText//获取原本的密文
+                            normalText.innerText = decryptedMsg
+                        }
                         isECMsg = true
                     }//文本内容修改为解密结果
 
                 } else if (atText) {
                     totalOriginalMsg += atText.innerText
 
-
+                    //下面检测是否为图片元素
                 } else if (imgElement) {
 
                     if (imgElement.getAttribute('src').includes('base64')) continue  //图片是base64格式的，直接跳过
@@ -241,6 +252,27 @@ export async function messageRenderer(allChats) {//下面对每条消息进行�
 
     }
 }
+
+/**
+ * 渲染file下载元素
+ * @param {Element} msgContent
+ * @param {Object} fileObj
+ */
+function fileDivCreater(msgContent, fileObj) {
+    msgContent.innerHTML = `
+<div class="ec-file-card">
+    <div class="ec-file-info">
+        <img id="ec-download-img" src="/src/assests/download.svg" alt="文件图标" class="file-icon">
+        <div class="ec-file-details">
+            <h3 class="ec-file-name">文件名.txt</h3>
+            <p class="ec-file-size">大小: 1.5 MB</p>
+        </div>
+    </div>
+    <button class="download-button">下载</button>
+</div>`
+
+}
+
 
 /**
  *添加解密消息标记，显示在QQ消息的下方，以小字的形式显示
