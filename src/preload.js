@@ -10,6 +10,7 @@ contextBridge.exposeInMainWorld("encrypt_chat", {
     decodeHex: (message) => ipcRenderer.invoke("LiteLoader.encrypt_chat.decodeHex", message),
     getWindowID: () => ipcRenderer.invoke("LiteLoader.encrypt_chat.getWindowID"),
     getMenuHTML:()=> ipcRenderer.invoke("LiteLoader.encrypt_chat.getMenuHTML"),
+    ecFileHandler: (fileBuffer,fileName)=>ipcRenderer.send("LiteLoader.encrypt_chat.ecFileHandler",fileBuffer,fileName),
     //设置相关，给renderer进程用
     getConfig: () => ipcRenderer.invoke("LiteLoader.encrypt_chat.getConfig"),
     setConfig: (newConfig) => ipcRenderer.invoke("LiteLoader.encrypt_chat.setConfig", newConfig),

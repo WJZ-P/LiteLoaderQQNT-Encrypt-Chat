@@ -149,7 +149,6 @@ export function addFuncBarIcon() {
     //let findCnt=0
     const taskID = setInterval(() => {
         if (!document.querySelector(".chat-input-area")) {
-            //if(findCnt++>=20) clearInterval(taskID)
             return
         }
         //已经找到对应元素

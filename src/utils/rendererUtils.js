@@ -1,6 +1,8 @@
+import "../assests/minJS/axios.min.js"
+
 //添加css样式
 const ecAPI = window.encrypt_chat
-let nowConfig = await ecAPI.getConfig()
+let currentConfig = await ecAPI.getConfig()
 
 export function patchCss() {
     console.log('[Encrypt-Chat]' + 'css加载中')
@@ -39,7 +41,7 @@ export function patchCss() {
                 transform: translateX(-30%);
                 opacity: 0;
                 pointer-events: none;
-                color:${nowConfig.mainColor};
+                color:${currentConfig.mainColor};
             }
             
             .message-encrypted-tip-right {
@@ -59,7 +61,7 @@ export function patchCss() {
                 transform: translateX(-30%);
                 opacity: 0;
                 pointer-events: none;
-                color:${nowConfig.mainColor};
+                color:${currentConfig.mainColor};
             }
             
             .message-encrypted-tip-parent {
@@ -70,7 +72,7 @@ export function patchCss() {
                 margin-left:3px;
                 margin-right:3px;
                 margin-bottom: 25px;
-                box-shadow: 0px 0px 8px 5px ${nowConfig.mainColor};
+                box-shadow: 0px 0px 8px 5px ${currentConfig.mainColor};
             }
             
 .q-svg{
@@ -119,6 +121,69 @@ export function patchCss() {
     border: 1px solid #66ccff; /* 激活时边框颜色 */
 }
 
+
+/*下面是下载DIV相关的样式*/
+
+.ec-file-card {
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    min-width: 300px;
+    width: fit-content;
+    margin: 3px;
+    font-family: Arial, sans-serif;
+}
+
+.ec-file-info {
+    display: flex;
+    align-items: center;
+    padding: 15px;
+    background-color: #f9f9f9;
+    flex-direction: column;
+    justify-content: center;
+    border-top-left-radius: 5px;
+    border-top-right-radius: 5px;
+}
+
+.ec-file-icon {
+    display: flex;
+    justify-content: center;
+    width: 75px;
+    height: 75px;
+}
+
+.ec-file-name {
+    margin: 0;
+    font-size: 20px; /* 增大字体 */
+    font-weight: bold; /* 加粗字体 */
+    color: #2c3e50; /* 使用更深的颜色 */
+    margin-bottom: 5px; /* 增加底部间距 */
+}
+
+.ec-file-size {
+    font-size: 16px;
+    color: #777;
+    margin-top: 2px; /* 增加顶部间距 */
+}
+
+.ec-download-button {
+    background-color: #66ccff;
+    color: white;
+    border: none;
+    border-radius: 0 0 8px 8px;
+    width: 100%;
+    font-size: 20px;
+    font-weight: bold; /* 加粗字体 */
+    cursor: pointer;
+    transition: 0.25s ease-in-out;
+    padding: 10px;
+    margin:0;
+}
+
+.ec-download-button:hover {
+    background-color: #5bb8e5; /* 悬停时稍微加深背景色 */
+}
+
 }`
 
     style.innerHTML = sHtml
@@ -130,7 +195,7 @@ export function patchCss() {
 export async function rePatchCss() {
     console.log("[EC]调用rePatchCss")
 
-    nowConfig = await ecAPI.getConfig()
+    currentConfig = await ecAPI.getConfig()
     patchCss()//重新插入
     document.getElementById('encrypt-chat-css').remove()
     //原理：搜索元素只会搜索到第一个，而我们插入的是新的，第二个，没问题
@@ -176,22 +241,33 @@ export async function messageRenderer(allChats) {//下面对每条消息进行�
                 const imgElement = singalMsg.querySelector('.image-content')
 
 
-                if (normalText) {//是普通文本
+                //是文本消息。需要具体判断是文件还是普通图片
+                if (normalText) {
                     hexString = await checkMsgElement(normalText)
+
+
                     if (hexString) {
                         const decryptedMsg = await ecAPI.messageDecryptor(hexString)
-
                         if (!decryptedMsg) continue//解密后如果消息是空的，那就直接忽略，进入下次循环
 
-                        totalOriginalMsg += normalText.innerText//获取原本的密文
-                        normalText.innerText = decryptedMsg
+                        //这里开始判断是否是文件
+                        if (decryptedMsg.includes('ec-encrypted-file')) {
+                            totalOriginalMsg = '[EC文件]'//注意这里是直接=，因为如果是文件只可能有一个Msg。
+
+                            //建立个函数进行fileDiv处理
+                            fileDivCreater(msgContent, JSON.parse(decryptedMsg))
+
+                        } else {
+                            totalOriginalMsg += normalText.innerText//获取原本的密文
+                            normalText.innerText = decryptedMsg
+                        }
                         isECMsg = true
                     }//文本内容修改为解密结果
 
                 } else if (atText) {
                     totalOriginalMsg += atText.innerText
 
-
+                    //下面检测是否为图片元素
                 } else if (imgElement) {
 
                     if (imgElement.getAttribute('src').includes('base64')) continue  //图片是base64格式的，直接跳过
@@ -243,13 +319,48 @@ export async function messageRenderer(allChats) {//下面对每条消息进行�
 }
 
 /**
+ * 渲染file下载元素
+ * @param {Element} msgContent
+ * @param {Object} fileObj
+ */
+function fileDivCreater(msgContent, fileObj) {
+    msgContent.innerHTML = `
+<div class="ec-file-card">
+    <div class="ec-file-info">
+            <h3 class="ec-file-name">文件名.txt</h3>
+            
+            <svg class="ec-file-icon" xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#B7B7B7">
+            <path d="M480-325 288.5-516.5l52-53 102 102V-790h75v322.5l102-102 52 53L480-325ZM245-170q-30.94 0-52.97-22.03Q170-214.06 170-245v-117.5h75V-245h470v-117.5h75V-245q0 30.94-22.03 52.97Q745.94-170 715-170H245Z"/></svg>
+        
+            <p class="ec-file-size">大小: xx MB</p>
+    </div>
+    
+    <div class="progress" style="display: none;">
+        <div class="progress-bar" style="width: 0; height: 5px; background: #00a9ff;"></div>
+    </div>
+    <button class="ec-download-button" data-url="${fileObj.fileUrl}">下载</button>
+    
+</div>`
+
+    msgContent.querySelector('.ec-file-name').innerText = fileObj.fileName
+    msgContent.querySelector('.ec-file-size').innerText = '大小：' + formatFileSize(fileObj.fileSize)
+
+    // 添加下载按钮的点击事件
+    msgContent.querySelector('.ec-download-button').addEventListener('click', function () {
+        // window.open(url, '_blank');这也太不优雅了！┗|｀O′|┛
+        downloadFile(fileObj, msgContent.querySelector('.progress'));
+    });
+}
+
+
+/**
  *添加解密消息标记，显示在QQ消息的下方，以小字的形式显示
  * @param msgContentContainer
  * @param originaltext
  */
 export function appendEncreptedTag(msgContentContainer, originaltext) {
     // console.log('[appendTag]' + '开始判断')
-    // if (!nowConfig.enableTip) return;//没开这个设置就不添加解密标记
+    // if (!currentConfig.enableTip) return;//没开这个设置就不添加解密标记
     //console.log('[appendTag]' + '判断成功，准备加tag')
 
     if (msgContentContainer.classList.contains('decrypted-msg-container')) return//添加标记，用来检测是否为已修改过的元素
@@ -275,3 +386,51 @@ export function appendEncreptedTag(msgContentContainer, originaltext) {
         tipElement.style.opacity = "0.8";
     }, 100);
 }
+
+
+function formatFileSize(bytes) {
+    const sizes = ['B', 'KB', 'MB', 'GB', 'TB'];
+    if (bytes === 0) return '0 B';
+    const i = parseInt(Math.floor(Math.log(bytes) / Math.log(1024)));
+    return Math.round(bytes / Math.pow(1024, i)) + ' ' + sizes[i];
+}
+
+function downloadFile(fileObj, progressElement) {
+    try {
+        console.log('准备开始下载文件')
+        //显示进度条
+        progressElement.style.display = 'flex'
+        console.log(axios)
+        //下面使用axios库进行下载
+        axios({
+            url: fileObj.fileUrl,
+            method: 'GET',
+            responseType: 'blob', //以这个格式接收文件，传给主进程
+            onDownloadProgress: (progressEvent) => {
+                const total = progressEvent.total
+                const current = progressEvent.loaded
+                const percentCompleted = (current / total) * 100
+                //更新进度条
+                progressElement.querySelector('.progress-bar').style.width = percentCompleted + '%';
+            }
+        }).then(response => {
+            //通过IPC发送到主进程
+            progressElement.style.display = 'none'
+            console.log(JSON.stringify(response,null,4))
+            ecAPI.ecFileHandler(response.data,fileObj.fileName)
+
+        }).catch(error => {
+            console.log('下载失败,', error)
+        })
+    } catch (e) {
+        console.log(e)
+    }
+}
+
+// const fileObj={
+//     type:'ec-encrypted-file',
+//     fileName: fileName,
+//     fileUrl:result.url,
+//     fileSize: fileSize,
+//     encryptionKey:config.encryptionKey  //直接放上加密文件的key
+// }

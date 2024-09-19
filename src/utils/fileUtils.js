@@ -1,5 +1,9 @@
 const fs = require('fs');
 const path = require("path")
+const {pluginLog} = require("./logUtils");
+const {decryptImg} = require("./cryptoUtils");
+const singlePixelPngBuffer = Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=', 'base64')
+const config = require("../Config.js").Config.config;
 
 /**
  * 清空给定路径下的所有文件
@@ -43,5 +47,15 @@ function getFileBuffer(filePath) {
     })
 }
 
+function ecFileHandler(fileBuffer, fileName) {
+    pluginLog('获取到的文件buffer为' + fileBuffer)
+    const decryptedBufFile = decryptImg(fileBuffer)//可以用同样的办法解密文件，因为都是二进制
+    if (!decryptedBufFile) return false//解密失败就不需要继续了
+    fs.writeFile(config.downloadFilePath + `\\${fileName}`, decryptedBufFile, (err) => {
+        pluginLog(err)
+    })
 
-module.exports = {deleteFiles,getFileBuffer}
+}
+
+
+module.exports = {deleteFiles, getFileBuffer, ecFileHandler}

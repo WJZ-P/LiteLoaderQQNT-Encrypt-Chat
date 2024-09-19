@@ -6,7 +6,7 @@ const {ipcModifyer} = require("./utils/ipcUtils");
 const {pluginLog} = require("./utils/logUtils")
 const {Config} = require("./Config.js")
 const {imgDecryptor, imgChecker} = require("./utils/imageUtils");
-const {deleteFiles} = require("./utils/fileUtils");
+const {deleteFiles, ecFileHandler} = require("./utils/fileUtils");
 
 const pluginPath = path.join(LiteLoader.plugins.encrypt_chat.path.plugin);//插件目录
 const configPath = path.join(pluginPath, "config.json");
@@ -86,9 +86,10 @@ async function onload() {
     ipcMain.handle("LiteLoader.encrypt_chat.getWindowID", (event) => event.sender.getOwnerBrowserWindow().id)
     ipcMain.handle("LiteLoader.encrypt_chat.imgDecryptor", (_, imgPath) => imgDecryptor(imgPath))
     ipcMain.handle("LiteLoader.encrypt_chat.imgChecker", (_, imgPath) => imgChecker(imgPath))
+    //进行下载文件的解密与保存。
+    ipcMain.on("LiteLoader.encrypt_chat.ecFileHandler",(_,fileBuffer,fileName)=> ecFileHandler(fileBuffer.fileName))
     //设置相关，给renderer进程用
     ipcMain.handle("LiteLoader.encrypt_chat.getConfig", () => Config.getConfig())
-
     ipcMain.handle("LiteLoader.encrypt_chat.setConfig", (event, newConfig) => {
         pluginLog('主进程收到setConfig消息，更新设置。')
         const oldMainColor = config.mainColor//先保存下当前的主题色
@@ -98,7 +99,6 @@ async function onload() {
             sendMsgToChatWindows("LiteLoader.encrypt_chat.rePatchCss");//主进程给渲染进程发送重新渲染ECcss消息
         return newestConfig
     })
-
     ipcMain.handle("LiteLoader.encrypt_chat.getMenuHTML", () => fs.readFileSync(path.join(config.pluginPath, 'src/pluginMenu.html'), 'utf-8'))
     ipcMain.handle("LiteLoader.encrypt_chat.isChatWindow", (event) => (event.sender.getOwnerBrowserWindow().webContents.getURL().indexOf("#/main/message") != -1
         || event.sender.getOwnerBrowserWindow().webContents.getURL().indexOf("#/chat") != -1))

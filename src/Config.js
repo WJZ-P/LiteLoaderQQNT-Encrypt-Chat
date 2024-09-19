@@ -10,6 +10,7 @@ class Config {
         mainColor: '#66ccff',                   //主颜色
         activeEC: false,                        //是否启用加密功能
         encryptionKey: '',                      //加密密钥
+        downloadFilePath:'',                    //解密文件的下载路径
         styles: {
             Bangboo: {//邦布语
                 length: [2, 5],
@@ -50,6 +51,7 @@ class Config {
         this.config.pluginPath = pluginPath
         this.config.configPath = configPath
         this.config.tempImgPath = path.join(pluginPath, 'src/assests/1x1#FFFFFF.gif')
+        this.config.downloadFilePath=path.join(pluginPath, 'decryptedFiles')
         pluginLog('现在执行initConfig方法')
         if (!(fs.existsSync(this.config.configPath))) {//如果文件目录不存在，就创建文件
             pluginLog('第一次启动，准备创建配置文件')
