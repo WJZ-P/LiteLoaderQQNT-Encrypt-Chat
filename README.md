@@ -79,7 +79,7 @@
   </a>
 </p>
 
-3. 打字，点击发送即可看到效果。目前采用bangboo语，日后会加入更多密文语种
+3. 打字，点击发送即可看到效果。目前显示的明文共有**六种**加密语，具体请在设置中查看。
 
 ### 加密对比图如下：
 <div style="display: flex; justify-content: center; align-items: center;">

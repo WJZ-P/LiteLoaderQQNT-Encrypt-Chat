@@ -12,14 +12,14 @@ const {imgChecker, imgDecryptor} = require("./imageUtils");
  * @param ipcProxy
  * @returns {function}
  */
-function ipcModifyer(ipcProxy){
-        return new Proxy(ipcProxy, {
+function ipcModifyer(ipcProxy) {
+    return new Proxy(ipcProxy, {
         apply(target, thisArg, args) {
-            let modifiedArgs =args;
+            let modifiedArgs = args;
             //console.log(JSON.stringify(args))//调试的时候用
             try {//thisArg是WebContent对象
                 //设置ipc通道名
-                const ipcName=args?.[3]?.[1]?.[0]
+                const ipcName = args?.[3]?.[1]?.[0]
                 if (ipcName === 'nodeIKernelMsgService/sendMsg') modifiedArgs = ipcMsgModify(args);
                 if (ipcName === 'openMediaViewer') modifiedArgs = ipcOpenImgModify(args);
 
@@ -96,8 +96,37 @@ function ipcMsgModify(args) {
                 //picSubType: 0,                  //设置为0是图片类型，1是表情包类型，会影响渲染大小
 
             })
+        } else if (item.elementType === 3)//3是发送文件
+        {
+
         }
     }
+
+    //插入一个卡片消息
+    // args[3][1][1].msgElements.push({
+    //     elementType: 10,
+    //     elementId: '',
+    //     arkElement: {
+    //         bytesData: JSON.stringify({
+    //             "app": "com.tencent.tdoc.qqpush",
+    //             "desc": "",
+    //             "bizsrc": "",
+    //             "view": "pic",
+    //             "ver": "1.0.0.15",
+    //             "prompt": "[QQ红包]恭喜发财",
+    //             "meta": {
+    //                 "pic": {
+    //                     "jumpUrl": "",
+    //                     "preview": "http:\/\/p.qlogo.cn\/homework\/0\/hw_h_4xknus6xi70gkck66c88b25f1298\/0\/25632286"
+    //                 }
+    //             },
+    //             "config": {"ctime": 1714214660, "forward": 1, "token": "f1245530d59bccad2b1c695544e98efb"}
+    //         }),
+    //         linkInfo: null,
+    //         subElementType: null
+    //     }
+    // })
+
     console.log('修改后的,msgElements为')
     for (let item of args[3][1][1].msgElements) {
         console.log(item)
@@ -111,9 +140,9 @@ function ipcMsgModify(args) {
  * @param args
  * @returns {args}
  */
-function ipcOpenImgModify(args){
-    const mediaList=args[3][1][1].mediaList
-    const imgPath=decodeURIComponent(mediaList[0].originPath).substring(9)//获取原始路径
+function ipcOpenImgModify(args) {
+    const mediaList = args[3][1][1].mediaList
+    const imgPath = decodeURIComponent(mediaList[0].originPath).substring(9)//获取原始路径
     if (!imgChecker(imgPath)) {
         console.log('[EC]图片校验未通过！渲染原图')
         return args
@@ -123,10 +152,16 @@ function ipcOpenImgModify(args){
     if (!decryptedObj) return args; //解密失败直接返回
     console.log(decryptedObj)
     //decryptedImgPath: 'E:\\LiteloaderQQNT\\plugins\\Encrypt-Chat\\decryptedImgs\\54dcd5689b10debf8a718d30f6b0691a.png',
-    mediaList[0].originPath="appimg://"+encodeURI(decryptedObj.decryptedImgPath.replace("\\", "/"))
-    mediaList[0].size={width:decryptedObj.width,height:decryptedObj.height}
-    pluginLog('修改后的图片路径：'+mediaList[0].originPath)
+    mediaList[0].originPath = "appimg://" + encodeURI(decryptedObj.decryptedImgPath.replace("\\", "/"))
+    mediaList[0].size = {width: decryptedObj.width, height: decryptedObj.height}
+    pluginLog('修改后的图片路径：' + mediaList[0].originPath)
     return args
+}
+
+const textElement = {
+    elementType: 1,
+    elementId: '',
+    textElement: {content: '测试', atType: 0, atUid: '', atTinyId: '', atNtUid: ''}
 }
 
 

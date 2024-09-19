@@ -10,6 +10,7 @@ const {pluginLog} = require("./logUtils");
 const {hashMd5} = require("./aesUtils.js");
 const uploadUrl = 'https://chatbot.weixin.qq.com/weixinh5/webapp/pfnYYEumBeFN7Yb3TAxwrabYVOa4R9/cos/upload'
 const singlePixelBuffer = Buffer.from('R0lGODdhAQABAIABAP///wAAACwAAAAAAQABAAACAkQBADs=', 'base64')
+//1x1png格式iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=
 
 /**
  * 图片加密，把图片加密到1x1的gif里面。返回对象

@@ -27,6 +27,8 @@ function getKey() {
  * @returns {string}
  */
 function messageEncryptor(messageToBeEncrypted) {
+    if(messageToBeEncrypted.trim() === '') return ''//空字符不加密
+
     //随机生成密语
     let minLength = getCurrentStyle().length[0];
     let maxLength = getCurrentStyle().length[1];
