@@ -93,7 +93,7 @@
 ### 加密对比图如下：
 <div style="display: flex; justify-content: center; align-items: center;">
   <a href="https://www.bilibili.com/video/BV12x411y7SN">
-    <img src="src/assests/markdown/encryptedMessage.png" alt="消息" style="margin-right: 10px; width: 500px">
+    <img src="src/assests/markdown/encryptedMessage.png" alt="消息">
   </a>
   <a href="https://www.bilibili.com/video/BV12x411y7SN">
     <img src="src/assests/markdown/normalMessage.png" alt="消息" style="width: 400px">
