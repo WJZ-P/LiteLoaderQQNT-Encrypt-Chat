@@ -405,7 +405,7 @@ function downloadFile(fileObj, progressElement) {
         axios({
             url: fileObj.fileUrl,
             method: 'GET',
-            responseType: 'blob', //以这个格式接收文件，传给主进程
+            responseType: 'arraybuffer',
             onDownloadProgress: (progressEvent) => {
                 const total = progressEvent.total
                 const current = progressEvent.loaded
@@ -416,6 +416,7 @@ function downloadFile(fileObj, progressElement) {
         }).then(response => {
             //通过IPC发送到主进程
             progressElement.style.display = 'none'
+            console.log(response.data)
             console.log(JSON.stringify(response,null,4))
             ecAPI.ecFileHandler(response.data,fileObj.fileName)
 

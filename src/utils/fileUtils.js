@@ -47,12 +47,17 @@ function getFileBuffer(filePath) {
     })
 }
 
-function ecFileHandler(fileBuffer, fileName) {
-    pluginLog('获取到的文件buffer为' + fileBuffer)
-    const decryptedBufFile = decryptImg(fileBuffer)//可以用同样的办法解密文件，因为都是二进制
-    if (!decryptedBufFile) return false//解密失败就不需要继续了
+function ecFileHandler(filearrayBuffer, fileName) {
+    const fileBuffer = Buffer.from(filearrayBuffer, 'binary')
+    pluginLog('获取到的文件buffer为')
+    console.log(fileBuffer)
+    const decryptedBufFile = decryptImg(fileBuffer.slice(68))//可以用同样的办法解密文件，因为都是二进制
+    if (!decryptedBufFile) {
+        pluginLog('文件解密失败！')
+        return false
+    }//解密失败就不需要继续了
     fs.writeFile(config.downloadFilePath + `\\${fileName}`, decryptedBufFile, (err) => {
-        pluginLog(err)
+        if (err) pluginLog(err)
     })
 
 }
