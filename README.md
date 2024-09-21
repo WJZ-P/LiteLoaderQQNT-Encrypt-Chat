@@ -2,12 +2,18 @@
 
 <!-- PROJECT SHIELDS -->
 
+
+
+<p align="center" style="margin-left: 50%">
+
 [![Contributors][contributors-shield]][contributors-url]
 [![Forks][forks-shield]][forks-url]
 [![Stargazers][stars-shield]][stars-url]
 [![Issues][issues-shield]][issues-url]
 [![MIT License][license-shield]][license-url]
 [![LinkedIn][linkedin-shield]][linkedin-url]
+
+</p>
 
 <!-- PROJECT LOGO -->
 
@@ -114,10 +120,12 @@
 
 - [LiteLoader QQNT](https://github.com/LiteLoaderQQNT/LiteLoaderQQNT?tab=readme-ov-file)
 
-## 重要声明
-### 本项目仅供交流学习使用，**禁止**用于一切非法用途！任何问题概不负责。(｡•́︿•̀｡) 
 
-### **因项目特殊性，不接受任何形式的赞助、捐赠等基于本项目的利益输送行为。**
+
+> [!NOTE]\
+> ## 重要声明
+>### 本项目仅供交流学习使用，**禁止**用于一切非法用途！任何问题概不负责。(｡•́︿•̀｡)
+>### **因项目特殊性，不接受任何形式的赞助、捐赠等基于本项目的利益输送行为。**
 
 ## 📝 To Do List
 

@@ -411,8 +411,10 @@ function downloadFile(fileObj, msgContent) {
     const iconElement = msgContent.querySelector('.ec-file-icon') //下载的图标元素
     const downloadButton = msgContent.querySelector('.ec-download-button')
 
-    //现在开始下载，修改图标为下载中状态
+    //现在开始下载，修改图标为下载中状态，并且不能再被点击
     iconElement.innerHTML = `<path d="M440-92q-74.5-8-138.25-41.5t-110.5-85.75q-46.75-52.25-73.5-119.5T91-481q0-151 100-262t250-127v75q-119 17-197 105.75T166-481q0 119.5 78 208.25T440-167v75Zm39-194.5L283-483l53-53 106 106v-246.5h75V-431l104-104 53 53.5-195 195ZM518-92v-75q42.5-6 81.5-22.5T672-232l55 55q-46 36-98.75 57.5T518-92Zm156-638q-34.5-25.5-73.5-42.25T519-795v-75q57.5 6 110.25 27.5T727-785l-53 55Zm108 496-53-53.5q25.5-34 41.25-73T792-442h77q-8 57.5-29 110.75T782-234Zm10-286q-6-42.5-21.75-81.5t-41.25-73l53-53.5q37 44 59 97.25T869-520h-77Z"/>`
+    downloadButton.innerText='下载中'
+    downloadButton.disabled=true//设置为不可点击
     try {
         console.log('准备开始下载文件')
         //显示进度条
@@ -439,6 +441,7 @@ function downloadFile(fileObj, msgContent) {
             //下载完成，图标修改为下载完成状态
             iconElement.innerHTML = `<path d="M383-327 167.5-542.5 221-596l162 162 356-356 53.5 53.5L383-327ZM210-170v-70h540v70H210Z"/>`
             //下面的下载按钮要改成打开所在目录
+            downloadButton.disabled=false//切换为可点击状态
             downloadButton.innerText = '打开文件目录'
             downloadButton.removeEventListener('click', fileObj.downloadFunc)
             downloadButton.addEventListener('click', () => {    //再次添加一个事件监听器
