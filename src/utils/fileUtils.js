@@ -2,7 +2,7 @@ const fs = require('fs');
 const path = require("path")
 const {pluginLog} = require("./logUtils");
 const {decryptImg} = require("./cryptoUtils");
-const singlePixelPngBuffer = Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=', 'base64')
+//const singlePixelPngBuffer = Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=', 'base64')
 const config = require("../Config.js").Config.config;
 
 /**

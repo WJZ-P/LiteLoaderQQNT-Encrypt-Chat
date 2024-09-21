@@ -1,4 +1,4 @@
-const {ipcMain, globalShortcut} = require("electron");
+const {ipcMain, globalShortcut, shell} = require("electron");
 const fs = require("fs")
 const {messageDecrypter, messageEncrypter, decodeHex} = require("./utils/cryptoUtils");
 const path = require("path");
@@ -47,7 +47,7 @@ module.exports.onBrowserWindowCreated = async window => {
                 pluginLog("main.js onLoad注入成功")
 
                 //替换掉官方的ipc监听器
-                window.webContents._events["-ipc-message"] = ipcModifyer(window.webContents._events["-ipc-message"])
+                window.webContents._events["-ipc-message"] = ipcModifyer(window.webContents._events["-ipc-message"],window)
 
 
                 //这里修改关闭窗口时候的函数，用来在关闭QQ时清空加密图片缓存
@@ -88,6 +88,11 @@ async function onload() {
     ipcMain.handle("LiteLoader.encrypt_chat.imgChecker", (_, imgPath) => imgChecker(imgPath))
     //进行下载文件的解密与保存。
     ipcMain.on("LiteLoader.encrypt_chat.ecFileHandler",(_,fileBuffer,fileName)=> ecFileHandler(fileBuffer,fileName))
+    //打开对应目录的文件夹
+    ipcMain.on("LiteLoader.encrypt_chat.openPath",(_,filePath)=> shell.openPath(filePath))
+    //检查对应文件是否存在
+    ipcMain.handle("LiteLoader.encrypt_chat.isFileExist", (_, filePathArray) => fs.existsSync(path.join(...filePathArray)))
+
     //设置相关，给renderer进程用
     ipcMain.handle("LiteLoader.encrypt_chat.getConfig", () => Config.getConfig())
     ipcMain.handle("LiteLoader.encrypt_chat.setConfig", (event, newConfig) => {

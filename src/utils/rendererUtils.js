@@ -3,6 +3,7 @@ import "../assests/minJS/axios.min.js"
 //添加css样式
 const ecAPI = window.encrypt_chat
 let currentConfig = await ecAPI.getConfig()
+const downloadFunc = (fileObj, msgContent) => () => downloadFile(fileObj, msgContent)
 
 export function patchCss() {
     console.log('[Encrypt-Chat]' + 'css加载中')
@@ -255,7 +256,7 @@ export async function messageRenderer(allChats) {//下面对每条消息进行�
                             totalOriginalMsg = '[EC文件]'//注意这里是直接=，因为如果是文件只可能有一个Msg。
 
                             //建立个函数进行fileDiv处理
-                            fileDivCreater(msgContent, JSON.parse(decryptedMsg))
+                            await fileDivCreater(msgContent, JSON.parse(decryptedMsg))
 
                         } else {
                             totalOriginalMsg += normalText.innerText//获取原本的密文
@@ -323,7 +324,7 @@ export async function messageRenderer(allChats) {//下面对每条消息进行�
  * @param {Element} msgContent
  * @param {Object} fileObj
  */
-function fileDivCreater(msgContent, fileObj) {
+async function fileDivCreater(msgContent, fileObj) {
     msgContent.innerHTML = `
 <div class="ec-file-card">
     <div class="ec-file-info">
@@ -335,21 +336,31 @@ function fileDivCreater(msgContent, fileObj) {
             <p class="ec-file-size">大小: xx MB</p>
     </div>
     
-    <div class="progress" style="display: none;">
-        <div class="progress-bar" style="width: 0; height: 5px; background: #00a9ff;"></div>
+    <div class="progress" style="display: none; color: #007BFF">
+        <div class="progress-bar" style="width: 0; height: 5px; background: #0078ff;"></div>
     </div>
     <button class="ec-download-button" data-url="${fileObj.fileUrl}">下载</button>
     
 </div>`
-
+    //修改文件名字和大小
     msgContent.querySelector('.ec-file-name').innerText = fileObj.fileName
     msgContent.querySelector('.ec-file-size').innerText = '大小：' + formatFileSize(fileObj.fileSize)
 
-    // 添加下载按钮的点击事件
-    msgContent.querySelector('.ec-download-button').addEventListener('click', function () {
-        // window.open(url, '_blank');这也太不优雅了！┗|｀O′|┛
-        downloadFile(fileObj, msgContent.querySelector('.progress'));
-    });
+    //接下来判断该文件是否已经完成下载
+    if (await ecAPI.isFileExist([currentConfig.downloadFilePath, fileObj.fileName])) {
+        //文件已经完成了下载，直接显示打开目录按钮即可
+        console.log('文件已完成下载')
+        msgContent.querySelector('.ec-file-icon').innerHTML = `<path d="M383-327 167.5-542.5 221-596l162 162 356-356 53.5 53.5L383-327ZM210-170v-70h540v70H210Z"/>`
+        msgContent.querySelector('.ec-download-button').innerText = '打开文件目录'
+        msgContent.querySelector('.ec-download-button').addEventListener('click', () => {    //再次添加一个事件监听器
+            ecAPI.openPath(currentConfig.downloadFilePath)
+        })
+    } else {
+        // 添加下载按钮的点击事件
+        const funcReference = downloadFunc(fileObj, msgContent)
+        fileObj.downloadFunc = funcReference
+        msgContent.querySelector('.ec-download-button').addEventListener('click', funcReference)
+    }
 }
 
 
@@ -395,12 +406,18 @@ function formatFileSize(bytes) {
     return Math.round(bytes / Math.pow(1024, i)) + ' ' + sizes[i];
 }
 
-function downloadFile(fileObj, progressElement) {
+function downloadFile(fileObj, msgContent) {
+    const progressElement = msgContent.querySelector('.progress')
+    const iconElement = msgContent.querySelector('.ec-file-icon') //下载的图标元素
+    const downloadButton = msgContent.querySelector('.ec-download-button')
+
+    //现在开始下载，修改图标为下载中状态
+    iconElement.innerHTML = `<path d="M440-92q-74.5-8-138.25-41.5t-110.5-85.75q-46.75-52.25-73.5-119.5T91-481q0-151 100-262t250-127v75q-119 17-197 105.75T166-481q0 119.5 78 208.25T440-167v75Zm39-194.5L283-483l53-53 106 106v-246.5h75V-431l104-104 53 53.5-195 195ZM518-92v-75q42.5-6 81.5-22.5T672-232l55 55q-46 36-98.75 57.5T518-92Zm156-638q-34.5-25.5-73.5-42.25T519-795v-75q57.5 6 110.25 27.5T727-785l-53 55Zm108 496-53-53.5q25.5-34 41.25-73T792-442h77q-8 57.5-29 110.75T782-234Zm10-286q-6-42.5-21.75-81.5t-41.25-73l53-53.5q37 44 59 97.25T869-520h-77Z"/>`
     try {
         console.log('准备开始下载文件')
         //显示进度条
         progressElement.style.display = 'flex'
-        console.log(axios)
+
         //下面使用axios库进行下载
         axios({
             url: fileObj.fileUrl,
@@ -417,11 +434,20 @@ function downloadFile(fileObj, progressElement) {
             //通过IPC发送到主进程
             progressElement.style.display = 'none'
             console.log(response.data)
-            console.log(JSON.stringify(response,null,4))
-            ecAPI.ecFileHandler(response.data,fileObj.fileName)
+            console.log(JSON.stringify(response, null, 4))
+            ecAPI.ecFileHandler(response.data, fileObj.fileName)
+            //下载完成，图标修改为下载完成状态
+            iconElement.innerHTML = `<path d="M383-327 167.5-542.5 221-596l162 162 356-356 53.5 53.5L383-327ZM210-170v-70h540v70H210Z"/>`
+            //下面的下载按钮要改成打开所在目录
+            downloadButton.innerText = '打开文件目录'
+            downloadButton.removeEventListener('click', fileObj.downloadFunc)
+            downloadButton.addEventListener('click', () => {    //再次添加一个事件监听器
+                ecAPI.openPath(currentConfig.downloadFilePath)
+            })
 
         }).catch(error => {
             console.log('下载失败,', error)
+            iconElement.innerHTML = `<path d="M480-325 288.5-516.5l52-53 102 102V-790h75v322.5l102-102 52 53L480-325ZM245-170q-30.94 0-52.97-22.03Q170-214.06 170-245v-117.5h75V-245h470v-117.5h75V-245q0 30.94-22.03 52.97Q745.94-170 715-170H245Z"/>`
         })
     } catch (e) {
         console.log(e)

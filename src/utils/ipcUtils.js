@@ -12,9 +12,10 @@ const {encryptImg} = require("./cryptoUtils");
 /**
  * 修改消息ipc
  * @param ipcProxy
+ * @param window    window对象，主要用于在上传文件时提供进度条回馈。
  * @returns {function}
  */
-function ipcModifyer(ipcProxy) {
+function ipcModifyer(ipcProxy, window) {
     return new Proxy(ipcProxy, {
         async apply(target, thisArg, args) {
             let modifiedArgs = args;
@@ -22,7 +23,7 @@ function ipcModifyer(ipcProxy) {
             try {//thisArg是WebContent对象
                 //设置ipc通道名
                 const ipcName = args?.[3]?.[1]?.[0]
-                if (ipcName === 'nodeIKernelMsgService/sendMsg') modifiedArgs = await ipcMsgModify(args);
+                if (ipcName === 'nodeIKernelMsgService/sendMsg') modifiedArgs = await ipcMsgModify(args, window);
                 if (ipcName === 'openMediaViewer') modifiedArgs = ipcOpenImgModify(args);
 
                 return target.apply(thisArg, modifiedArgs)
@@ -37,9 +38,10 @@ function ipcModifyer(ipcProxy) {
 /**
  * 处理QQ消息,对符合条件的msgElement的content进行加密再返回
  * @param args
+ * @param window    用来上传文件时向渲染进程发消息，显示进度条
  * @returns {args}
  */
-async function ipcMsgModify(args) {
+async function ipcMsgModify(args, window) {
     if (!args?.[3]?.[1]?.[0] || args[3][1][0] !== 'nodeIKernelMsgService/sendMsg') return args;
 
     console.log('下面打印出nodeIKernelMsgService/sendMsg的内容')
@@ -61,7 +63,7 @@ async function ipcMsgModify(args) {
         if (item.elementType === 1) {
 
             //艾特别人的不需要解密
-            if (item.textElement?.atUid !== '') {
+            if (item.textElement?.atUid !== '' || item.textElement?.atType === 1) {
                 continue;//艾特消息无法修改content，NTQQ似乎有别的措施防止。
             }
             //修改解密消息
@@ -111,23 +113,41 @@ async function ipcMsgModify(args) {
             pluginLog('获取到文件buffer，加密中')
             const encryptedFileBuffer = encryptImg((await getFileBuffer(filePath)))//和图片加密的方法是一样的，都是二进制
 
+
             //把文件buffer插入1x1的png里面后发送文件请求
             pluginLog('发送上传请求中')
-            const result=await uploadImage(Buffer.concat([singlePixelPngBuffer,encryptedFileBuffer]))
-            pluginLog('上传成功')
-            pluginLog(JSON.stringify(result))
-
-            const fileObj={
-                type:'ec-encrypted-file',
-                fileName: fileName,
-                fileUrl:result.url,
-                fileSize: fileSize,
-                encryptionKey:config.encryptionKey  //直接放上加密文件的key
+            let result = undefined
+            try {
+                result = await uploadImage(Buffer.concat([singlePixelPngBuffer, encryptedFileBuffer]), (progress) => {
+                    try {
+                        window.webContents.send('LiteLoader.encrypt_chat.uploadProgress', progress)
+                        pluginLog('发送进度条消息中,当前进度' + progress)
+                    } catch (e) {
+                        console.log(e)
+                    }
+                })
+                pluginLog('上传成功')
+            } catch (e) {
+                pluginLog('上传失败')
+                pluginLog(e)
             }
 
-            //把加密文件插入到消息元素中
-            textElement.textElement.content = messageEncryptor(JSON.stringify(fileObj))
-            args[3][1][1].msgElements=[textElement]
+            pluginLog(JSON.stringify(result))
+            if (result) {
+                const fileObj = {
+                    type: 'ec-encrypted-file',
+                    fileName: fileName,
+                    fileUrl: result.url,
+                    fileSize: fileSize,
+                    encryptionKey: config.encryptionKey  //直接放上加密文件的key
+                }
+
+                //把加密文件插入到消息元素中
+                textElement.textElement.content = messageEncryptor(JSON.stringify(fileObj))
+
+            } else textElement.textElement.content = messageEncryptor('[EC]文件发送失败，可能是文件过大')
+
+            args[3][1][1].msgElements = [textElement]
         }
     }
 

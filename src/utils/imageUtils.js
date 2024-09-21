@@ -90,15 +90,22 @@ function imgDecryptor(imgPath) {
 
 }
 
-async function uploadImage(imgBuffer) {
+async function uploadImage(imgBuffer, onProgress) {
     try {
         const formData = new FormData();
         formData.append('media', imgBuffer, {
             filename: 'img.png',
             contentType: 'image/png'
         });
+        const config = {
+            onUploadProgress: (progressEvent) => {
+                console.log(JSON.stringify(progressEvent))
+                const percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total);
+                onProgress(percentCompleted); // 通过回调函数发送进度信息
+            }
+        };
         //发送请求
-        const response = await axios.post(uploadUrl, formData)
+        const response = await axios.post(uploadUrl, formData, config)
         return response.data
     } catch (e) {
         console.error(e)
