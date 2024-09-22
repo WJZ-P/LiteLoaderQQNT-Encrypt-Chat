@@ -1,4 +1,4 @@
-import {addFuncBarIcon, addMenuItemEC} from "./utils/chatUtils.js";
+import {addFuncBarIcon, addMenuItemEC, ECactivator} from "./utils/chatUtils.js";
 import {SettingListeners} from "./utils/SettingListeners.js"
 import {messageRenderer, patchCss, rePatchCss} from "./utils/rendererUtils.js";
 
@@ -38,14 +38,23 @@ async function onLoad() {
     // console.log(await ecAPI.isChatWindow())
     // if(!(await ecAPI.isChatWindow())) return //不是聊天窗口，则不渲染
 
-    ecAPI.addEventListener('LiteLoader.encrypt_chat.ECactivator', window.ECactivator);//监听功能开关
-    ecAPI.addEventListener('LiteLoader.encrypt_chat.rePatchCss',rePatchCss) //监听设置被修改后，从主进程发过来的重新修改css请求
+    //ecAPI.addEventListener('LiteLoader.encrypt_chat.ECactivator', window.ECactivator);//监听功能开关，不再需要
+    ecAPI.addEventListener('LiteLoader.encrypt_chat.rePatchCss', rePatchCss) //监听设置被修改后，从主进程发过来的重新修改css请求
 
     console.log('[EC]下面执行onLoad方法')
     try {
         //addMenuItemEC()//添加鼠标右键时的菜单选项
         patchCss()//修改css
         addFuncBarIcon()//添加功能栏的功能图标
+
+        //给document添加监听器快捷键。
+        document.addEventListener('keydown', (event) => {
+            if (event.ctrlKey && event.code === 'KeyE') {
+                if (document.hasFocus()) {
+                    ECactivator()
+                }
+            }
+        });
 
     } catch (e) {
         console.log(e)
@@ -75,6 +84,7 @@ export async function sleep(ms) {
         setTimeout(resolve, ms)
     })
 }
+
 //下面的方案有bug,MutationObserver有概率不触发，所以选择直接写死循环
 
 // //节流，防止多次渲染

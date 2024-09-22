@@ -64,14 +64,6 @@ module.exports.onBrowserWindowCreated = async window => {
 
                 pluginLog('ipc监听器修改成功')
 
-                //这里添加一个快捷键
-                globalShortcut.register('Control+E', () => {
-                    if (window.isFocused()) {
-                        pluginLog('快捷键触发,更改EC状态')
-                        window.webContents.send('LiteLoader.encrypt_chat.ECactivator');
-                    } else pluginLog('窗口未聚焦，不更改')
-                })
-
             } catch (e) {
                 console.log(e)
             }

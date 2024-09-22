@@ -182,7 +182,5 @@ export async function ECactivator(svg = null, sendBtnWrapEl = null) {
     await ecAPI.setConfig({activeEC: !isActive})//设置开关状态
 }
 
-window.ECactivator = ECactivator//给window对象添加一个方法，供其他地方调用
-
 //ecAPI.addEventListener('LiteLoader.encrypt_chat.changeAllECactivator',ECactivator)
 //这样写会存在不同窗口的同步问题。
