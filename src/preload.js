@@ -19,7 +19,8 @@ contextBridge.exposeInMainWorld("encrypt_chat", {
     addEventListener: (channel, func) => ipcRenderer.on(channel, (event, ...args) => {
         func(...args)
     }),
-    isChatWindow: () => ipcRenderer.invoke("LiteLoader.encrypt_chat.isChatWindow")
+    isChatWindow: () => ipcRenderer.invoke("LiteLoader.encrypt_chat.isChatWindow"),
+    sendIPC: (channel, arg) => ipcRenderer.send(channel, arg)//渲染进程用来发送IPC消息
 });
 
 

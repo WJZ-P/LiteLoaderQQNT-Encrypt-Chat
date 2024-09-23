@@ -92,7 +92,7 @@ export function addMenuItemEC() {
  */
 function createFuncBarIcon(chatElement) {
     new MutationObserver(async () => {
-        if(document.querySelector('#id-func-bar-EncryptChat')) return //已经有了就不添加了
+        if (document.querySelector('#id-func-bar-EncryptChat')) return //已经有了就不添加了
         const funcBarElement = chatElement.getElementsByClassName("func-bar")[1]//第二个就是右边的
         // console.log('下面打印出右侧的funcbar')
         // console.log(funcBarElement)
@@ -134,7 +134,7 @@ height="24px" viewBox="0 -960 960 960" width="24px" fill="#D9D9D9" onclick="ECac
             const sendBtnWrapEl = document.querySelector('.send-btn-wrap')
             sendBtnWrapEl.classList.toggle('active')
             const sendTextBtnEl = sendBtnWrapEl.querySelector('.send-msg')//带有“发送字样的按钮”
-            sendTextBtnEl.innerText ="加密发送"
+            sendTextBtnEl.innerText = "加密发送"
         }
     }).observe(chatElement, {childList: true});//检测子元素的增删变化
 }
@@ -180,7 +180,27 @@ export async function ECactivator(svg = null, sendBtnWrapEl = null) {
     svg.classList.toggle('active');
 
     await ecAPI.setConfig({activeEC: !isActive})//设置开关状态
+
+    //这里加点测试用功能，点击发送ipc消息，看看能否成功下载图片
+    ecAPI.sendIPC("nodeIKernelMsgService/downloadRichMedia", {
+        "getReq": {
+            "fileModelId": "0",
+            "downSourceType": 0,
+            "triggerType": 1,
+            "msgId": "7417796721271003103",
+            "chatType": 2,
+            "peerUid": "934773893",
+            "elementId": "7417796721271003102",
+            "thumbSize": 0,
+            "downloadType": 1,
+            "filePath": "F:\\QQ文件\\1369727119\\nt_qq\\nt_data\\Pic\\2024-09\\Ori\\a2aac49ad4b98d90780325f62f6842b2.gif"
+        }
+    })
+    console.log('尝试下载原图')
+    console.log(window)
 }
+
+window.ECactivator = ECactivator
 
 //ecAPI.addEventListener('LiteLoader.encrypt_chat.changeAllECactivator',ECactivator)
 //这样写会存在不同窗口的同步问题。
