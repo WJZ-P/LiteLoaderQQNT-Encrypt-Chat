@@ -19,7 +19,7 @@ function ipcModifyer(ipcProxy, window) {
     return new Proxy(ipcProxy, {
         async apply(target, thisArg, args) {
             let modifiedArgs = args;
-            console.log(JSON.stringify(args))//调试的时候用
+            //console.log(JSON.stringify(args))//调试的时候用
             try {//thisArg是WebContent对象
                 //设置ipc通道名
                 const ipcName = args?.[3]?.[1]?.[0]

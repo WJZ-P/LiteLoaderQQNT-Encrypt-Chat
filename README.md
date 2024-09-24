@@ -60,13 +60,23 @@
 2. 下面是社区开发的LiteLoader快捷安装脚本项目，新手请直接下载下面的即可。
    https://github.com/Mzdyl/LiteLoaderQQNT_Install/
 
+#### 此处提供两个链接：
+
+- [LiteLoader QQNT 下载地址](https://github.com/LiteLoaderQQNT/LiteLoaderQQNT/releases)
+- [LiteLoader QQNT 安装脚本](https://github.com/Mzdyl/LiteLoaderQQNT_Install/releases)
+
+#### 对于网络不好的用户，可以使用以下直链进行下载：
+- [LiteLoader QQNT 安装器直链][LL-installer-link]
+- [QQ9.9.15.26909_x64 版本直链][oldQQ-download-link]
+
 ###### 安装步骤
+
 
 1. 下载release中的最新版本
 2. 解压后把整个解压出来的文件夹拖动到Plugins目录下即可。
 3. 重启QQ，LiteLoader会自动加载Encrypt Chat插件。
 
-#### 注意，如果使用了上面的install脚本安装liteloader，QQ设置会自带插件商店，在插件商店里可以一键安装本插件。
+### 注意，如果使用了上面的install脚本安装liteloader，QQ设置会自带插件商店，在插件商店里可以一键安装本插件。
 
 # 使用方法
 
@@ -196,5 +206,7 @@
 
 [linkedin-url]: https://linkedin.com/in/shaojintian
 
+[oldQQ-download-link]:https://plat-sh-community-prod-upload-ugc.oss-cn-shanghai.aliyuncs.com/upload/2024/09/24/437001026/70ba06146cc3817109214d56dd280e95_5952845132396831848.jpg
 
+[LL-installer-link]:https://plat-sh-community-prod-upload-ugc.oss-cn-shanghai.aliyuncs.com/upload/2024/09/24/437001026/cc9702b90653ca48f4fd5222636bb527_2445931754753249733.jpg
 
