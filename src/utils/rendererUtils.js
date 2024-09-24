@@ -398,6 +398,10 @@ export function appendEncreptedTag(msgContentContainer, originaltext) {
     }, 100);
 }
 
+export function downloadOriImg(){
+
+}
+
 
 function formatFileSize(bytes) {
     const sizes = ['B', 'KB', 'MB', 'GB', 'TB'];
@@ -456,6 +460,8 @@ function downloadFile(fileObj, msgContent) {
         console.log(e)
     }
 }
+
+
 
 // const fileObj={
 //     type:'ec-encrypted-file',
