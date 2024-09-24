@@ -275,15 +275,17 @@ export async function messageRenderer(allChats) {//下面对每条消息进行�
 
                     let imgPath = decodeURIComponent(imgElement.getAttribute('src')).substring(9)//前面一般是appimg://
                     if (imgPath.includes('Thumb') && imgPath.includes('.gif')) {
-                        if (imgPath.includes('_720.gif')) {//说明是加密的缩略图，需要请求原图
-                            console.log('检测到加密缩略图！准备下载原图')
-                            const curAioData=app.__vue_app__.config.globalProperties.$store.state.common_Aio.curAioData
-                            const msgId=msgContentContainer.parentElement.parentElement.id
-                            const elementId=imgElement.parentElement.getAttribute('element-id')
-                            const chatType=curAioData.chatType
-                            const peerUid=curAioData.header.uid
-                            const oriImgPath=imgPath.replace(/\/Thumb\//, '/Ori/').replace(/_\d+\.gif/, '.gif')
-                            await downloadOriImg(msgId,elementId,chatType,peerUid,oriImgPath)//下载原图
+
+                        if (imgPath.includes('_720.gif') && !imgElement.classList.contains('ec-transformed-img')) {//说明是加密的缩略图，需要请求原图
+                            imgElement.classList.add('ec-transformed-img')//添加标记，避免重复调用
+                            console.log('检测到加密缩略图！')
+                            const curAioData = app.__vue_app__.config.globalProperties.$store.state.common_Aio.curAioData
+                            const msgId = chatElement.id
+                            const elementId = imgElement.parentElement.getAttribute('element-id')
+                            const chatType = curAioData.chatType
+                            const peerUid = curAioData.header.uid
+                            const oriImgPath = imgPath.replace(/\/Thumb\//, '/Ori/').replace(/_\d+\.gif/, '.gif')
+                            await downloadOriImg(msgId, elementId, chatType, peerUid, oriImgPath)//下载原图
                         }
                         imgPath = imgPath.replace(/\/Thumb\//, '/Ori/').replace(/_\d+\.gif/, '.gif')//替换成原图地址
                         //console.log('检测到缩略图！索引到原图地址为' + imgPath)
@@ -419,6 +421,9 @@ export function appendEncreptedTag(msgContentContainer, originaltext) {
  */
 export async function downloadOriImg(msgId, elementId, chatType, peerUid, filePath) {
     console.log('正在尝试下载原图')
+    console.log(`具体参数为：msgId：${msgId}，elementId:${elementId}，chatType:${chatType}，peerUid:${peerUid}，filePath:${filePath}`)
+    //先检查图片是否已经在本地存在
+    if (await ecAPI.isFileExist([filePath])) return //文件已存在，无需下载，直接返回即可。
     const result = await ecAPI.invokeNative("ns-ntApi", "nodeIKernelMsgService/downloadRichMedia"
         , false, window.webContentId, {
             "getReq": {
