@@ -185,6 +185,14 @@ export function patchCss() {
     background-color: #5bb8e5; /* 悬停时稍微加深背景色 */
 }
 
+.ec-loading-img {
+    position: absolute;
+    left: 100%;
+    width: 35px;
+    height: auto;
+    color: ${currentConfig.mainColor};
+}
+
 }`
 
     style.innerHTML = sHtml
@@ -276,25 +284,46 @@ export async function messageRenderer(allChats) {//下面对每条消息进行�
                     let imgPath = decodeURIComponent(imgElement.getAttribute('src')).substring(9)//前面一般是appimg://
                     if (imgPath.includes('Thumb') && imgPath.includes('.gif')) {
 
-                        if (imgPath.includes('_720.gif') && !imgElement.classList.contains('ec-transformed-img')) {//说明是加密的缩略图，需要请求原图
+                        if (imgPath.includes('_720.gif') && !imgElement.classList.contains('ec-transformed-img')) {//说明是加密的缩略图，可能需要请求原图
                             imgElement.classList.add('ec-transformed-img')//添加标记，避免重复调用
                             console.log('检测到加密缩略图！')
+
                             const curAioData = app.__vue_app__.config.globalProperties.$store.state.common_Aio.curAioData
                             const msgId = chatElement.id
                             const elementId = imgElement.parentElement.getAttribute('element-id')
                             const chatType = curAioData.chatType
                             const peerUid = curAioData.header.uid
                             const oriImgPath = imgPath.replace(/\/Thumb\//, '/Ori/').replace(/_\d+\.gif/, '.gif')
+
+                            if (await ecAPI.isFileExist([oriImgPath])) {
+                                continue
+                            } //文件已存在，无需下载，直接继续即可。
+
+                            //添加一个加载中的动画
+                            appendLoadingImg(msgContentContainer)
+
                             await downloadOriImg(msgId, elementId, chatType, peerUid, oriImgPath)//下载原图
+
+                            //下面就监听图片元素变化，变化了就删掉loading
+                            new MutationObserver(()=>{
+                                console.log('删除loading元素')
+                                msgContentContainer.removeChild(msgContentContainer.querySelector('.ec-loading-img'))
+                                console.log('loading元素删除成功')
+                            }).observe(imgElement, {attributes: true, attributeFilter: ['src']})
+
                         }
+
                         imgPath = imgPath.replace(/\/Thumb\//, '/Ori/').replace(/_\d+\.gif/, '.gif')//替换成原图地址
                         //console.log('检测到缩略图！索引到原图地址为' + imgPath)
                     }
                     if (!(await ecAPI.imgChecker(imgPath))) {
                         continue //图片检测未通过
                     }
+
                     //下面进行图片解密
                     // console.log('图片校验通过！')
+                    msgContentContainer.classList.add('message-encrypted-tip-parent')//调整父元素的style
+
                     const decryptedObj = await ecAPI.imgDecryptor(imgPath)
                     const decryptedImgPath = decryptedObj.decryptedImgPath
                     if (decryptedImgPath)  //解密成功才继续
@@ -375,6 +404,18 @@ async function fileDivCreater(msgContent, fileObj) {
     }
 }
 
+/**
+ * 添加加载中图标
+ * @param msgContentContainer
+ */
+function appendLoadingImg(msgContentContainer) {
+    const imgElement = document.createElement('img')
+    imgElement.src = currentConfig.pluginPath+'/src/assests/loading.svg'
+    imgElement.classList.add('ec-loading-img')
+    msgContentContainer.classList.add('message-encrypted-tip-parent')//调整父元素的style
+    msgContentContainer.appendChild(imgElement)
+}
+
 
 /**
  *添加解密消息标记，显示在QQ消息的下方，以小字的形式显示
@@ -423,7 +464,6 @@ export async function downloadOriImg(msgId, elementId, chatType, peerUid, filePa
     console.log('正在尝试下载原图')
     console.log(`具体参数为：msgId：${msgId}，elementId:${elementId}，chatType:${chatType}，peerUid:${peerUid}，filePath:${filePath}`)
     //先检查图片是否已经在本地存在
-    if (await ecAPI.isFileExist([filePath])) return //文件已存在，无需下载，直接返回即可。
     const result = await ecAPI.invokeNative("ns-ntApi", "nodeIKernelMsgService/downloadRichMedia"
         , false, window.webContentId, {
             "getReq": {
