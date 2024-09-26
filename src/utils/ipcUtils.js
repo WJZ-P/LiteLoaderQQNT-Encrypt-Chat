@@ -19,10 +19,14 @@ function ipcModifyer(ipcProxy, window) {
     return new Proxy(ipcProxy, {
         async apply(target, thisArg, args) {
             let modifiedArgs = args;
-            //console.log(JSON.stringify(args))//调试的时候用
             try {//thisArg是WebContent对象
                 //设置ipc通道名
                 const ipcName = args?.[3]?.[1]?.[0]
+
+                //测试
+                if(ipcName==='nodeIKernelMsgService/multiForwardMsgWithComment') console.log(JSON.stringify(args))
+                //console.log(JSON.stringify(args))//调试的时候用
+
                 if (ipcName === 'nodeIKernelMsgService/sendMsg') modifiedArgs = await ipcMsgModify(args, window);
                 if (ipcName === 'openMediaViewer') modifiedArgs = ipcOpenImgModify(args);
 

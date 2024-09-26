@@ -181,45 +181,34 @@ export async function ECactivator(svg = null, sendBtnWrapEl = null) {
 
     await ecAPI.setConfig({activeEC: !isActive})//设置开关状态
 
-    //这里加点测试用功能，点击发送ipc消息，看看能否成功下载图片
-    // window.ipcRenderer.send("ns-ntApi", [{
-    //     "frameId": 1,
-    //     "processId": 5
-    // }, false, "IPC_UP_2", [{
-    //     "type": "request",
-    //     "callbackId": "3e3ab081-94b8-4a28-a096-6b1737824b0b",
-    //     "eventName": "ns-ntApi-2"
-    // }, ["nodeIKernelMsgService/downloadRichMedia", {
-    //     "getReq": {
-    //         "fileModelId": "0",
-    //         "downSourceType": 0,
-    //         "triggerType": 1,
-    //         "msgId": "7417796721271003103",
-    //         "chatType": 2,
-    //         "peerUid": "934773893",
-    //         "elementId": "7417796721271003102",
-    //         "thumbSize": 0,
-    //         "downloadType": 1,
-    //         "filePath": "F:\\QQ文件\\1369727119\\nt_qq\\nt_data\\Pic\\2024-09\\Ori\\a2aac49ad4b98d90780325f62f6842b2.gif"
-    //     }
-    // }, null]]])
-    //console.log('尝试下载原图')
-    // const result=await ecAPI.invokeNative("ns-ntApi", "nodeIKernelMsgService/downloadRichMedia"
+    //这里加点测试用功能
+    const multiForwardMsg = [{"frameId": 1, "processId": 5}, false, "IPC_UP_2", [{
+        "type": "request",
+        "callbackId": "24b46f24-8235-4cb6-a8ff-5acdd8435491",
+        "eventName": "ns-ntApi-2"
+    }, ["nodeIKernelMsgService/multiForwardMsgWithComment", {
+        "msgInfos": [{
+            "msgId": "7418734961609529108",
+            "senderShowName": "真漂亮"
+        }, {"msgId": "7418734961609529103", "senderShowName": "真漂亮"}],
+        "srcContact": {"chatType": 2, "peerUid": "934773893", "guildId": ""},
+        "dstContact": {"chatType": 2, "peerUid": "934773893", "guildId": ""},
+        "commentElements": [],
+        "msgAttributeInfos": {}
+    }, null]]]
+
+    // const result = await ecAPI.invokeNative("ns-ntApi", "nodeIKernelMsgService/multiForwardMsgWithComment"
     //     , false, window.webContentId, {
-    //         "getReq": {
-    //             "fileModelId": "0",
-    //             "downSourceType": 0,
-    //             "triggerType": 1,
-    //             "msgId": "7418000136162666970",
-    //             "chatType": 1,//1是个人，2是群聊
-    //             "peerUid": "u_gI88wjCtH3NFtO6t7Zep0Q",//如果是群，这里会是群号
-    //             "elementId": "7418000136162666971",
-    //             "thumbSize": 0,
-    //             "downloadType": 1,
-    //             "filePath": "F:\\QQ文件\\1369727119\\nt_qq\\nt_data\\Pic\\2024-09\\Ori\\a2aac49ad4b98d90780325f62f6842b2.gif"
-    //         }
-    //     })
-    // console.log(JSON.stringify(result))
+    //         "msgInfos": [{
+    //             "msgId": "7418734961609529108",
+    //             "senderShowName": "真漂亮"
+    //         }, {"msgId": "7418734961609529103", "senderShowName": "真漂亮"}],
+    //         "srcContact": {"chatType": 2, "peerUid": "934773893", "guildId": ""},
+    //         "dstContact": {"chatType": 2, "peerUid": "545402644", "guildId": ""},
+    //         "commentElements": [],
+    //         "msgAttributeInfos": {}
+    //     }, null)
+
 }
 
 window.ECactivator = ECactivator
