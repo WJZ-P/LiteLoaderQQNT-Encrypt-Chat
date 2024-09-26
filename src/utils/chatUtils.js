@@ -197,6 +197,8 @@ export async function ECactivator(svg = null, sendBtnWrapEl = null) {
         "msgAttributeInfos": {}
     }, null]]]
 
+    console.log(123123)
+
     // const result = await ecAPI.invokeNative("ns-ntApi", "nodeIKernelMsgService/multiForwardMsgWithComment"
     //     , false, window.webContentId, {
     //         "msgInfos": [{
