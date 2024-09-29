@@ -1,27 +1,34 @@
 {
-    "manifest_version": 4,
-    "type": "extension",
-    "name": "Encrypt Chat",
-    "slug": "encrypt_chat",
-    "description": "一个方便好用加密通话插件(*^_^*)",
-    "version": "2.1.3",
-    "icon": "./src/assests/chat_blue.svg",
-    "authors": [{
-        "name": "WJZ_P",
-        "link": "https://github.com/WJZ-P"
-    }],
-    "platform": ["win32", "linux", "darwin"],
-    "injects": {
-        "renderer": "./src/renderer.js",
-        "main": "./src/main.js",
-        "preload": "./src/preload.js"
-    },
-     "repository": {
-        "repo": "WJZ-P/LiteLoaderQQNT-Encrypt-Chat",
-        "branch": "main",
-        "release": {
-            "tag": "v2.1.3",
-            "file": "Encrypt-Chat-2.1.3.zip"
-        }
+  "manifest_version": 4,
+  "type": "extension",
+  "name": "Encrypt Chat",
+  "slug": "encrypt_chat",
+  "description": "一个方便好用加密通话插件(*^_^*)",
+  "version": "2.1.3",
+  "icon": "./src/assests/chat_blue.svg",
+  "thumb": "./src/assests/chat_blue.svg",
+  "authors": [
+    {
+      "name": "WJZ_P",
+      "link": "https://github.com/WJZ-P"
     }
+  ],
+  "platform": [
+    "win32",
+    "linux",
+    "darwin"
+  ],
+  "injects": {
+    "renderer": "./src/renderer.js",
+    "main": "./src/main.js",
+    "preload": "./src/preload.js"
+  },
+  "repository": {
+    "repo": "WJZ-P/LiteLoaderQQNT-Encrypt-Chat",
+    "branch": "main",
+    "release": {
+      "tag": "v2.1.3",
+      "file": "Encrypt-Chat-2.1.3.zip"
+    }
+  }
 }
