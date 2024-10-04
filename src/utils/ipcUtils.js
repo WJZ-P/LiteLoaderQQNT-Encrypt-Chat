@@ -22,7 +22,7 @@ function ipcModifyer(ipcProxy, window) {
             try {//thisArg是WebContent对象
                 //设置ipc通道名
                 const ipcName = args?.[3]?.[1]?.[0]
-                const eventName=args?.[3]?.[0]?.eventName
+                const eventName = args?.[3]?.[0]?.eventName
                 //测试
                 //if(ipcName==='nodeIKernelMsgService/ForwardMsgWithComment') console.log(JSON.stringify(args))
                 //if(eventName!=="ns-LoggerApi-2") console.log(JSON.stringify(args))//调试的时候用
@@ -49,11 +49,8 @@ async function ipcMsgModify(args, window) {
     if (!args?.[3]?.[1]?.[0] || args[3][1][0] !== 'nodeIKernelMsgService/sendMsg') return args;
 
     console.log('下面打印出nodeIKernelMsgService/sendMsg的内容')
-    console.log(args[3][1][1])
-    console.log('下面打印出具体的msgElement')
-    for (let item of args[3][1][1].msgElements) {
-        console.log(item)
-    }
+    console.log(JSON.stringify(args[3][1][1],null,2))
+
 
     //console.log(args[3][1][1].msgElements?.[0].textElement)
 
