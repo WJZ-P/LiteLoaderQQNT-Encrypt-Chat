@@ -128,13 +128,15 @@ height="24px" viewBox="0 -960 960 960" width="24px" fill="#D9D9D9" onclick="ECac
         //把自己的新图标元素添加进去，并且是添加成为第一个子元素，显示在最左边。
         funcBarElement.insertBefore(barIconElement, funcBarElement.firstChild);
 
-        //检查一下目前的激活状态并对应修改颜色
+        //检查一下目前的激活状态并对应修改
         if ((await ecAPI.getConfig()).activeEC) {
             imageElement.firstChild.classList.add('active')
             const sendBtnWrapEl = document.querySelector('.send-btn-wrap')
             sendBtnWrapEl.classList.toggle('active')
             const sendTextBtnEl = sendBtnWrapEl.querySelector('.send-msg')//带有“发送字样的按钮”
             sendTextBtnEl.innerText = "加密发送"
+
+            document.querySelector('.chat-input-area').classList.toggle('active')
         }
     }).observe(chatElement, {childList: true});//检测子元素的增删变化
 }
@@ -179,6 +181,11 @@ export async function ECactivator(svg = null, sendBtnWrapEl = null) {
 
     svg.classList.toggle('active');
 
+    //对输入框加点特效，使得开启加密更加明显
+    const chatInputEl=document.querySelector('.chat-input-area')
+    chatInputEl.classList.toggle('active')
+
+
     await ecAPI.setConfig({activeEC: !isActive})//设置开关状态
 
     //这里加点测试用功能
@@ -194,7 +201,7 @@ export async function ECactivator(svg = null, sendBtnWrapEl = null) {
         "srcContact": {"chatType": 2, "peerUid": "934773893", "guildId": ""},
         "dstContact": {"chatType": 2, "peerUid": "934773893", "guildId": ""},
         "commentElements": [],
-        "msgAttributeInfos": {}
+        "msgAttributeInfos": new Map()
     }, null]]]
 
     console.log(123123)

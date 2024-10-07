@@ -1,4 +1,5 @@
 import "../assests/minJS/axios.min.js"
+import {pluginLog} from "./frontLogUtils.js";
 
 //添加css样式
 const ecAPI = window.encrypt_chat
@@ -89,6 +90,13 @@ export function patchCss() {
 
 .q-svg.active {
     fill: #66ccff; /* 更深的颜色 */
+}
+
+/*修改聊天栏背景样式，使得开启加密更加明显*/
+.chat-input-area.active {
+    border-top: 2px solid ${currentConfig.mainColor}; /* 添加边框 */
+    transition: border-top 0.2s ease-in-out; /* 添加过渡效果 */
+    box-sizing: border-box; /* 确保边框不影响布局 */
 }
 
 .q-tooltips-div{
@@ -233,7 +241,8 @@ export async function messageRenderer(allChats) {//下面对每条消息进行�
     for (const chatElement of allChats) {
         try {
             const msgContentContainer = chatElement.querySelector('.msg-content-container')
-            if (!msgContentContainer || msgContentContainer?.classList.contains('decrypted-msg-container')) continue//说明这条消息已经被修改过
+            if (!msgContentContainer || msgContentContainer?.classList.contains('decrypted-msg-container') ||
+                msgContentContainer?.classList.contains('reply-msg-checked')) continue//说明这条消息已经被修改过
 
             const msgContent = chatElement.querySelector('.message-content')//包裹着所有消息的div
             let isECMsg = false//判断是否是加密消息
@@ -248,7 +257,23 @@ export async function messageRenderer(allChats) {//下面对每条消息进行�
                 const normalText = singalMsg.querySelector('.text-normal')
                 const atText = singalMsg.querySelector('.text-element--at')
                 const imgElement = singalMsg.querySelector('.image-content')
+                const mixContent = singalMsg.querySelector('.mixed-container')
 
+                //接下来先对引用消息进行解密处理。
+                if (mixContent) {
+                    msgContentContainer.classList.add('reply-msg-checked')
+                    for (const child of mixContent.children) {
+                        hexString = await checkMsgElement(child)
+                        if (hexString) {
+                            //pluginLog('检测到加密回复消息')
+                            const decryptedMsg = await ecAPI.messageDecryptor(hexString)
+                            if (!decryptedMsg) continue//解密后如果消息是空的，那就直接忽略，进入下次循环
+                            //直接修改内容
+                            child.innerText = decryptedMsg
+                            //添加已解密tag，防止对同一条引用消息多次解密
+                        }
+                    }
+                }
 
                 //是文本消息。需要具体判断是文件还是普通图片
                 if (normalText) {
@@ -305,7 +330,7 @@ export async function messageRenderer(allChats) {//下面对每条消息进行�
                             await downloadOriImg(msgId, elementId, chatType, peerUid, oriImgPath)//下载原图
 
                             //下面就监听图片元素变化，变化了就删掉loading
-                            new MutationObserver(()=>{
+                            new MutationObserver(() => {
                                 console.log('删除loading元素')
                                 msgContentContainer.removeChild(msgContentContainer.querySelector('.ec-loading-img'))
                                 console.log('loading元素删除成功')
@@ -410,7 +435,7 @@ async function fileDivCreater(msgContent, fileObj) {
  */
 function appendLoadingImg(msgContentContainer) {
     const imgElement = document.createElement('img')
-    imgElement.src = currentConfig.pluginPath+'/src/assests/loading.svg'
+    imgElement.src = currentConfig.pluginPath + '/src/assests/loading.svg'
     imgElement.classList.add('ec-loading-img')
     msgContentContainer.classList.add('message-encrypted-tip-parent')//调整父元素的style
     msgContentContainer.appendChild(imgElement)
