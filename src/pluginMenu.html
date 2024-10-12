@@ -6,7 +6,7 @@
             <div class="list">
                 <div class="vertical-list-item top-box">
                     <div class="left-part">
-                        <h2>配置密钥</h2>
+                        <h2>默认密钥</h2>
                         <div style="display: flex; flex-direction: column">
                             <span class="secondary-text">密钥用于加密和解密信息，必须双方密钥一致才可以正常通信。</span>
                         </div>
@@ -37,23 +37,6 @@
                     </div>
                 </div>
 
-                <hr class="horizontal-dividing-line"/>
-                <div class="vertical-list-item" style="display: flex; flex-direction: column">
-                    <h1>使用方法：打开聊天窗口，点击输入栏上方右侧的加密图标即可切换是否加密。</h1>
-                    <h2>目前全局共用一个密钥。</h2>
-                </div>
-                <hr class="horizontal-dividing-line"/>
-                <div class="vertical-list-item">
-                    <h1>加密图片的缓存在插件目录/decryptedImgs内，每次退出QQ会自动删除缓存。</h1>
-                </div>
-                <hr class="horizontal-dividing-line"/>
-                <div class="vertical-list-item">
-                    <h1>加密文件下载地址在插件目录/decryptedFiles内。</h1>
-                </div>
-                <hr class="horizontal-dividing-line"/>
-                <div class="vertical-list-item" style="display: flex; flex-direction: column">
-                    <h1>按Ctrl+E可快捷切换EC状态</h1>
-                </div>
             </div>
         </div>
     </section>
@@ -78,6 +61,72 @@
         </div>
     </section>
 
+    <section class="path">
+        <h1>独立密钥配置</h1>
+        <div class="wrap">
+            <div class="list">
+                <div class="vertical-list-item" style="display: flex; flex-direction: column">
+                    <h1>此处配置单独的用户/群聊密钥</h1>
+                </div>
+                <hr class="horizontal-dividing-line"/>
+                <div class="key-list-container">
+                    <!--                    <div class="vertical-list-item singal-key-row">-->
+                    <!--                        <div class="independent-key-div">-->
+                    <!--                            <h2 style="margin-right: 5px">备注</h2>-->
+                    <!--                            <input data-type="primary"-->
+                    <!--                                   class="q-input__inner q-input__inner&#45;&#45;clearable custom-input independent-key-input"-->
+                    <!--                                   type="text" placeholder="ID和密钥的备注">-->
+                    <!--                        </div>-->
+                    <!--                        <div class="independent-key-div">-->
+                    <!--                            <h2 style="margin-right: 5px">ID</h2>-->
+                    <!--                            <input data-type="primary"-->
+                    <!--                                   class="q-input__inner q-input__inner&#45;&#45;clearable custom-input independent-key-input"-->
+                    <!--                                   type="text" placeholder="Q号或群号">-->
+                    <!--                        </div>-->
+                    <!--                        <div class="independent-key-div">-->
+                    <!--                            <h2 style="margin-right: 5px">密钥</h2>-->
+                    <!--                            <input data-type="primary"-->
+                    <!--                                   class="q-input__inner q-input__inner&#45;&#45;clearable custom-input independent-key-input"-->
+                    <!--                                   type="text" placeholder="双方需一致">-->
+                    <!--                        </div>-->
+                    <!--                        <button class="q-button q-button&#45;&#45;secondary q-button&#45;&#45;large delete-row-button">×</button>-->
+                    <!--                    </div>-->
+                </div>
+                <hr class="horizontal-dividing-line"/>
+                <div class="vertical-list-item" style="display: flex; flex-direction: column">
+                    <button class="q-button q-button--secondary q-button--large add-row-button">+</button>
+                </div>
+
+
+            </div>
+        </div>
+    </section>
+
+    <section class="path">
+        <h1>插件说明</h1>
+        <div class="wrap">
+            <div class="list">
+                <div class="vertical-list-item" style="display: flex; flex-direction: column">
+                    <h1>使用方法：打开聊天窗口，点击输入栏上方右侧的加密图标即可切换是否加密。</h1>
+                    <h2>目前全局共用一个密钥。</h2>
+                </div>
+                <hr class="horizontal-dividing-line"/>
+                <div class="vertical-list-item">
+                    <h1>加密图片的缓存在插件目录/decryptedImgs内，每次退出QQ会自动删除缓存。</h1>
+                </div>
+                <hr class="horizontal-dividing-line"/>
+                <div class="vertical-list-item">
+                    <h1>加密文件下载地址在插件目录/decryptedFiles内。</h1>
+                </div>
+                <hr class="horizontal-dividing-line"/>
+                <div class="vertical-list-item" style="display: flex; flex-direction: column">
+                    <h1>按Ctrl+E可快捷切换EC状态</h1>
+                </div>
+            </div>
+        </div>
+    </section>
+
+
     <style>
         #ec-style-selector {
             color: gray;
@@ -98,7 +147,7 @@
             opacity: 0.8;
             color: #333;
             padding: 10px;
-            font-size: 16px;
+            font-size: 17px;
         }
 
         #ec-style-selector option:hover {
@@ -111,9 +160,33 @@
             box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
         }
 
+        .add-row-button {
+            font-size: 20px;
+            width: 15%;
+            cursor: pointer;
+        }
+
+        .delete-row-button {
+            font-size: 20px;
+            height: 25px;
+            cursor: pointer;
+        }
+
         .custom-input {
             color: gray;
             /*background-color: #abbbbb; !* 暗色背景 *!*/
+        }
+
+        .independent-key-input {
+            width: 75%;
+        }
+
+        .independent-key-div {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 5px;
+            width: 33%;
         }
 
         /*控制颜色选择器样式*/
@@ -147,6 +220,7 @@
         /* 通用 */
         .config_view {
             margin: 20px;
+            overflow-y: auto;
         }
 
         .config_view h1 {

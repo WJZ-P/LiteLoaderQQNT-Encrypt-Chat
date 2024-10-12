@@ -1,15 +1,16 @@
 const {Config} = require("../Config.js")
 const {pluginLog} = require("./logUtils");
 const {encrypt, decrypt, hashSha256} = require("./aesUtils.js");
-const {encoder} =require("basex-encoder")
+const {encoder} = require("basex-encoder")
 
 const config = Config.config
 
-const alphabet = new Array(16).fill(0).map((value,index)=> String.fromCharCode(index + 0xfe00)).join("")
-const baseZero=encoder(alphabet,'utf-8')
+const alphabet = new Array(16).fill(0).map((value, index) => String.fromCharCode(index + 0xfe00)).join("")
+const baseZero = encoder(alphabet, 'utf-8')
 
 const styles = config.styles
-function getCurrentStyle(){
+
+function getCurrentStyle() {
     return styles[config.currentStyleName]
 }
 
@@ -17,7 +18,18 @@ function getCurrentStyle(){
  * 写成函数是因为需要判断值是否为空，为空则返回默认值
  * @returns {Buffer}
  */
-function getKey() {
+function getKey(uin = undefined) {
+    if (!uin) return hashSha256(config.encryptionKey.trim() || "20040821")//没有就直接返回
+
+    else {
+        for(const keyObj of config.independentKeyList){//看看有没有能对应上的
+            if(keyObj.id === uin){
+                //找到了该单位对应的独立密钥
+                return hashSha256(keyObj.key.trim())//返回对应的密钥
+            }
+        }
+    }
+    //也没找到啊，用默认密钥
     return hashSha256(config.encryptionKey.trim() || "20040821")
 }
 
@@ -27,7 +39,7 @@ function getKey() {
  * @returns {string}
  */
 function messageEncryptor(messageToBeEncrypted) {
-    if(messageToBeEncrypted.trim() === '') return ''//空字符不加密
+    if (messageToBeEncrypted.trim() === '') return ''//空字符不加密
 
     //随机生成密语
     let minLength = getCurrentStyle().length[0];
@@ -51,14 +63,15 @@ function messageEncryptor(messageToBeEncrypted) {
 /**
  *消息解密器,解密失败会返回空字符串
  * @param {string} hexStr 里面有一个十六进制格式的字符串
+ * @param uin
  * @returns {string|null}
  */
-function messageDecryptor(hexStr) {
+function messageDecryptor(hexStr, uin) {
     try {
         // console.log('[EC] 解密器启动，message为' + hexStr)
         const bufferMsg = Buffer.from(hexStr, 'hex')
 
-        const decryptedText = decrypt(bufferMsg, getKey()).toString('utf-8')
+        const decryptedText = decrypt(bufferMsg, getKey(uin)).toString('utf-8')
 
         // 检查是否解密成功
         if (!decryptedText.trim()) {
@@ -74,13 +87,13 @@ function messageDecryptor(hexStr) {
 }
 
 function encodeHex(result) {
-    return baseZero.encode(result,'hex')
+    return baseZero.encode(result, 'hex')
 }
 
 function decodeHex(content) {
     // console.log('decodeHex启动，content为' + content)
     content = [...content].filter((it) => alphabet.includes(it)).join("").trim()
-    return baseZero.decode(content,'hex')
+    return baseZero.decode(content, 'hex')
 }
 
 /**
@@ -118,4 +131,4 @@ function decryptImg(bufferImg) {
     }
 }
 
-module.exports = {messageEncryptor, messageDecrypter: messageDecryptor, decodeHex, encryptImg, decryptImg}
+module.exports = {messageEncryptor, messageDecryptor, decodeHex, encryptImg, decryptImg}

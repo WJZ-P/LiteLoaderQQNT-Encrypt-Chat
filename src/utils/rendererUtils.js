@@ -5,7 +5,7 @@ import {pluginLog} from "./frontLogUtils.js";
 const ecAPI = window.encrypt_chat
 let currentConfig = await ecAPI.getConfig()
 const downloadFunc = (fileObj, msgContent) => () => downloadFile(fileObj, msgContent)
-
+//const curAioData = app.__vue_app__.config.globalProperties.$store.state.common_Aio.curAioData
 export function patchCss() {
     console.log('[Encrypt-Chat]' + 'css加载中')
 
@@ -92,11 +92,13 @@ export function patchCss() {
     fill: #66ccff; /* 更深的颜色 */
 }
 
+.chat-input-area{
+    transition: all 0.2s ease-in-out; /* 添加过渡效果 */
+}
+
 /*修改聊天栏背景样式，使得开启加密更加明显*/
 .chat-input-area.active {
-    border-top: 2px solid ${currentConfig.mainColor}; /* 添加边框 */
-    transition: border-top 0.2s ease-in-out; /* 添加过渡效果 */
-    box-sizing: border-box; /* 确保边框不影响布局 */
+    filter: drop-shadow(5px 5px 5px ${currentConfig.mainColor});
 }
 
 .q-tooltips-div{
@@ -238,6 +240,7 @@ export async function checkMsgElement(msgElement) {
  * @returns {Promise<void>}
  */
 export async function messageRenderer(allChats) {//下面对每条消息进行判断
+    const uin=app.__vue_app__?.config?.globalProperties?.$store?.state?.common_Aio?.curAioData?.header.uin
     for (const chatElement of allChats) {
         try {
             const msgContentContainer = chatElement.querySelector('.msg-content-container')
@@ -266,7 +269,7 @@ export async function messageRenderer(allChats) {//下面对每条消息进行�
                         hexString = await checkMsgElement(child)
                         if (hexString) {
                             //pluginLog('检测到加密回复消息')
-                            const decryptedMsg = await ecAPI.messageDecryptor(hexString)
+                            const decryptedMsg = await ecAPI.messageDecryptor(hexString,uin)
                             if (!decryptedMsg) continue//解密后如果消息是空的，那就直接忽略，进入下次循环
                             //直接修改内容
                             child.innerText = decryptedMsg
@@ -281,7 +284,7 @@ export async function messageRenderer(allChats) {//下面对每条消息进行�
 
 
                     if (hexString) {
-                        const decryptedMsg = await ecAPI.messageDecryptor(hexString)
+                        const decryptedMsg = await ecAPI.messageDecryptor(hexString,uin)
                         if (!decryptedMsg) continue//解密后如果消息是空的，那就直接忽略，进入下次循环
 
                         //这里开始判断是否是文件

@@ -4,7 +4,7 @@ const {contextBridge, ipcRenderer} = require("electron");
 // 在window对象下导出只读对象
 contextBridge.exposeInMainWorld("encrypt_chat", {
     messageEncryptor: (message) => ipcRenderer.invoke("LiteLoader.encrypt_chat.messageEncryptor", message),
-    messageDecryptor: (message) => ipcRenderer.invoke("LiteLoader.encrypt_chat.messageDecryptor", message),
+    messageDecryptor: (message,uin) => ipcRenderer.invoke("LiteLoader.encrypt_chat.messageDecryptor", message,uin),
     imgDecryptor: (imgPath) => ipcRenderer.invoke("LiteLoader.encrypt_chat.imgDecryptor", imgPath),
     imgChecker: (imgPath) => ipcRenderer.invoke("LiteLoader.encrypt_chat.imgChecker", imgPath),
     decodeHex: (message) => ipcRenderer.invoke("LiteLoader.encrypt_chat.decodeHex", message),
