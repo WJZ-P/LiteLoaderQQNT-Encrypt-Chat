@@ -206,7 +206,7 @@
 
 [linkedin-url]: https://linkedin.com/in/shaojintian
 
-[oldQQ-download-link]:https://plat-sh-community-prod-upload-ugc.oss-cn-shanghai.aliyuncs.com/upload/2024/09/24/437001026/70ba06146cc3817109214d56dd280e95_5952845132396831848.jpg
+[oldQQ-download-link]:https://ats-prod.oss-accelerate.aliyuncs.com/91ff35732557ef7d8415050a85973801
 
-[LL-installer-link]:https://plat-sh-community-prod-upload-ugc.oss-cn-shanghai.aliyuncs.com/upload/2024/09/24/437001026/cc9702b90653ca48f4fd5222636bb527_2445931754753249733.jpg
+[LL-installer-link]:https://ats-prod.oss-accelerate.aliyuncs.com/18734247705198dcb594916e8ba1facc
 
