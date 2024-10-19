@@ -1,0 +1,5 @@
+更新了插件tag覆盖掉轻量工具箱的+1标签的bug。现在轻量工具箱的+1tag会优先覆盖掉插件的tag。
+https://github.com/WJZ-P/LiteLoaderQQNT-Encrypt-Chat/issues/6
+修复上面的bug。
+
+修复在某些情况下，正常图片会被错误带上解密边框的bug。

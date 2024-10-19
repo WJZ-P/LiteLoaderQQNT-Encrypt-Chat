@@ -91,9 +91,9 @@ export class SettingListeners {
                    type="text" placeholder="ID和密钥的备注" value="${note}">`;
 
         idDiv.innerHTML = `
-            <h2 style="margin-right: 5px">ID</h2>
+            <h2 style="margin-right: 5px">群号</h2>
             <input data-type="primary" class="q-input__inner q-input__inner--clearable custom-input independent-key-input"
-                   type="text" placeholder="Q号或群号" value="${id}">`;
+                   type="text" placeholder="QQ群号" value="${id}">`;
 
         keyDiv.innerHTML = `
             <h2 style="margin-right: 5px">密钥</h2>

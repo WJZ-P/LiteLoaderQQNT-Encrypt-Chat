@@ -204,8 +204,6 @@ export async function ECactivator(svg = null, sendBtnWrapEl = null) {
         "msgAttributeInfos": new Map()
     }, null]]]
 
-    console.log(123123)
-
     // const result = await ecAPI.invokeNative("ns-ntApi", "nodeIKernelMsgService/multiForwardMsgWithComment"
     //     , false, window.webContentId, {
     //         "msgInfos": [{
@@ -215,7 +213,7 @@ export async function ECactivator(svg = null, sendBtnWrapEl = null) {
     //         "srcContact": {"chatType": 2, "peerUid": "934773893", "guildId": ""},
     //         "dstContact": {"chatType": 2, "peerUid": "545402644", "guildId": ""},
     //         "commentElements": [],
-    //         "msgAttributeInfos": {}
+    //         "msgAttributeInfos": new Map()
     //     }, null)
 
 }

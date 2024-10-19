@@ -5,6 +5,7 @@ import {pluginLog} from "./frontLogUtils.js";
 const ecAPI = window.encrypt_chat
 let currentConfig = await ecAPI.getConfig()
 const downloadFunc = (fileObj, msgContent) => () => downloadFile(fileObj, msgContent)
+
 //const curAioData = app.__vue_app__.config.globalProperties.$store.state.common_Aio.curAioData
 export function patchCss() {
     console.log('[Encrypt-Chat]' + 'css加载中')
@@ -99,6 +100,7 @@ export function patchCss() {
 /*修改聊天栏背景样式，使得开启加密更加明显*/
 .chat-input-area.active {
     filter: drop-shadow(5px 5px 5px ${currentConfig.mainColor});
+    pointer-events: auto; /* 确保可以接收鼠标事件 */
 }
 
 .q-tooltips-div{
@@ -240,7 +242,7 @@ export async function checkMsgElement(msgElement) {
  * @returns {Promise<void>}
  */
 export async function messageRenderer(allChats) {//下面对每条消息进行判断
-    const uin=app.__vue_app__?.config?.globalProperties?.$store?.state?.common_Aio?.curAioData?.header.uin
+    const uin = app.__vue_app__?.config?.globalProperties?.$store?.state?.common_Aio?.curAioData?.header.uin//当天聊天的对应信息
     for (const chatElement of allChats) {
         try {
             const msgContentContainer = chatElement.querySelector('.msg-content-container')
@@ -269,7 +271,7 @@ export async function messageRenderer(allChats) {//下面对每条消息进行�
                         hexString = await checkMsgElement(child)
                         if (hexString) {
                             //pluginLog('检测到加密回复消息')
-                            const decryptedMsg = await ecAPI.messageDecryptor(hexString,uin)
+                            const decryptedMsg = await ecAPI.messageDecryptor(hexString, uin)
                             if (!decryptedMsg) continue//解密后如果消息是空的，那就直接忽略，进入下次循环
                             //直接修改内容
                             child.innerText = decryptedMsg
@@ -284,7 +286,7 @@ export async function messageRenderer(allChats) {//下面对每条消息进行�
 
 
                     if (hexString) {
-                        const decryptedMsg = await ecAPI.messageDecryptor(hexString,uin)
+                        const decryptedMsg = await ecAPI.messageDecryptor(hexString, uin)
                         if (!decryptedMsg) continue//解密后如果消息是空的，那就直接忽略，进入下次循环
 
                         //这里开始判断是否是文件
@@ -312,10 +314,7 @@ export async function messageRenderer(allChats) {//下面对每条消息进行�
                     let imgPath = decodeURIComponent(imgElement.getAttribute('src')).substring(9)//前面一般是appimg://
                     if (imgPath.includes('Thumb') && imgPath.includes('.gif')) {
 
-                        if (imgPath.includes('_720.gif') && !imgElement.classList.contains('ec-transformed-img')) {//说明是加密的缩略图，可能需要请求原图
-                            imgElement.classList.add('ec-transformed-img')//添加标记，避免重复调用
-                            console.log('检测到加密缩略图！')
-
+                        if (imgPath.includes('_720.gif') && !imgElement.classList.contains('ec-transformed-img')) {//说明可能是加密的缩略图，可能需要请求原图
                             const curAioData = app.__vue_app__.config.globalProperties.$store.state.common_Aio.curAioData
                             const msgId = chatElement.id
                             const elementId = imgElement.parentElement.getAttribute('element-id')
@@ -345,18 +344,23 @@ export async function messageRenderer(allChats) {//下面对每条消息进行�
                         //console.log('检测到缩略图！索引到原图地址为' + imgPath)
                     }
                     if (!(await ecAPI.imgChecker(imgPath))) {
+                        //console.log("[EC]图片检测未通过！")
                         continue //图片检测未通过
                     }
+                    //到这里已经确定是需要解密的图片
+                    imgElement.classList.add('ec-transformed-img')//添加标记，避免重复调用
 
                     //下面进行图片解密
-                    // console.log('图片校验通过！')
+                    console.log('[EC]图片校验通过！')
                     msgContentContainer.classList.add('message-encrypted-tip-parent')//调整父元素的style
 
                     const decryptedObj = await ecAPI.imgDecryptor(imgPath)
-                    const decryptedImgPath = decryptedObj.decryptedImgPath
+                    const decryptedImgPath = "local:///" + decryptedObj.decryptedImgPath.replaceAll("\\", "/")
                     if (decryptedImgPath)  //解密成功才继续
                     {
+                        console.log("准备替换的图片地址为" + decryptedImgPath)
                         //拿到解密后的图片的本地地址，进行替换。
+
                         imgElement.setAttribute('src', decryptedImgPath)
                         //更改父亲的宽高属性
                         imgElement.parentElement.style.width = decryptedObj.width + 'px'
@@ -459,6 +463,7 @@ export function appendEncreptedTag(msgContentContainer, originaltext) {
 
     const tipElement = document.createElement('div')
     tipElement.innerText = '原消息：' + originaltext
+    tipElement.style.zIndex = '-10';
 
     //下面先判断是自己发的消息还是别人发的消息
     if (msgContentContainer?.classList.contains('container--others')) {

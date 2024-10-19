@@ -25,7 +25,7 @@ function ipcModifyer(ipcProxy, window) {
                 const eventName = args?.[3]?.[0]?.eventName
                 //测试
                 //if(ipcName==='nodeIKernelMsgService/ForwardMsgWithComment') console.log(JSON.stringify(args))
-                if(eventName!=="ns-LoggerApi-2") console.log(JSON.stringify(args))//调试的时候用
+                //if(eventName!=="ns-LoggerApi-2") console.log(JSON.stringify(args))//调试的时候用
 
                 if (ipcName === 'nodeIKernelMsgService/sendMsg') modifiedArgs = await ipcMsgModify(args, window);
                 if (ipcName === 'openMediaViewer') modifiedArgs = ipcOpenImgModify(args);
@@ -50,8 +50,6 @@ async function ipcMsgModify(args, window) {
 
     console.log('下面打印出nodeIKernelMsgService/sendMsg的内容')
     console.log(JSON.stringify(args[3][1][1],null,2))
-
-
     //console.log(args[3][1][1].msgElements?.[0].textElement)
 
     //下面判断加密是否启用，启用了就修改消息内容
@@ -59,7 +57,9 @@ async function ipcMsgModify(args, window) {
 
     //————————————————————————————————————————————————————————————————————
     //修改原始消息
+    const peerUid=args[3][1][1].peer?.peerUid
     for (let item of args[3][1][1].msgElements) {
+
         //说明消息内容是文字类
         if (item.elementType === 1) {
 
@@ -68,7 +68,8 @@ async function ipcMsgModify(args, window) {
                 continue;//艾特消息无法修改content，NTQQ似乎有别的措施防止。
             }
             //修改解密消息
-            item.textElement.content = messageEncryptor(item.textElement.content)
+            pluginLog("准备进行加密！")
+            item.textElement.content = messageEncryptor(item.textElement.content,peerUid)
         }
 
 
@@ -144,18 +145,18 @@ async function ipcMsgModify(args, window) {
                 }
 
                 //把加密文件插入到消息元素中
-                textElement.textElement.content = messageEncryptor(JSON.stringify(fileObj))
+                textElement.textElement.content = messageEncryptor(JSON.stringify(fileObj),peerUid)
 
-            } else textElement.textElement.content = messageEncryptor('[EC]文件发送失败，可能是文件过大')
+            } else textElement.textElement.content = messageEncryptor('[EC]文件发送失败，可能是文件过大',peerUid)
 
             args[3][1][1].msgElements = [textElement]
         }
     }
 
-    console.log('修改后的,msgElements为')
-    for (let item of args[3][1][1].msgElements) {
-        console.log(item)
-    }
+    // console.log('修改后的,msgElements为')
+    // for (let item of args[3][1][1].msgElements) {
+    //     console.log(item)
+    // }
     return args
 }
 

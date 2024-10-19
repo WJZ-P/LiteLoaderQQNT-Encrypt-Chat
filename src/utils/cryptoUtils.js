@@ -16,29 +16,34 @@ function getCurrentStyle() {
 
 /**
  * 写成函数是因为需要判断值是否为空，为空则返回默认值
+ * @param {String} peerUid
  * @returns {Buffer}
  */
-function getKey(uin = undefined) {
-    if (!uin) return hashSha256(config.encryptionKey.trim() || "20040821")//没有就直接返回
+function getKey(peerUid = undefined) {
+    //pluginLog('传入的peerUid为'+peerUid)
+    if (!peerUid) return hashSha256(config.encryptionKey.trim() || "20040821")//没有就直接返回
 
     else {
         for(const keyObj of config.independentKeyList){//看看有没有能对应上的
-            if(keyObj.id === uin){
+            if(keyObj.id.trim() === peerUid.trim()){
                 //找到了该单位对应的独立密钥
+                pluginLog('已找到对应密钥，为'+keyObj.key)
                 return hashSha256(keyObj.key.trim())//返回对应的密钥
             }
         }
     }
     //也没找到啊，用默认密钥
+    pluginLog('未找到对应密钥，使用默认密钥')
     return hashSha256(config.encryptionKey.trim() || "20040821")
 }
 
 /**
  * 消息加密器
  * @param {string} messageToBeEncrypted
+ * @param {string} peerUid   目标群号，根据群号进行消息加密。
  * @returns {string}
  */
-function messageEncryptor(messageToBeEncrypted) {
+function messageEncryptor(messageToBeEncrypted,peerUid) {
     if (messageToBeEncrypted.trim() === '') return ''//空字符不加密
 
     //随机生成密语
@@ -54,7 +59,7 @@ function messageEncryptor(messageToBeEncrypted) {
     }
 
     //加密明文
-    const encryptedMessage = encrypt(Buffer.from(messageToBeEncrypted), getKey()).toString('hex')
+    const encryptedMessage = encrypt(Buffer.from(messageToBeEncrypted), getKey(peerUid)).toString('hex')
     // console.log('[EC] 加密后的密文' + encryptedMessage)
     //密文转成空白符
     return encodeHex(encryptedMessage) + randomMsg.trim()//加密后的密文
@@ -68,6 +73,7 @@ function messageEncryptor(messageToBeEncrypted) {
  */
 function messageDecryptor(hexStr, uin) {
     try {
+        pluginLog(uin)
         // console.log('[EC] 解密器启动，message为' + hexStr)
         const bufferMsg = Buffer.from(hexStr, 'hex')
 
@@ -81,7 +87,7 @@ function messageDecryptor(hexStr, uin) {
 
         return decryptedText;
     } catch (e) {
-        // console.log(e)
+         console.log(e)
         return null
     }
 }
