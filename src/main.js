@@ -109,12 +109,12 @@ async function onload() {
  */
 function sendMsgToChatWindows(message) {
     pluginLog('给渲染进程发送重新渲染ECcss消息')
-    pluginLog('所有聊天窗口如下')
-    console.log(chatWindows)
-    for (const window of chatWindows) {
-        if (window.isDestroyed()) continue;
-        window.webContents.send(message);
-    }
+    // pluginLog('所有聊天窗口如下')
+    // console.log(chatWindows)
+    // for (const window of chatWindows) {
+    //     if (window.isDestroyed()) continue;
+    //     window.webContents.send(message);
+    // }
 }
 
 // const ipcInvokeProxy = window.webContents._events["-ipc-invoke"]

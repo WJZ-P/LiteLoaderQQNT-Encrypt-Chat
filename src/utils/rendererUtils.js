@@ -74,7 +74,16 @@ export function patchCss() {
                 margin-top:3px;
                 margin-left:3px;
                 margin-right:3px;
-                margin-bottom: 25px;
+                margin-bottom: 15px;
+                box-shadow: 0px 0px 8px 5px ${currentConfig.mainColor};
+            }
+            .message-encrypted-tip-parent-notip {
+                border-radius: 10px;
+                position: relative;
+                overflow: unset !important;
+                margin-top:3px;
+                margin-left:3px;
+                margin-right:3px;
                 box-shadow: 0px 0px 8px 5px ${currentConfig.mainColor};
             }
             
@@ -384,7 +393,7 @@ export async function messageRenderer(allChats) {//下面对每条消息进行�
             }
             if (isECMsg) {
                 //包裹住消息内容的div msg-content-container
-                appendEncreptedTag(msgContentContainer, totalOriginalMsg)//全部处理完成添加已解密消息标记，同时修改样式
+                await appendEncreptedTag(msgContentContainer, totalOriginalMsg)//全部处理完成添加已解密消息标记，同时修改样式
             }
         } catch
             (e) {
@@ -456,10 +465,14 @@ function appendLoadingImg(msgContentContainer) {
  * @param msgContentContainer
  * @param originaltext
  */
-export function appendEncreptedTag(msgContentContainer, originaltext) {
+export async function appendEncreptedTag(msgContentContainer, originaltext) {
     // console.log('[appendTag]' + '开始判断')
-    // if (!currentConfig.enableTip) return;//没开这个设置就不添加解密标记
     //console.log('[appendTag]' + '判断成功，准备加tag')
+
+    if (!(await ecAPI.getConfig()).isUseTag) {
+        msgContentContainer.classList.add('message-encrypted-tip-parent-notip')//调整父元素的style
+        return;
+    }//没开这个设置就不添加解密标记
 
     if (msgContentContainer.classList.contains('decrypted-msg-container')) return//添加标记，用来检测是否为已修改过的元素
 
@@ -467,16 +480,15 @@ export function appendEncreptedTag(msgContentContainer, originaltext) {
     tipElement.innerText = '原消息：' + originaltext
     tipElement.style.zIndex = '-10';
 
-    //下面先判断是自己发的消息还是别人发的消息
+    msgContentContainer.classList.add('message-encrypted-tip-parent')//调整父元素的style
+    msgContentContainer.appendChild(tipElement)
+
+    //下面判断是自己发的消息还是别人发的消息
     if (msgContentContainer?.classList.contains('container--others')) {
         //不为空，说明是别人的消息
         tipElement.classList.add('message-encrypted-tip-left')//添加tip类名
-        msgContentContainer.classList.add('message-encrypted-tip-parent')//调整父元素的style
-        msgContentContainer.appendChild(tipElement)
     } else {
         tipElement.classList.add('message-encrypted-tip-right')//添加tip类名
-        msgContentContainer.classList.add('message-encrypted-tip-parent')//调整父元素的style
-        msgContentContainer.appendChild(tipElement)
     }
 
     msgContentContainer.classList.add('decrypted-msg-container')//添加标记，用来检测是否为已修改过的元素

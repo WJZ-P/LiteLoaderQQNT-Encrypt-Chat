@@ -55,7 +55,10 @@ export class SettingListeners {
 
     async tagButtonListener() {
         const tagButton = this.document.querySelector('#ec-tag-button')
+        // console.log(tagButton)
+        // console.log((await ecAPI.getConfig()).isUseTag)
         if ((await ecAPI.getConfig()).isUseTag) tagButton.classList.toggle('is-active')
+
         tagButton.addEventListener('click', async () => {
             const isUseTag = (await ecAPI.getConfig()).isUseTag
             tagButton.classList.toggle('is-active')
