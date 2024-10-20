@@ -320,10 +320,13 @@ export async function messageRenderer(allChats) {//下面对每条消息进行�
 
                     if (imgElement.getAttribute('src').includes('base64')) continue  //图片是base64格式的，直接跳过
 
+                    //查询图片的时候会append一个loadingtag，然后会存在这个类名。不要重复执行，可能会出错
+                    //if (msgContentContainer.classList.contains('message-encrypted-tip-parent')) continue
+
                     let imgPath = decodeURIComponent(imgElement.getAttribute('src')).substring(9)//前面一般是appimg://
                     if (imgPath.includes('Thumb') && imgPath.includes('.gif')) {
-
-                        if (imgPath.includes('_720.gif') && !imgElement.classList.contains('ec-transformed-img')) {//说明可能是加密的缩略图，可能需要请求原图
+                        //imgPath.includes('_720.gif')&& 好像有的图是_0也不会自动下载原图
+                        if ( !imgElement.classList.contains('ec-transformed-img')) {//说明可能是加密的缩略图，可能需要请求原图
                             const curAioData = app.__vue_app__.config.globalProperties.$store.state.common_Aio.curAioData
                             const msgId = chatElement.id
                             const elementId = imgElement.parentElement.getAttribute('element-id')
@@ -331,21 +334,20 @@ export async function messageRenderer(allChats) {//下面对每条消息进行�
                             const peerUid = curAioData.header.uid
                             const oriImgPath = imgPath.replace(/\/Thumb\//, '/Ori/').replace(/_\d+\.gif/, '.gif')
 
-                            if (await ecAPI.isFileExist([oriImgPath])) {
-                                continue
-                            } //文件已存在，无需下载，直接继续即可。
+                            //没有原图就尝试下载原图
+                            if (!(await ecAPI.isFileExist([oriImgPath])) && !msgContentContainer.classList.contains('message-encrypted-tip-parent')) {
+                                //添加一个加载中的动画
+                                appendLoadingImg(msgContentContainer)
+                                await downloadOriImg(msgId, elementId, chatType, peerUid, oriImgPath)//下载原图
 
-                            //添加一个加载中的动画
-                            appendLoadingImg(msgContentContainer)
+                                //下面就监听图片元素变化，变化了就删掉loading
+                                new MutationObserver(() => {
+                                    //console.log('删除loading元素')
+                                    msgContentContainer.removeChild(msgContentContainer.querySelector('.ec-loading-img'))
+                                    //console.log('loading元素删除成功')
+                                }).observe(imgElement, {attributes: true, attributeFilter: ['src']})
+                            }
 
-                            await downloadOriImg(msgId, elementId, chatType, peerUid, oriImgPath)//下载原图
-
-                            //下面就监听图片元素变化，变化了就删掉loading
-                            new MutationObserver(() => {
-                                console.log('删除loading元素')
-                                msgContentContainer.removeChild(msgContentContainer.querySelector('.ec-loading-img'))
-                                console.log('loading元素删除成功')
-                            }).observe(imgElement, {attributes: true, attributeFilter: ['src']})
 
                         }
 
@@ -353,7 +355,7 @@ export async function messageRenderer(allChats) {//下面对每条消息进行�
                         //console.log('检测到缩略图！索引到原图地址为' + imgPath)
                     }
                     if (!(await ecAPI.imgChecker(imgPath))) {
-                        //console.log("[EC]图片检测未通过！")
+                        //console.log("[EC]图片检测未通过！"+imgPath)
                         continue //图片检测未通过
                     }
 
@@ -364,15 +366,19 @@ export async function messageRenderer(allChats) {//下面对每条消息进行�
 
                     if (decryptedObj.decryptedImgPath !== "")  //解密成功才继续
                     {
-                        //到这里已经确定是需要解密的图片
                         msgContentContainer.classList.add('message-encrypted-tip-parent')//调整父元素的style
-                        imgElement.classList.add('ec-transformed-img')//添加标记，避免重复调用
 
                         const decryptedImgPath = "local:///" + decryptedObj.decryptedImgPath.replaceAll("\\", "/")
-                        console.log("准备替换的图片地址为" + decryptedImgPath)
                         //拿到解密后的图片的本地地址，进行替换。
 
+                        //下面开始替换图片
                         imgElement.setAttribute('src', decryptedImgPath)
+                        //console.log("替换成的图片地址为"+decryptedImgPath)
+
+                        //到这里已经确定是需要解密的图片
+
+                        imgElement.classList.add('ec-transformed-img')//添加标记，避免重复调用
+
                         //更改父亲的宽高属性
                         imgElement.parentElement.style.width = decryptedObj.width + 'px'
                         imgElement.parentElement.style.height = 'auto'
@@ -453,7 +459,7 @@ async function fileDivCreater(msgContent, fileObj) {
  */
 function appendLoadingImg(msgContentContainer) {
     const imgElement = document.createElement('img')
-    imgElement.src = currentConfig.pluginPath + '/src/assests/loading.svg'
+    imgElement.src = "local:///" + (currentConfig.pluginPath + '/src/assests/loading.svg').replaceAll("\\", "/")
     imgElement.classList.add('ec-loading-img')
     msgContentContainer.classList.add('message-encrypted-tip-parent')//调整父元素的style
     msgContentContainer.appendChild(imgElement)
