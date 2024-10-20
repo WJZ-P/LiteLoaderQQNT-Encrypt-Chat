@@ -52,12 +52,15 @@ export class SettingListeners {
             console.log('[EC]语种设置为' + keyValue)
         })
     }
-    async tagButtonListener(){
-        const tagButton = this.document.querySelector('#ec-tag-button')
-        if((await ecAPI.getConfig()).isUseTag) tagButton.classList.toggle('is-active')
-        tagButton.addEventListener('click', async () => {
 
-        }
+    async tagButtonListener() {
+        const tagButton = this.document.querySelector('#ec-tag-button')
+        if ((await ecAPI.getConfig()).isUseTag) tagButton.classList.toggle('is-active')
+        tagButton.addEventListener('click', async () => {
+            const isUseTag = (await ecAPI.getConfig()).isUseTag
+            tagButton.classList.toggle('is-active')
+            await ecAPI.setConfig({isUseTag: !isUseTag})
+        })
     }
 
     async addKeyRowButtonListener() {
@@ -158,6 +161,7 @@ export class SettingListeners {
         this.keyInputListener()
         this.colorSelectorListener()
         this.styleSelectorListener()
+        this.tagButtonListener()
         this.addKeyRowButtonListener()
         this.initIndependentKeyList()
     }
