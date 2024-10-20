@@ -136,7 +136,8 @@ height="24px" viewBox="0 -960 960 960" width="24px" onclick="ECactivator(this,do
             const sendTextBtnEl = sendBtnWrapEl.querySelector('.send-msg')//带有“发送字样的按钮”
             sendTextBtnEl.innerText = "加密发送"
 
-            document.querySelector('.chat-input-area').classList.toggle('active')
+            if ((await ecAPI.getConfig()).isUseEnhanceArea)
+                document.querySelector('.chat-input-area').classList.toggle('active')
         }
     }).observe(chatElement, {childList: true});//检测子元素的增删变化
 }
@@ -182,27 +183,29 @@ export async function ECactivator(svg = null, sendBtnWrapEl = null) {
     svg.classList.toggle('active');
 
     //对输入框加点特效，使得开启加密更加明显
-    const chatInputEl=document.querySelector('.chat-input-area')
-    chatInputEl.classList.toggle('active')
+    if ((await ecAPI.getConfig()).isUseEnhanceArea) {
+        const chatInputEl = document.querySelector('.chat-input-area')
+        chatInputEl.classList.toggle('active')
+    }
 
 
     await ecAPI.setConfig({activeEC: !isActive})//设置开关状态
 
     //这里加点测试用功能
-    const multiForwardMsg = [{"frameId": 1, "processId": 5}, false, "IPC_UP_2", [{
-        "type": "request",
-        "callbackId": "24b46f24-8235-4cb6-a8ff-5acdd8435491",
-        "eventName": "ns-ntApi-2"
-    }, ["nodeIKernelMsgService/multiForwardMsgWithComment", {
-        "msgInfos": [{
-            "msgId": "7418734961609529108",
-            "senderShowName": "真漂亮"
-        }, {"msgId": "7418734961609529103", "senderShowName": "真漂亮"}],
-        "srcContact": {"chatType": 2, "peerUid": "934773893", "guildId": ""},
-        "dstContact": {"chatType": 2, "peerUid": "934773893", "guildId": ""},
-        "commentElements": [],
-        "msgAttributeInfos": new Map()
-    }, null]]]
+    // const multiForwardMsg = [{"frameId": 1, "processId": 5}, false, "IPC_UP_2", [{
+    //     "type": "request",
+    //     "callbackId": "24b46f24-8235-4cb6-a8ff-5acdd8435491",
+    //     "eventName": "ns-ntApi-2"
+    // }, ["nodeIKernelMsgService/multiForwardMsgWithComment", {
+    //     "msgInfos": [{
+    //         "msgId": "7418734961609529108",
+    //         "senderShowName": "真漂亮"
+    //     }, {"msgId": "7418734961609529103", "senderShowName": "真漂亮"}],
+    //     "srcContact": {"chatType": 2, "peerUid": "934773893", "guildId": ""},
+    //     "dstContact": {"chatType": 2, "peerUid": "934773893", "guildId": ""},
+    //     "commentElements": [],
+    //     "msgAttributeInfos": new Map()
+    // }, null]]]
 
     // const result = await ecAPI.invokeNative("ns-ntApi", "nodeIKernelMsgService/multiForwardMsgWithComment"
     //     , false, window.webContentId, {

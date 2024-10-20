@@ -66,6 +66,17 @@ export class SettingListeners {
         })
     }
 
+    async enhanceAreaButtonListener() {
+        const button = this.document.querySelector('#ec-enhance-input-area-button')
+        if ((await ecAPI.getConfig()).isUseEnhanceArea) button.classList.toggle('is-active')
+
+        button.addEventListener('click', async () => {
+            const isUseEnhanceArea = (await ecAPI.getConfig()).isUseEnhanceArea
+            button.classList.toggle('is-active')
+            await ecAPI.setConfig({isUseEnhanceArea: !isUseEnhanceArea})
+        })
+    }
+
     async addKeyRowButtonListener() {
         this.document.querySelector('.add-row-button').addEventListener('click', async () => {
             //点击按钮之后，应该多出一行设置栏，并且配置列表添加新的空行
