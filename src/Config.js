@@ -10,7 +10,8 @@ class Config {
         mainColor: '#66ccff',                   //主颜色
         activeEC: false,                        //是否启用加密功能
         encryptionKey: '',                      //加密密钥
-        downloadFilePath: '',                    //解密文件的下载路径
+        downloadFilePath: '',                   //解密文件的下载路径
+        isUseTag: true,                         //是否使用tag，即解密消息下方的"原消息"
         styles: {
             Bangboo: {//邦布语
                 length: [2, 5],

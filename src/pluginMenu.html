@@ -55,8 +55,16 @@
                                class="q-button q-button--small q-button--secondary color-picker"/>
                     </div>
                 </div>
-
                 <hr class="horizontal-dividing-line"/>
+                <div class="vertical-list-item">
+                    <div>
+                        <h2>是否启用解密Tag</h2>
+                        <span class="secondary-text">消息解密后下方的"原消息：xxx"</span>
+                    </div>
+                    <div class="q-switch">
+                        <span class="q-switch__handle" id="ec-tag-button"></span>
+                    </div>
+                </div>
             </div>
         </div>
     </section>
@@ -66,7 +74,7 @@
         <div class="wrap">
             <div class="list">
                 <div class="vertical-list-item" style="display: flex; flex-direction: column">
-                    <h1>此处配置单独的群聊密钥(暂不支持私聊密钥)</h1>
+                    <h1>此处配置单独的群聊密钥(如需要私聊密钥需要手动填写Q号对应的uin)</h1>
                 </div>
                 <hr class="horizontal-dividing-line"/>
                 <div class="key-list-container">

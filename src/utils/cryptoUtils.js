@@ -33,7 +33,7 @@ function getKey(peerUid = undefined) {
         }
     }
     //也没找到啊，用默认密钥
-    pluginLog('未找到对应密钥，使用默认密钥')
+    //pluginLog('未找到对应密钥，使用默认密钥')
     return hashSha256(config.encryptionKey.trim() || "20040821")
 }
 

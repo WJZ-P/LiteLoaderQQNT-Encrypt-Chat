@@ -76,7 +76,7 @@ function onHashUpdate() {
 async function render() {
     try {
         while (true) {
-            await sleep(100)
+            await sleep(100)//稍微调大点
             setTimeout(async () => {
                 //console.log('[Encrypt-Chat]' + '准备加载render方法(renderer进程)')
                 const allChats = document.querySelectorAll('.ml-item')

@@ -52,6 +52,13 @@ export class SettingListeners {
             console.log('[EC]语种设置为' + keyValue)
         })
     }
+    async tagButtonListener(){
+        const tagButton = this.document.querySelector('#ec-tag-button')
+        if((await ecAPI.getConfig()).isUseTag) tagButton.classList.toggle('is-active')
+        tagButton.addEventListener('click', async () => {
+
+        }
+    }
 
     async addKeyRowButtonListener() {
         this.document.querySelector('.add-row-button').addEventListener('click', async () => {
