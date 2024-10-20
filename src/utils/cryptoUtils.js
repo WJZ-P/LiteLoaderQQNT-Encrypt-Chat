@@ -27,7 +27,7 @@ function getKey(peerUid = undefined) {
         for(const keyObj of config.independentKeyList){//看看有没有能对应上的
             if(keyObj.id.trim() === peerUid.trim()){
                 //找到了该单位对应的独立密钥
-                pluginLog('已找到对应密钥，为'+keyObj.key)
+                //pluginLog('已找到对应密钥，为'+keyObj.key)
                 return hashSha256(keyObj.key.trim())//返回对应的密钥
             }
         }
@@ -73,7 +73,7 @@ function messageEncryptor(messageToBeEncrypted,peerUid) {
  */
 function messageDecryptor(hexStr, uin) {
     try {
-        pluginLog(uin)
+        //pluginLog(getKey(uin).toString('hex'))
         // console.log('[EC] 解密器启动，message为' + hexStr)
         const bufferMsg = Buffer.from(hexStr, 'hex')
 
@@ -107,7 +107,7 @@ function decodeHex(content) {
  * @param bufferImg
  * @returns {Buffer}
  */
-function encryptImg(bufferImg) {
+function encryptImg(bufferImg,peerUid) {
     // JPG 文件以字节 0xFF 0xD8 开头
     // PNG 文件以字节 0x89 0x50 0x4E 0x47 开头
     // GIF 文件以字节 0x47 0x49 0x46 开头
@@ -115,7 +115,7 @@ function encryptImg(bufferImg) {
     // pluginLog('即将进行加密的图片为')
     // console.log(bufferImg)
     //加密明文
-    const encryptedImg = encrypt(bufferImg, getKey())
+    const encryptedImg = encrypt(bufferImg, getKey(peerUid))
     // pluginLog('[EC] 加密后的图片为')
     // console.log(encryptedImg)
     return encryptedImg
@@ -124,11 +124,12 @@ function encryptImg(bufferImg) {
 /**
  * 图像解密器，输入和输出都是buffer
  * @param bufferImg 需要解密的imgBuffer
+ * @param peerUid   群号ID，字符串
  * @returns {Buffer|false}    解密完成的图片Buffer
  */
-function decryptImg(bufferImg) {
+function decryptImg(bufferImg,peerUid) {
     try {
-        const decryptedBufImg = decrypt(bufferImg, getKey())
+        const decryptedBufImg = decrypt(bufferImg, getKey(peerUid))
         // pluginLog('图片解密的结果为')
         // console.log(decryptedBufImg)
         return decryptedBufImg

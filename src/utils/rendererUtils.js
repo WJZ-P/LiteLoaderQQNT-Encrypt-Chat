@@ -280,7 +280,7 @@ export async function messageRenderer(allChats) {//下面对每条消息进行�
                     }
                 }
 
-                //是文本消息。需要具体判断是文件还是普通图片
+                //是文本消息。需要具体判断是文件还是普通文本消息
                 if (normalText) {
                     hexString = await checkMsgElement(normalText)
 
@@ -347,17 +347,19 @@ export async function messageRenderer(allChats) {//下面对每条消息进行�
                         //console.log("[EC]图片检测未通过！")
                         continue //图片检测未通过
                     }
-                    //到这里已经确定是需要解密的图片
-                    imgElement.classList.add('ec-transformed-img')//添加标记，避免重复调用
 
                     //下面进行图片解密
-                    console.log('[EC]图片校验通过！')
-                    msgContentContainer.classList.add('message-encrypted-tip-parent')//调整父元素的style
+                    //console.log('[EC]图片校验通过！尝试进行解密')
+                    //解密图片
+                    const decryptedObj = await ecAPI.imgDecryptor(imgPath, uin)
 
-                    const decryptedObj = await ecAPI.imgDecryptor(imgPath)
-                    const decryptedImgPath = "local:///" + decryptedObj.decryptedImgPath.replaceAll("\\", "/")
-                    if (decryptedImgPath)  //解密成功才继续
+                    if (decryptedObj.decryptedImgPath !== "")  //解密成功才继续
                     {
+                        //到这里已经确定是需要解密的图片
+                        msgContentContainer.classList.add('message-encrypted-tip-parent')//调整父元素的style
+                        imgElement.classList.add('ec-transformed-img')//添加标记，避免重复调用
+
+                        const decryptedImgPath = "local:///" + decryptedObj.decryptedImgPath.replaceAll("\\", "/")
                         console.log("准备替换的图片地址为" + decryptedImgPath)
                         //拿到解密后的图片的本地地址，进行替换。
 

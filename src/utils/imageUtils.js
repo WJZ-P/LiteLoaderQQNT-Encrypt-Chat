@@ -16,15 +16,16 @@ const singlePixelPngBuffer = Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAA
 /**
  * 图片加密，把图片加密到1x1的gif里面。返回对象
  * @param imgPath
+ * @param peerUid   群号字符串
  * @returns {{picPath: string, picMD5: string}}
  */
-function imgEncryptor(imgPath) {
+function imgEncryptor(imgPath, peerUid) {
     try {
         const bufferImg = fs.readFileSync(imgPath);//需要被加密的图片文件
         // console.log('bufferimg')
         // console.log(bufferImg)
         //加密图片，返回加密后的buffer
-        const encryptedBuffer = encryptImg(bufferImg);
+        const encryptedBuffer = encryptImg(bufferImg, peerUid);
         // console.log('encryptedBuffer')
         // console.log(encryptedBuffer)
         const tempImg = fs.readFileSync(config.tempImgPath)//一共35个字节
@@ -48,6 +49,7 @@ function imgEncryptor(imgPath) {
 /**
  * 图片解密，把加密后的图片解密，保存到本地。
  * @param imgPath
+ * @param peerUid 群号字符串
  * @returns {{
  *             decryptedImgPath: String,
  *             width: Number,
@@ -55,7 +57,7 @@ function imgEncryptor(imgPath) {
  *             type: String,
  *         }|false}
  */
-function imgDecryptor(imgPath) {
+function imgDecryptor(imgPath, peerUid) {
     try {
         // pluginLog('下面输出加密图片的buffer')
         // console.log(fs.readFileSync(imgPath))
@@ -63,8 +65,13 @@ function imgDecryptor(imgPath) {
         // pluginLog('用来解密的图片buffer为')
         // console.log(bufferImg)
 
-        const decryptedBufImg = decryptImg(bufferImg);
-        if (!decryptedBufImg) return false//解密失败就不需要继续了
+        const decryptedBufImg = decryptImg(bufferImg, peerUid);
+        if (!decryptedBufImg) return {
+            decryptedImgPath: "",
+            width: 0,
+            height: 0,
+            type: "",
+        }//解密失败就不需要继续了
 
         const imgMD5 = hashMd5(decryptedBufImg).toString('hex')
 

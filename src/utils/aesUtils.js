@@ -1,4 +1,6 @@
-const {createCipheriv, createDecipheriv, randomBytes,createHash} = require("crypto");
+const {createCipheriv, createDecipheriv, randomBytes, createHash} = require("crypto");
+const {pluginLog} = require("./logUtils");
+
 function hashSha256(data) {
     const hash = createHash('sha256');
 // 更新哈希对象与输入数据
@@ -6,7 +8,6 @@ function hashSha256(data) {
 // 计算哈希值并以十六进制（hex）字符串形式输出
     return hash.digest();
 }
-
 
 
 function hashMd5(data) {
@@ -41,20 +42,25 @@ function encrypt(data, key) {
 
 // AES-GCM 解密
 function decrypt(encryptedData, key) {
-    const iv = encryptedData.slice(0, 16);
-    const authTag = encryptedData.slice(encryptedData.length - 16);
-    const ciphertext = encryptedData.slice(16, encryptedData.length - 16);
+    try {
+        const iv = encryptedData.slice(0, 16);
+        const authTag = encryptedData.slice(encryptedData.length - 16);
+        const ciphertext = encryptedData.slice(16, encryptedData.length - 16);
 
-    const decipher = createDecipheriv('aes-256-gcm', key, iv);
-    decipher.setAuthTag(authTag);
+        const decipher = createDecipheriv('aes-256-gcm', key, iv);
+        decipher.setAuthTag(authTag);
 
-    return Buffer.concat([
-        decipher.update(ciphertext),
-        decipher.final()
-    ]);
+        return Buffer.concat([
+            decipher.update(ciphertext),
+            decipher.final()
+        ]);
+    } catch (e) {
+        //console.log(e)
+        return "";
+    }
 }
 
-module.exports={encrypt,decrypt,hashSha256,hashMd5}
+module.exports = {encrypt, decrypt, hashSha256, hashMd5}
 
 
 // const encrypted = encrypt(Buffer.from('123哈哈哈牛逼'))

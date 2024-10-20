@@ -78,7 +78,7 @@ async function ipcMsgModify(args, window) {
         else if (item.elementType === 2) {
             if (imgChecker(item.picElement.sourcePath)) return//要发送的是加密图片，不进行二次加密
 
-            const result = imgEncryptor(item.picElement.sourcePath)
+            const result = imgEncryptor(item.picElement.sourcePath,peerUid)
             console.log(result)
 
             //获取缓存路径

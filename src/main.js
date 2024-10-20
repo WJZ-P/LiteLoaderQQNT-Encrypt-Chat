@@ -76,7 +76,7 @@ async function onload() {
     ipcMain.handle("LiteLoader.encrypt_chat.messageDecryptor", (_, message,uin) => messageDecryptor(message,uin))
     ipcMain.handle("LiteLoader.encrypt_chat.decodeHex", (_, message) => decodeHex(message))
     ipcMain.handle("LiteLoader.encrypt_chat.getWindowID", (event) => event.sender.getOwnerBrowserWindow().id)
-    ipcMain.handle("LiteLoader.encrypt_chat.imgDecryptor", (_, imgPath) => imgDecryptor(imgPath))
+    ipcMain.handle("LiteLoader.encrypt_chat.imgDecryptor", (_, imgPath,peerUid) => imgDecryptor(imgPath,peerUid))
     ipcMain.handle("LiteLoader.encrypt_chat.imgChecker", (_, imgPath) => imgChecker(imgPath))
     //进行下载文件的解密与保存。
     ipcMain.on("LiteLoader.encrypt_chat.ecFileHandler",(_,fileBuffer,fileName)=> ecFileHandler(fileBuffer,fileName))
