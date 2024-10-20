@@ -176,6 +176,7 @@ export class SettingListeners {
         this.colorSelectorListener()
         this.styleSelectorListener()
         this.tagButtonListener()
+        this.enhanceAreaButtonListener()
         this.addKeyRowButtonListener()
         this.initIndependentKeyList()
     }
