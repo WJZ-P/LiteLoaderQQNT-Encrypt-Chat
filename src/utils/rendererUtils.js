@@ -319,6 +319,12 @@ export async function messageRenderer(allChats) {//下面对每条消息进行�
                 } else if (imgElement) {
 
                     if (imgElement.getAttribute('src').includes('base64')) continue  //图片是base64格式的，直接跳过
+                    if (msgContentContainer.classList.contains('message-encrypted-tip-parent')){//说明有解密边框
+                        if(!imgElement.getAttribute('src').includes('local')){
+                            //修复正常图片被带上解密边框的bug。
+                            msgContentContainer.classList.remove('message-encrypted-tip-parent')
+                        }
+                    }
 
                     //查询图片的时候会append一个loadingtag，然后会存在这个类名。不要重复执行，可能会出错
                     //if (msgContentContainer.classList.contains('message-encrypted-tip-parent')) continue
@@ -356,7 +362,6 @@ export async function messageRenderer(allChats) {//下面对每条消息进行�
                     }
                     if (!(await ecAPI.imgChecker(imgPath))) {
                         //console.log("[EC]图片检测未通过！"+imgPath)
-                        msgContentContainer?.classList.remove('message-encrypted-tip-parent')//移除父元素的style
                         continue //图片检测未通过
                     }
 

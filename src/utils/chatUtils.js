@@ -132,7 +132,7 @@ height="24px" viewBox="0 -960 960 960" width="24px" onclick="ECactivator()">
         if ((await ecAPI.getConfig()).activeEC) {
             imageElement.firstChild.classList.add('active')
             const sendBtnWrapEl = document.querySelector('.send-btn-wrap')
-            sendBtnWrapEl.classList.toggle('active')
+            sendBtnWrapEl.classList.toggle('active', true)
             const sendTextBtnEl = sendBtnWrapEl.querySelector('.send-msg')//带有“发送字样的按钮”
             sendTextBtnEl.innerText = "加密发送"
 
@@ -183,16 +183,16 @@ export async function changeECStyle(isActive) {
     const svg = document.querySelector('.ec-svg')
     const sendBtnWrapEl = document.querySelector('.send-btn-wrap')
 
-    sendBtnWrapEl.classList.toggle('active',isActive)
+    sendBtnWrapEl.classList.toggle('active', isActive)
     const sendTextBtnEl = sendBtnWrapEl.querySelector('.send-msg')//带有“发送字样的按钮”
-    sendTextBtnEl.innerText = !isActive ? "加密发送" : "发送"
+    sendTextBtnEl.innerText = isActive ? "加密发送" : "发送"
 
-    svg.classList.toggle('active',isActive);
+    svg.classList.toggle('active', isActive);
 
     //对输入框加点特效，使得开启加密更加明显
     if ((await ecAPI.getConfig()).isUseEnhanceArea) {
         const chatInputEl = document.querySelector('.chat-input-area')
-        chatInputEl.classList.toggle('active',isActive)
+        chatInputEl.classList.toggle('active', isActive)
     }
 }
 
