@@ -356,6 +356,7 @@ export async function messageRenderer(allChats) {//下面对每条消息进行�
                     }
                     if (!(await ecAPI.imgChecker(imgPath))) {
                         //console.log("[EC]图片检测未通过！"+imgPath)
+                        msgContentContainer?.classList.remove('message-encrypted-tip-parent')//移除父元素的style
                         continue //图片检测未通过
                     }
 

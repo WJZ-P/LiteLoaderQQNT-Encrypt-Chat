@@ -146,7 +146,7 @@ height="24px" viewBox="0 -960 960 960" width="24px" onclick="ECactivator()">
  * 为QQ添加一个EC的功能栏图标，位置在打字窗口的正上方
  */
 export function addFuncBarIcon() {
-    // console.log('addfuncbar启动辣！``````````````````````````````````````````````')
+    console.log('[EC]addfuncbar启动辣！尝试寻找并添加加密图标')
 
     let chatElement = null
     //let findCnt=0
@@ -156,7 +156,7 @@ export function addFuncBarIcon() {
         }
         //已经找到对应元素
         chatElement = document.querySelector(".chat-input-area")
-        // console.log('找到啦！' + chatElement)
+        console.log('[EC addFuncBarIcon]找到chat-input-area啦！' + chatElement)
 
         createFuncBarIcon(chatElement)
         clearInterval(taskID)//关闭任务
@@ -172,29 +172,27 @@ export async function ECactivator() {
 
     //点击按钮之后，应该通知所有渲染进程调用changeECStyle方法
     // await changeECStyle()
-    await ecAPI.sendMsgToChatWindows("LiteLoader.encrypt_chat.changeECStyle",isActive)//让主进程通知渲染进程改变开关状态
+    await ecAPI.sendMsgToChatWindows("LiteLoader.encrypt_chat.changeECStyle", !isActive)//让主进程通知渲染进程改变开关状态
 
-    setTimeout(async () => {
-        await ecAPI.setConfig({activeEC: !isActive})//设置开关状态
-    }, 100)
+    await ecAPI.setConfig({activeEC: !isActive})//设置开关状态
+
 }
 
 export async function changeECStyle(isActive) {
-    console.log("当前准备执行changeECStyle方法。传参为"+isActive)
-    //const isActive = (await ecAPI.getConfig()).activeEC//获取当前EC状态，默认关闭加密
+    console.log("当前准备执行changeECStyle方法。状态修改为" + isActive)
     const svg = document.querySelector('.ec-svg')
     const sendBtnWrapEl = document.querySelector('.send-btn-wrap')
 
-    sendBtnWrapEl.classList.toggle('active')
+    sendBtnWrapEl.classList.toggle('active',isActive)
     const sendTextBtnEl = sendBtnWrapEl.querySelector('.send-msg')//带有“发送字样的按钮”
     sendTextBtnEl.innerText = !isActive ? "加密发送" : "发送"
 
-    svg.classList.toggle('active');
+    svg.classList.toggle('active',isActive);
 
     //对输入框加点特效，使得开启加密更加明显
     if ((await ecAPI.getConfig()).isUseEnhanceArea) {
         const chatInputEl = document.querySelector('.chat-input-area')
-        chatInputEl.classList.toggle('active')
+        chatInputEl.classList.toggle('active',isActive)
     }
 }
 

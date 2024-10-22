@@ -16,14 +16,15 @@ contextBridge.exposeInMainWorld("encrypt_chat", {
     //设置相关，给renderer进程用
     getConfig: () => ipcRenderer.invoke("LiteLoader.encrypt_chat.getConfig"),
     setConfig: (newConfig) => ipcRenderer.invoke("LiteLoader.encrypt_chat.setConfig", newConfig),
-    addEventListener: (channel, func) => ipcRenderer.on(channel, (event, ...args) => {
-        func(...args)
-    }),
+    addEventListener: (channel, func) => ipcRenderer.on(channel, (event, ...args) => func(...args)),
     isChatWindow: () => ipcRenderer.invoke("LiteLoader.encrypt_chat.isChatWindow"),
     sendIPC: (channel, arg) => ipcRenderer.send(channel, arg),//渲染进程用来发送IPC消息,其实不需要，NTQQ的window对象有ipcRenderer
 
     //发送消息到所有聊天窗口
-    sendMsgToChatWindows: (message, arg) => ipcRenderer.send("LiteLoader.encrypt_chat.sendMsgToChatWindows", message, arg),
+    sendMsgToChatWindows: (message, arg) => {
+        //console.log(message,arg)
+        ipcRenderer.send("LiteLoader.encrypt_chat.sendMsgToChatWindows", message, arg)
+    },
 
     invokeNative: (eventName, cmdName, registered, webContentId, ...args) => invokeNative(eventName, cmdName, registered, webContentId, ...args)
 });

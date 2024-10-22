@@ -42,35 +42,33 @@ module.exports.onBrowserWindowCreated = async window => {
         // console.log(window.webContents)
 
         //是聊天窗口才修改
-        if (window.id !== 1) {
-            try {
-                //window 为 Electron 的 BrowserWindow 实例
-                if (window.ecIsLoaded) return pluginLog("[Main]当前窗口已加载。不需要重复加载")
-                window.ecIsLoaded = true
+        try {
+            //window 为 Electron 的 BrowserWindow 实例
+            if (window.ecIsLoaded) return pluginLog("[Main]已修改IPC，不需要重复加载")
+            window.ecIsLoaded = true
 
-                pluginLog('启动！')
-                //替换掉官方的ipc监听器
-                window.webContents._events["-ipc-message"] = ipcModifyer(window.webContents._events["-ipc-message"], window)
+            pluginLog('启动！')
+            //替换掉官方的ipc监听器
+            window.webContents._events["-ipc-message"] = ipcModifyer(window.webContents._events["-ipc-message"], window)
 
-                //这里修改关闭窗口时候的函数，用来在关闭QQ时清空加密图片缓存
-                window.webContents._events['-before-unload-fired'] = new Proxy(window.webContents._events['-before-unload-fired'], {
-                    apply(target, thisArg, args) {
-                        try {
-                            //下面删除掉加密图片缓存
-                            const cachePath = path.join(config.pluginPath, 'decryptedImgs')
-                            deleteFiles(cachePath)
-                        } catch (e) {
-                            console.log(e)
-                        }
-                        return target.apply(thisArg, args)
+            //这里修改关闭窗口时候的函数，用来在关闭QQ时清空加密图片缓存
+            window.webContents._events['-before-unload-fired'] = new Proxy(window.webContents._events['-before-unload-fired'], {
+                apply(target, thisArg, args) {
+                    try {
+                        //下面删除掉加密图片缓存
+                        const cachePath = path.join(config.pluginPath, 'decryptedImgs')
+                        deleteFiles(cachePath)
+                    } catch (e) {
+                        console.log(e)
                     }
-                })
+                    return target.apply(thisArg, args)
+                }
+            })
 
-                pluginLog('ipc监听器修改成功')
+            pluginLog('ipc监听器修改成功')
 
-            } catch (e) {
-                pluginLog(e)
-            }
+        } catch (e) {
+            pluginLog(e)
         }
     })
 }
@@ -103,7 +101,7 @@ async function onload() {
     })
 
     ipcMain.handle("LiteLoader.encrypt_chat.getMenuHTML", () => fs.readFileSync(path.join(config.pluginPath, 'src/pluginMenu.html'), 'utf-8'))
-    ipcMain.handle("LiteLoader.encrypt_chat.sendMsgToChatWindows", (_, message, args) => {
+    ipcMain.on("LiteLoader.encrypt_chat.sendMsgToChatWindows", (_, message, args) => {
         console.log('主进程准备处理sendMsgToChatWindows')
         pluginLog(_, message, args)
         sendMsgToChatWindows(message, args)
