@@ -1,4 +1,4 @@
-import {addFuncBarIcon, addMenuItemEC, ECactivator} from "./utils/chatUtils.js";
+import {addFuncBarIcon, addMenuItemEC, changeECStyle, ECactivator} from "./utils/chatUtils.js";
 import {SettingListeners} from "./utils/SettingListeners.js"
 import {messageRenderer, patchCss, rePatchCss} from "./utils/rendererUtils.js";
 
@@ -31,24 +31,26 @@ export const onSettingWindowCreated = async view => {
 
 //注入函数
 async function onLoad() {
+    console.log('[EC渲染进程]正在调用onLoad函数')
     if (location.hash === "#/blank") {
         navigation.addEventListener("navigatesuccess", onHashUpdate, {once: true});
     } else {
         onHashUpdate();
     }
+    console.log('[EC渲染进程]onLoad函数加载完成')
 }
 
 function onHashUpdate() {
     const hash = location.hash;
-    if (hash === '#/blank') {
-        return
-    }
+    if (hash === '#/blank') return
 
     if (!(hash.includes("#/main/message") || hash.includes("#/chat"))) return;//不符合条件直接返回
 
-    ecAPI.addEventListener('LiteLoader.encrypt_chat.rePatchCss', rePatchCss) //监听设置被修改后，从主进程发过来的重新修改css请求
+    console.log('[EC渲染进程]onHashUpdate')
 
-    console.log('[EC]下面执行onLoad方法')
+    ecAPI.addEventListener('LiteLoader.encrypt_chat.rePatchCss', rePatchCss) //监听设置被修改后，从主进程发过来的重新修改css请求
+    ecAPI.addEventListener('LiteLoader.encrypt_chat.changeECStyle', changeECStyle) //改变svg图标样式
+
     try {
         //addMenuItemEC()//添加鼠标右键时的菜单选项
         patchCss()//修改css

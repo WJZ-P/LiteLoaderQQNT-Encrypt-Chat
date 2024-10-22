@@ -90,6 +90,7 @@ class Config {
                 }
             })
             pluginLog('修改配置文件成功')
+            return this.config
         } catch (e) {
             console.log(e)
         }

@@ -107,7 +107,7 @@ function createFuncBarIcon(chatElement) {
         iconItem.id = "id-func-bar-EncryptChat"
         iconItem.ariaLabel = "加密聊天"
         imageElement.innerHTML = `<svg class="q-svg ec-svg" xmlns="http://www.w3.org/2000/svg" 
-height="24px" viewBox="0 -960 960 960" width="24px" onclick="ECactivator(this,document.querySelector('.send-btn-wrap'))">
+height="24px" viewBox="0 -960 960 960" width="24px" onclick="ECactivator()">
 <path d="M240-399h313v-60H240v60Zm0-130h480v-60H240v60Zm0-130h480v-60H240v60ZM80-80v-740q0-24 18-42t42-18h680q24 0 42 18t18 42v520q0 24-18 42t-42 18H240L80-80Zm134-220h606v-520H140v600l74-80Zm-74 0v-520 520Z"/></svg>`
 
         //下面把提示字添加到子元素内
@@ -137,7 +137,7 @@ height="24px" viewBox="0 -960 960 960" width="24px" onclick="ECactivator(this,do
             sendTextBtnEl.innerText = "加密发送"
 
             if ((await ecAPI.getConfig()).isUseEnhanceArea)
-                document.querySelector('.chat-input-area').classList.toggle('active')
+                document.querySelector('.chat-input-area').classList.toggle('active', true)
         }
     }).observe(chatElement, {childList: true});//检测子元素的增删变化
 }
@@ -165,16 +165,25 @@ export function addFuncBarIcon() {
 
 /**
  * 启用/关闭加密聊天功能，同时修改svg元素样式和输入框的样式
- * @param svg svg元素
- * @param sendBtnWrapEl
  */
-export async function ECactivator(svg = null, sendBtnWrapEl = null) {
-    let isActive = (await ecAPI.getConfig()).activeEC//获取当前EC状态，默认关闭加密
+export async function ECactivator() {
+    const isActive = (await ecAPI.getConfig()).activeEC//获取当前EC状态，默认关闭加密
     console.log('更改active为' + !isActive)
 
-    //没传入就自己找
-    if (!svg) svg = document.querySelector('.ec-svg')
-    if (!sendBtnWrapEl) sendBtnWrapEl = document.querySelector('.send-btn-wrap')
+    //点击按钮之后，应该通知所有渲染进程调用changeECStyle方法
+    // await changeECStyle()
+    await ecAPI.sendMsgToChatWindows("LiteLoader.encrypt_chat.changeECStyle",isActive)//让主进程通知渲染进程改变开关状态
+
+    setTimeout(async () => {
+        await ecAPI.setConfig({activeEC: !isActive})//设置开关状态
+    }, 100)
+}
+
+export async function changeECStyle(isActive) {
+    console.log("当前准备执行changeECStyle方法。传参为"+isActive)
+    //const isActive = (await ecAPI.getConfig()).activeEC//获取当前EC状态，默认关闭加密
+    const svg = document.querySelector('.ec-svg')
+    const sendBtnWrapEl = document.querySelector('.send-btn-wrap')
 
     sendBtnWrapEl.classList.toggle('active')
     const sendTextBtnEl = sendBtnWrapEl.querySelector('.send-msg')//带有“发送字样的按钮”
@@ -187,38 +196,6 @@ export async function ECactivator(svg = null, sendBtnWrapEl = null) {
         const chatInputEl = document.querySelector('.chat-input-area')
         chatInputEl.classList.toggle('active')
     }
-
-
-    await ecAPI.setConfig({activeEC: !isActive})//设置开关状态
-
-    //这里加点测试用功能
-    // const multiForwardMsg = [{"frameId": 1, "processId": 5}, false, "IPC_UP_2", [{
-    //     "type": "request",
-    //     "callbackId": "24b46f24-8235-4cb6-a8ff-5acdd8435491",
-    //     "eventName": "ns-ntApi-2"
-    // }, ["nodeIKernelMsgService/multiForwardMsgWithComment", {
-    //     "msgInfos": [{
-    //         "msgId": "7418734961609529108",
-    //         "senderShowName": "真漂亮"
-    //     }, {"msgId": "7418734961609529103", "senderShowName": "真漂亮"}],
-    //     "srcContact": {"chatType": 2, "peerUid": "934773893", "guildId": ""},
-    //     "dstContact": {"chatType": 2, "peerUid": "934773893", "guildId": ""},
-    //     "commentElements": [],
-    //     "msgAttributeInfos": new Map()
-    // }, null]]]
-
-    // const result = await ecAPI.invokeNative("ns-ntApi", "nodeIKernelMsgService/multiForwardMsgWithComment"
-    //     , false, window.webContentId, {
-    //         "msgInfos": [{
-    //             "msgId": "7418734961609529108",
-    //             "senderShowName": "真漂亮"
-    //         }, {"msgId": "7418734961609529103", "senderShowName": "真漂亮"}],
-    //         "srcContact": {"chatType": 2, "peerUid": "934773893", "guildId": ""},
-    //         "dstContact": {"chatType": 2, "peerUid": "545402644", "guildId": ""},
-    //         "commentElements": [],
-    //         "msgAttributeInfos": new Map()
-    //     }, null)
-
 }
 
 window.ECactivator = ECactivator

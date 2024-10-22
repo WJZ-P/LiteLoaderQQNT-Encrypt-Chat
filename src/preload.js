@@ -4,8 +4,8 @@ const {contextBridge, ipcRenderer} = require("electron");
 // 在window对象下导出只读对象
 contextBridge.exposeInMainWorld("encrypt_chat", {
     messageEncryptor: (message) => ipcRenderer.invoke("LiteLoader.encrypt_chat.messageEncryptor", message),
-    messageDecryptor: (message,peerUid) => ipcRenderer.invoke("LiteLoader.encrypt_chat.messageDecryptor", message,peerUid),
-    imgDecryptor: (imgPath,peerUid) => ipcRenderer.invoke("LiteLoader.encrypt_chat.imgDecryptor", imgPath,peerUid),
+    messageDecryptor: (message, peerUid) => ipcRenderer.invoke("LiteLoader.encrypt_chat.messageDecryptor", message, peerUid),
+    imgDecryptor: (imgPath, peerUid) => ipcRenderer.invoke("LiteLoader.encrypt_chat.imgDecryptor", imgPath, peerUid),
     imgChecker: (imgPath) => ipcRenderer.invoke("LiteLoader.encrypt_chat.imgChecker", imgPath),
     decodeHex: (message) => ipcRenderer.invoke("LiteLoader.encrypt_chat.decodeHex", message),
     getWindowID: () => ipcRenderer.invoke("LiteLoader.encrypt_chat.getWindowID"),
@@ -21,6 +21,10 @@ contextBridge.exposeInMainWorld("encrypt_chat", {
     }),
     isChatWindow: () => ipcRenderer.invoke("LiteLoader.encrypt_chat.isChatWindow"),
     sendIPC: (channel, arg) => ipcRenderer.send(channel, arg),//渲染进程用来发送IPC消息,其实不需要，NTQQ的window对象有ipcRenderer
+
+    //发送消息到所有聊天窗口
+    sendMsgToChatWindows: (message, arg) => ipcRenderer.send("LiteLoader.encrypt_chat.sendMsgToChatWindows", message, arg),
+
     invokeNative: (eventName, cmdName, registered, webContentId, ...args) => invokeNative(eventName, cmdName, registered, webContentId, ...args)
 });
 
