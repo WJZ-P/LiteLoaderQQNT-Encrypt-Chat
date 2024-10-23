@@ -91,7 +91,7 @@ export function addMenuItemEC() {
  * @param chatElement
  */
 function createFuncBarIcon(chatElement) {
-    new MutationObserver(async () => {
+    async function executor() {
         if (document.querySelector('#id-func-bar-EncryptChat')) return //已经有了就不添加了
         const funcBarElement = chatElement.getElementsByClassName("func-bar")[1]//第二个就是右边的
         // console.log('下面打印出右侧的funcbar')
@@ -128,6 +128,8 @@ height="24px" viewBox="0 -960 960 960" width="24px" onclick="ECactivator()">
         //把自己的新图标元素添加进去，并且是添加成为第一个子元素，显示在最左边。
         funcBarElement.insertBefore(barIconElement, funcBarElement.firstChild);
 
+        console.log("EC按钮添加成功")
+
         //检查一下目前的激活状态并对应修改
         if ((await ecAPI.getConfig()).activeEC) {
             imageElement.firstChild.classList.add('active')
@@ -139,7 +141,11 @@ height="24px" viewBox="0 -960 960 960" width="24px" onclick="ECactivator()">
             if ((await ecAPI.getConfig()).isUseEnhanceArea)
                 document.querySelector('.chat-input-area').classList.toggle('active', true)
         }
-    }).observe(chatElement, {childList: true});//检测子元素的增删变化
+    }
+    executor()
+    //setTimeout(executor, 200) //延迟一段时间，等待元素加载完毕，然后再执行，防止报错。
+
+    new MutationObserver(executor).observe(chatElement, {childList: true});//检测子元素的增删变化
 }
 
 /**
@@ -152,6 +158,7 @@ export function addFuncBarIcon() {
     //let findCnt=0
     const taskID = setInterval(() => {
         if (!document.querySelector(".chat-input-area")) {
+            console.log("正在寻找chat-input-area")
             return
         }
         //已经找到对应元素
@@ -159,6 +166,7 @@ export function addFuncBarIcon() {
         console.log('[EC addFuncBarIcon]找到chat-input-area啦！' + chatElement)
 
         createFuncBarIcon(chatElement)
+
         clearInterval(taskID)//关闭任务
     }, 500)
 }
