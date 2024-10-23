@@ -98,6 +98,7 @@ function createFuncBarIcon(chatElement) {
         // console.log(funcBarElement)
         if (!funcBarElement) return//为空就返回，说明当前不是聊天窗口
 
+        const hexColor = (rgbaToHex(window.getComputedStyle(chatElement.querySelector('#id-func-bar-MessageRecord > i > svg')).borderBlockColor))//获取QQ的自带svg颜色
 
         const barIconElement = funcBarElement.querySelector(`.bar-icon`).cloneNode(true)
         const iconItem = barIconElement.querySelector('.icon-item')//内部的元素，需要修改成自己的值
@@ -106,7 +107,7 @@ function createFuncBarIcon(chatElement) {
 
         iconItem.id = "id-func-bar-EncryptChat"
         iconItem.ariaLabel = "加密聊天"
-        imageElement.innerHTML = `<svg class="q-svg ec-svg" xmlns="http://www.w3.org/2000/svg" 
+        imageElement.innerHTML = `<svg class="q-svg ec-svg" fill=${hexColor} xmlns="http://www.w3.org/2000/svg" 
 height="24px" viewBox="0 -960 960 960" width="24px" onclick="ECactivator()">
 <path d="M240-399h313v-60H240v60Zm0-130h480v-60H240v60Zm0-130h480v-60H240v60ZM80-80v-740q0-24 18-42t42-18h680q24 0 42 18t18 42v520q0 24-18 42t-42 18H240L80-80Zm134-220h606v-520H140v600l74-80Zm-74 0v-520 520Z"/></svg>`
 
@@ -142,6 +143,7 @@ height="24px" viewBox="0 -960 960 960" width="24px" onclick="ECactivator()">
                 document.querySelector('.chat-input-area').classList.toggle('active', true)
         }
     }
+
     executor()
     //setTimeout(executor, 200) //延迟一段时间，等待元素加载完毕，然后再执行，防止报错。
 
@@ -205,6 +207,36 @@ export async function changeECStyle(isActive) {
 }
 
 window.ECactivator = ECactivator
+
+function rgbaToHex(color) {
+    // 使用正则表达式提取 RGB/A 值
+    const rgbaMatch = color.match(/rgba?\((\d+),\s*(\d+),\s*(\d+)(?:,\s*(\d*(?:\.\d+)?))?\)/);
+
+    if (!rgbaMatch) {
+        return '#000000'
+    }
+
+    const r = parseInt(rgbaMatch[1]);
+    const g = parseInt(rgbaMatch[2]);
+    const b = parseInt(rgbaMatch[3]);
+    const a = rgbaMatch[4] ? parseFloat(rgbaMatch[4]) : 1; // alpha 值，默认为 1
+
+    // 将 RGB 转换为十六进制
+    const toHex = (c) => {
+        return c.toString(16).padStart(2, '0');
+    };
+
+    // 生成十六进制颜色
+    const hexColor = `#${toHex(r)}${toHex(g)}${toHex(b)}`;
+
+    // 如果有 alpha 值，转换为两位十六进制
+    if (a < 1) {
+        const alphaHex = Math.round(a * 255).toString(16).padStart(2, '0');
+        return `${hexColor}${alphaHex}`;
+    }
+
+    return hexColor;
+}
 
 //ecAPI.addEventListener('LiteLoader.encrypt_chat.changeAllECactivator',ECactivator)
 //这样写会存在不同窗口的同步问题。
