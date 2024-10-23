@@ -84,7 +84,7 @@
 
 # 使用方法
 
-## 1. 打开QQ，随便选择一个聊天对象，当前不支持独立聊天窗口的加密，也就是说你需要在QQ左侧有好友栏，设置之类的那个页面使用加密功能。
+## 1. 打开QQ，随便选择一个聊天对象。支持独立窗口加密
 <p align="center">
   <a href="https://www.bilibili.com/video/BV12x411y7SN">
     <img src="src/assests/markdown/chatWindow.png" alt="聊天界面" style="width: 500px">
