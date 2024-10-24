@@ -133,6 +133,9 @@
 ## 鸣谢
 
 - [LiteLoader QQNT](https://github.com/LiteLoaderQQNT/LiteLoaderQQNT?tab=readme-ov-file)
+- [LiteLoader Euphony](https://github.com/LiteLoaderQQNT/LiteLoaderQQNT?tab=readme-ov-file)
+- [NapCat](https://github.com/NapNeko/NapCatQQ)
+- [LLOneBot](https://github.com/LLOneBot/LLOneBot)
 
 
 ## 重要声明
