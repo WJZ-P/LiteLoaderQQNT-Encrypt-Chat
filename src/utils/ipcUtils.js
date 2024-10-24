@@ -30,6 +30,7 @@ function ipcModifyer(ipcProxy, window) {
                 if (ipcName === 'nodeIKernelMsgService/sendMsg') modifiedArgs = await ipcMsgModify(args, window);
                 if (ipcName === 'openMediaViewer') modifiedArgs = ipcOpenImgModify(args);
                 if (ipcName === 'writeClipboard') modifiedArgs = ipcwriteClipboardModify(args);//修改复制功能
+                if (ipcName === 'startDrag') modifiedArgs = ipcStartDrag(args);
 
                 return target.apply(thisArg, modifiedArgs)
             } catch (err) {
@@ -210,6 +211,20 @@ function ipcwriteClipboardModify(args) {
     return args
 }
 
+//拖拽图片时解密
+function ipcStartDrag(args) {
+    const decryptedObj = imgDecryptor(args[3][1][1], null)
+    if (decryptedObj.decryptedImgPath !== "")  //解密成功才继续
+        args[3][1][1] = decryptedObj.decryptedImgPath
+    return args
+}
+
+const c = [{"frameId": 1, "processId": 5}, false, "IPC_UP_2", [{
+    "type": "request",
+    "callbackId": "30511689-ba3b-447e-add5-41df0d9f8a4a",
+    "eventName": "ns-OsApi-2"
+}, ["startDrag", "F:\\QQ文件\\1369727119\\nt_qq\\nt_data\\Pic\\2024-10\\Ori\\db8eedfbb3aefe4a5a92ec35439fe076.png"]]]
+
 module.exports = {ipcModifyer}
 
 const textElement = {
@@ -217,6 +232,7 @@ const textElement = {
     elementId: '',
     textElement: {content: '测试', atType: 0, atUid: '', atTinyId: '', atNtUid: ''}
 }
+
 //插入一个卡片消息
 // args[3][1][1].msgElements.push({
 //     elementType: 10,
