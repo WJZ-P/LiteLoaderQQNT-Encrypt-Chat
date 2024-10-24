@@ -603,16 +603,18 @@ function wrapLinks(text) {
     // 匹配带协议和不带协议的 URL
     const urlPattern = /(\b(https?:\/\/[^\s]+|www\.[^\s]+)\b)/g;
     // 将匹配的 URL 包装在 <span class="text-link"> 中
-    return text.replace(urlPattern, '<span onclick="ecOpenURL(url)" style="cursor: pointer;color: #2d77e5;text-decoration: underline" ' +
+    return text.replace(urlPattern, '<span onclick="ecOpenURL(event)" style="cursor: pointer;color: #2d77e5;text-decoration: underline" ' +
         'class="ec-link">$1</span>');
 }
 
-async function ecOpenURL(url) {
-    console.log("[EC链接]即将发送的URL为" + url)
+async function ecOpenURL(event) {
+    // console.log("[EC链接]ecOpenURL的参数为")
+    // console.log(event)
+    let url=event.target.innerText
+    if(!url.startsWith("http")) url="https://"+url
     await ecAPI.invokeNative("ns-BusinessApi", "openUrl", false, window.webContentId, {"url": url})
 }
 //给window对象添加函数
-let url=""
 window.ecOpenURL=ecOpenURL
 
 
