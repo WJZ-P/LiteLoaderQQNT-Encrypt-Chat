@@ -1,5 +1,4 @@
 import "../assests/minJS/axios.min.js"
-import {pluginLog} from "./frontLogUtils.js";
 
 //添加css样式
 const ecAPI = window.encrypt_chat
@@ -307,7 +306,7 @@ export async function messageRenderer(allChats) {//下面对每条消息进行�
 
                         } else {
                             totalOriginalMsg += normalText.innerText//获取原本的密文
-                            normalText.innerText = decryptedMsg
+                            normalText.innerHTML = wrapLinks(decryptedMsg)
                         }
                         isECMsg = true
                     }//文本内容修改为解密结果
@@ -319,8 +318,8 @@ export async function messageRenderer(allChats) {//下面对每条消息进行�
                 } else if (imgElement) {
 
                     if (imgElement.getAttribute('src').includes('base64')) continue  //图片是base64格式的，直接跳过
-                    if (msgContentContainer.classList.contains('message-encrypted-tip-parent')){//说明有解密边框
-                        if(!imgElement.getAttribute('src').includes('local')){
+                    if (msgContentContainer.classList.contains('message-encrypted-tip-parent')) {//说明有解密边框
+                        if (!imgElement.getAttribute('src').includes('local')) {
                             //修复正常图片被带上解密边框的bug。
                             msgContentContainer.classList.remove('message-encrypted-tip-parent')
                         }
@@ -332,7 +331,7 @@ export async function messageRenderer(allChats) {//下面对每条消息进行�
                     let imgPath = decodeURIComponent(imgElement.getAttribute('src')).substring(9)//前面一般是appimg://
                     if (imgPath.includes('Thumb') && imgPath.includes('.gif')) {
                         //imgPath.includes('_720.gif')&& 好像有的图是_0也不会自动下载原图
-                        if ( !imgElement.classList.contains('ec-transformed-img')) {//说明可能是加密的缩略图，可能需要请求原图
+                        if (!imgElement.classList.contains('ec-transformed-img')) {//说明可能是加密的缩略图，可能需要请求原图
                             const curAioData = app.__vue_app__.config.globalProperties.$store.state.common_Aio.curAioData
                             const msgId = chatElement.id
                             const elementId = imgElement.parentElement.getAttribute('element-id')
@@ -599,6 +598,22 @@ function downloadFile(fileObj, msgContent) {
         console.log(e)
     }
 }
+
+function wrapLinks(text) {
+    // 匹配带协议和不带协议的 URL
+    const urlPattern = /(\b(https?:\/\/[^\s]+|www\.[^\s]+)\b)/g;
+    // 将匹配的 URL 包装在 <span class="text-link"> 中
+    return text.replace(urlPattern, '<span onclick="ecOpenURL(url)" style="cursor: pointer;color: #2d77e5;text-decoration: underline" ' +
+        'class="ec-link">$1</span>');
+}
+
+async function ecOpenURL(url) {
+    console.log("[EC链接]即将发送的URL为" + url)
+    await ecAPI.invokeNative("ns-BusinessApi", "openUrl", false, window.webContentId, {"url": url})
+}
+//给window对象添加函数
+let url=""
+window.ecOpenURL=ecOpenURL
 
 
 // const fileObj={
