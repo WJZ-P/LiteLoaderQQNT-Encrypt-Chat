@@ -4,7 +4,7 @@
   "name": "Encrypt Chat",
   "slug": "encrypt_chat",
   "description": "一个方便好用加密通话插件(*^_^*)",
-  "version": "2.3.1",
+  "version": "2.3.2",
   "icon": "./src/assests/chat_blue.svg",
   "thumb": "./src/assests/chat_blue.svg",
   "authors": [
@@ -27,8 +27,8 @@
     "repo": "WJZ-P/LiteLoaderQQNT-Encrypt-Chat",
     "branch": "main",
     "release": {
-      "tag": "v2.3.1",
-      "file": "Encrypt-Chat-2.3.1.zip"
+      "tag": "v2.3.2",
+      "file": "Encrypt-Chat-2.3.2.zip"
     }
   }
 }
