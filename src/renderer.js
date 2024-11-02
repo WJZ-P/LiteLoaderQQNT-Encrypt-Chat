@@ -31,7 +31,7 @@ export const onSettingWindowCreated = async view => {
 
 //注入函数
 async function onLoad() {
-    console.log('[EC渲染进程]正在调用onLoad函数')
+    console.log('[EC渲染进程]正在调用onLoad函数~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~')
     if (location.hash === "#/blank") {
         navigation.addEventListener("navigatesuccess", onHashUpdate, {once: true});
     } else {
@@ -46,7 +46,7 @@ function onHashUpdate() {
 
     if (!(hash.includes("#/main/message") || hash.includes("#/chat"))) return;//不符合条件直接返回
 
-    console.log('[EC渲染进程]执行onHashUpdate')
+    console.log('[EC渲染进程]执行onHashUpdate~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~')
 
     ecAPI.addEventListener('LiteLoader.encrypt_chat.rePatchCss', rePatchCss) //监听设置被修改后，从主进程发过来的重新修改css请求
     ecAPI.addEventListener('LiteLoader.encrypt_chat.changeECStyle', changeECStyle) //改变svg图标样式
