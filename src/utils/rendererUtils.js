@@ -74,7 +74,7 @@ export function patchCss() {
                 margin-left:3px;
                 margin-right:3px;
                 margin-bottom: 15px;
-                box-shadow: 0px 0px 8px 5px ${currentConfig.mainColor};
+                box-shadow: 0px 0px 8px 5px ${currentConfig.mainColor} !important;
             }
             .message-encrypted-tip-parent-notip {
                 border-radius: 10px;
@@ -83,7 +83,7 @@ export function patchCss() {
                 margin-top:3px;
                 margin-left:3px;
                 margin-right:3px;
-                box-shadow: 0px 0px 8px 5px ${currentConfig.mainColor};
+                box-shadow: 0px 0px 8px 5px ${currentConfig.mainColor} !important;
             }
             
 .q-svg{
