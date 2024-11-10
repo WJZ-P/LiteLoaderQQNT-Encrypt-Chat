@@ -13,6 +13,7 @@ class Config {
         downloadFilePath: '',                   //解密文件的下载路径
         isUseTag: true,                         //是否使用tag，即解密消息下方的"原消息"
         isUseEnhanceArea: false,                //开启后，使用加密时聊天框会添加背景色
+        useEncrypt:true,                        //是否启用加密
         styles: {
             Bangboo: {//邦布语
                 length: [2, 5],

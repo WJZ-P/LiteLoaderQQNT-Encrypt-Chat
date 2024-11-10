@@ -66,6 +66,19 @@ export class SettingListeners {
         })
     }
 
+    async activeButtonListener() {
+        const tagButton = this.document.querySelector('#ec-active-button')
+        // console.log(tagButton)
+        // console.log((await ecAPI.getConfig()).isUseTag)
+        if ((await ecAPI.getConfig()).useEncrypt) tagButton.classList.toggle('is-active')
+
+        tagButton.addEventListener('click', async () => {
+            const useEncrypt = (await ecAPI.getConfig()).useEncrypt
+            tagButton.classList.toggle('is-active')
+            await ecAPI.setConfig({useEncrypt: !useEncrypt})
+        })
+    }
+
     async enhanceAreaButtonListener() {
         const button = this.document.querySelector('#ec-enhance-input-area-button')
         if ((await ecAPI.getConfig()).isUseEnhanceArea) button.classList.toggle('is-active')
@@ -179,5 +192,6 @@ export class SettingListeners {
         this.enhanceAreaButtonListener()
         this.addKeyRowButtonListener()
         this.initIndependentKeyList()
+        this.activeButtonListener()
     }
 }

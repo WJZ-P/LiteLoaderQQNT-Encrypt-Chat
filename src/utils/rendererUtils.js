@@ -250,6 +250,8 @@ export async function checkMsgElement(msgElement) {
  * @returns {Promise<void>}
  */
 export async function messageRenderer(allChats) {//下面对每条消息进行判断
+    if(!(await ecAPI.getConfig()).useEncrypt) return//说明未开启加密，不做处理。
+
     const uin = app.__vue_app__?.config?.globalProperties?.$store?.state?.common_Aio?.curAioData?.header.uin//当天聊天的对应信息
     for (const chatElement of allChats) {
         try {

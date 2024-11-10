@@ -50,7 +50,6 @@ module.exports.onBrowserWindowCreated = async window => {
             pluginLog('启动！')
             //替换掉官方的ipc监听器
             window.webContents._events["-ipc-message"] = ipcModifyer(window.webContents._events["-ipc-message"], window)
-
             //这里修改关闭窗口时候的函数，用来在关闭QQ时清空加密图片缓存
             window.webContents._events['-before-unload-fired'] = new Proxy(window.webContents._events['-before-unload-fired'], {
                 apply(target, thisArg, args) {
