@@ -186,17 +186,8 @@ export async function ECactivator() {
 
     await ecAPI.setConfig({activeEC: !isActive})//设置开关状态
 
-    // await ecAPI.invokeNative('ns-ntApi', "nodeIKernelMsgService/sendMsg", false, window.webContentId, {
-    //     "msgId": "0",
-    //     "peer": {"chatType": 2, "peerUid": "934773893", "guildId": ""},
-    //     "msgElements": [{
-    //         "elementType": 10,
-    //         "elementId": "",
-    //         "arkElement": {"bytesData": "{\"ver\":\"1.0.0.19\",\"prompt\":\"[QQ 小程序]哔哩哔哩\",\"config\":{\"type\":\"normal\",\"width\":0,\"height\":0,\"forward\":1,\"autoSize\":0,\"ctime\":1730459674,\"token\":\"4a47f46a44e0fd675adcc716866214a1\"},\"app\":\"com.tencent.miniapp_01\",\"view\":\"view_8C8E89B49BE609866298ADDFF2DBABA4\",\"meta\":{\"detail_1\":{\"appid\":\"1109937557\",\"appType\":0,\"title\":\"哔哩哔哩哇哈哈\",\"desc\":\"哔哩哔哩嘻嘻嘎嘎\",\"icon\":\"https://miniapp.gtimg.cn/public/appicon/51f90239b78a2e4994c11215f4c4ba15_200.jpg\",\"preview\":\"https://miniapp.gtimg.cn/pcminiapp/screenshot/9d836f5c-1901-4181-84d0-a1943ecf7e6d.jpeg\",\"url\":\"m.q.qq.com/a/s/c8145f7101052043f9cf8d9a72f3529d\",\"scene\":0,\"host\":{\"uin\":1369727119,\"nick\":\"　\"},\"shareTemplateId\":\"8C8E89B49BE609866298ADDFF2DBABA4\",\"shareTemplateData\":{},\"showLittleTail\":\"\",\"gamePoints\":\"\",\"gamePointsUrl\":\"\",\"shareOrigin\":0}},\"miniappShareOrigin\":3,\"miniappOpenRefer\":\"10002\"}"}
-    //     }],
-    //     "msgAttributeInfos": new Map()
-    // }, null)
-
+    const input = document.querySelector("p[data-placeholder]").innerText
+    ecAPI.showMainProcessInfo(input)
 }
 
 export async function changeECStyle(isActive) {

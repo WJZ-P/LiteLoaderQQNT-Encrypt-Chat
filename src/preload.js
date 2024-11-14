@@ -19,7 +19,7 @@ contextBridge.exposeInMainWorld("encrypt_chat", {
     addEventListener: (channel, func) => ipcRenderer.on(channel, (event, ...args) => func(...args)),
     isChatWindow: () => ipcRenderer.invoke("LiteLoader.encrypt_chat.isChatWindow"),
     sendIPC: (channel, arg) => ipcRenderer.send(channel, arg),//渲染进程用来发送IPC消息,其实不需要，NTQQ的window对象有ipcRenderer
-
+    showMainProcessInfo: (message) => ipcRenderer.send("LiteLoader.encrypt_chat.showMainProcessInfo", message),
     //发送消息到所有聊天窗口
     sendMsgToChatWindows: (message, arg) => {
         //console.log(message,arg)

@@ -83,6 +83,29 @@ async function onload() {
     ipcMain.on("LiteLoader.encrypt_chat.ecFileHandler", (_, fileBuffer, fileName) => ecFileHandler(fileBuffer, fileName))
     //打开对应目录的文件夹
     ipcMain.on("LiteLoader.encrypt_chat.openPath", (_, filePath) => shell.openPath(filePath))
+
+    ipcMain.on("LiteLoader.encrypt_chat.showMainProcessInfo", (_, message) => {
+        const globalObject = global
+
+        // 将变量名按点分割
+        const keys = message.split('.');
+        if (keys.length === 0) return console.log(globalObject)
+
+        // 遍历获取深层属性
+        let currentValue = globalObject;
+        for (const key of keys) {
+            if (currentValue && currentValue.hasOwnProperty(key)) {
+                currentValue = currentValue[key];
+            } else {
+                console.log(`${message} is not defined in the global scope.`);
+                return;
+            }
+        }
+
+        // 打印最终的值
+        console.log(`${message}:\n`, currentValue);
+    })
+
     //检查对应文件是否存在
     ipcMain.handle("LiteLoader.encrypt_chat.isFileExist", (_, filePathArray) => fs.existsSync(path.join(...filePathArray)))
 
