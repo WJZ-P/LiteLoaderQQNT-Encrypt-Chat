@@ -1,37 +1,32 @@
 <meta charset="UTF-8">
-<div class="config-menu config_view">
-    <section class="path">
-        <h1>主要配置</h1>
-        <div class="wrap">
-            <div class="list">
-                <div class="vertical-list-item top-box">
+<plugin-menu>
+    <setting-section data-title="主要配置">
+        <setting-panel>
+            <setting-list data-direction="column">
+                <setting-item data-direction="row">
                     <div>
-                        <h2>开启/关闭解密功能</h2>
-                        <span class="secondary-text">开启实时生效，关闭后对新消息生效，或切换页面也会生效。</span>
+                        <setting-text>开启/关闭解密功能</setting-text>
+                        <setting-text data-type="secondary">开启实时生效，关闭后对新消息生效，或切换页面也会生效。</setting-text>
                     </div>
                     <div id="ec-active-button" class="q-switch">
                         <span class="q-switch__handle"></span>
                     </div>
-                </div>
-                <hr class="horizontal-dividing-line"/>
-                <div class="vertical-list-item">
+                </setting-item>
+                <setting-item data-direction="row">
                     <div class="left-part">
-                        <h2>默认密钥</h2>
-                        <div style="display: flex; flex-direction: column">
-                            <span class="secondary-text">密钥用于加密和解密信息，必须双方密钥一致才可以正常通信。</span>
-                        </div>
+                        <setting-text>默认密钥</setting-text>
+                        <setting-text data-type="secondary">密钥用于加密和解密信息，必须双方密钥一致才可以正常通信。</setting-text>
+
                     </div>
                     <input data-type="primary" class="q-input__inner q-input__inner--clearable custom-input"
                            type="text" id="ec-key-input" placeholder="默认20040821">
-                </div>
+                </setting-item>
 
-                <hr class="horizontal-dividing-line"/>
-                <div class="vertical-list-item">
+                <setting-item data-direction="row">
                     <div class="left-part">
-                        <h2>选择语种</h2>
-                        <div style="display: flex; flex-direction: column">
-                            <span class="secondary-text">语种与加密内容无关，仅作为表面上的文本混淆视听。有可爱的喵喵语、邦布语等哦！</span>
-                        </div>
+                        <setting-text>选择语种</setting-text>
+                            <setting-text data-type="secondary">语种与加密内容无关，仅作为表面上的文本混淆视听。</setting-text>
+
                     </div>
                     <div>
                         <label>
@@ -45,49 +40,45 @@
                             </select>
                         </label>
                     </div>
-                </div>
+                </setting-item>
+            </setting-list>
+        </setting-panel>
+    </setting-section>
 
-            </div>
-        </div>
-    </section>
-
-    <section class="path">
-        <h1>样式配置</h1>
-        <div class="wrap">
-            <div class="list">
-                <div class="vertical-list-item">
+    <setting-section data-title="样式配置">
+        <setting-panel>
+            <setting-list data-direction="column">
+                <setting-item data-direction="row">
                     <div>
-                        <h2>EC消息主题色</h2>
-                        <span class="secondary-text">修改EC消息被解密渲染时的边框颜色和解密tag颜色</span>
+                        <setting-text>EC消息主题色</setting-text>
+                        <setting-text data-type="secondary">修改EC消息被解密渲染时的边框颜色和解密tag颜色</setting-text>
                     </div>
                     <div>
                         <input type="color" value="#66ccff" id="ec-color-selector"
                                class="q-button q-button--small q-button--secondary color-picker"/>
                     </div>
-                </div>
-                <hr class="horizontal-dividing-line"/>
-                <div class="vertical-list-item">
+                </setting-item>
+                <setting-item data-direction="row">
                     <div>
-                        <h2>是否启用解密Tag</h2>
-                        <span class="secondary-text">消息解密后下方的"原消息：xxx"</span>
+                        <setting-text>是否启用解密Tag</setting-text>
+                        <setting-text data-type="secondary">消息解密后下方的"原消息：xxx"</setting-text>
                     </div>
                     <div id="ec-tag-button" class="q-switch">
                         <span class="q-switch__handle"></span>
                     </div>
-                </div>
-                <hr class="horizontal-dividing-line"/>
-                <div class="vertical-list-item">
+                </setting-item>
+                <setting-item data-direction="row">
                     <div>
-                        <h2>是否启用更明显的开启加密提示</h2>
-                        <span class="secondary-text">开启后聊天框会有主题背景色。原理是filter的drop-shadow，若高版本有bug请关闭</span>
+                        <setting-text>是否启用更明显的开启加密提示</setting-text>
+                        <setting-text data-type="secondary">开启后聊天框会有主题背景色。原理是filter的drop-shadow，若高版本有bug请关闭</setting-text>
                     </div>
                     <div id="ec-enhance-input-area-button" class="q-switch">
                         <span class="q-switch__handle"></span>
                     </div>
-                </div>
-            </div>
-        </div>
-    </section>
+                </setting-item>
+            </setting-list>
+        </setting-panel>
+    </setting-section>
 
     <section class="path">
         <h1>独立密钥配置</h1>
@@ -353,4 +344,4 @@
         }
 
     </style>
-</div>
+</plugin-menu>

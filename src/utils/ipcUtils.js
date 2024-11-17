@@ -25,7 +25,7 @@ function ipcModifyer(ipcProxy, window) {
                 const eventName = args?.[3]?.[0]?.eventName
                 //测试
                 //if(ipcName==='nodeIKernelMsgService/ForwardMsgWithComment') console.log(JSON.stringify(args))
-                if (eventName !== "ns-LoggerApi-2") console.log(JSON.stringify(args))//调试的时候用
+                //if (eventName !== "ns-LoggerApi-2") console.log(JSON.stringify(args))//调试的时候用
                 //if (ipcName === "nodeIKernelMsgService/setMsgEmojiLikes") console.log(JSON.stringify(args))//打印贴表情
 
                 if (ipcName === 'nodeIKernelMsgService/sendMsg') modifiedArgs = await ipcMsgModify(args, window);
@@ -193,8 +193,8 @@ function ipcwriteClipboardModify(args) {
         //说明消息内容是文字类
         if (item.elementType === 1) {
             //修改解密消息
-            const hexString = decodeHex(item.textElement.content)
-            if (hexString) item.textElement.content = messageDecryptor(hexString, null)
+            const decryptedMsg = messageDecryptor(decodeHex(item.textElement.content), null)
+            if (decryptedMsg) item.textElement.content = decryptedMsg
         }
 
         //说明消息内容是图片类，md5HexStr这个属性一定要对，会做校验

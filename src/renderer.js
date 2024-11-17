@@ -15,7 +15,7 @@ export const onSettingWindowCreated = async view => {
     try {
         //整个插件主菜单
         const parser = new DOMParser()
-        const settingHTML = parser.parseFromString(await ecAPI.getMenuHTML(), "text/html").querySelector(".config-menu")
+        const settingHTML = parser.parseFromString(await ecAPI.getMenuHTML(), "text/html").querySelector("plugin-menu")
 
         const myListener = new SettingListeners(settingHTML)
         await myListener.onLoad()
