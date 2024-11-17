@@ -6,7 +6,8 @@
                 <setting-item data-direction="row">
                     <div>
                         <setting-text>开启/关闭解密功能</setting-text>
-                        <setting-text data-type="secondary">开启实时生效，关闭后对新消息生效，或切换页面也会生效。</setting-text>
+                        <setting-text data-type="secondary">开启实时生效，关闭后对新消息生效，或切换页面也会生效。
+                        </setting-text>
                     </div>
                     <div id="ec-active-button" class="q-switch">
                         <span class="q-switch__handle"></span>
@@ -15,7 +16,8 @@
                 <setting-item data-direction="row">
                     <div class="left-part">
                         <setting-text>默认密钥</setting-text>
-                        <setting-text data-type="secondary">密钥用于加密和解密信息，必须双方密钥一致才可以正常通信。</setting-text>
+                        <setting-text data-type="secondary">密钥用于加密和解密信息，必须双方密钥一致才可以正常通信。
+                        </setting-text>
 
                     </div>
                     <input data-type="primary" class="q-input__inner q-input__inner--clearable custom-input"
@@ -25,7 +27,8 @@
                 <setting-item data-direction="row">
                     <div class="left-part">
                         <setting-text>选择语种</setting-text>
-                            <setting-text data-type="secondary">语种与加密内容无关，仅作为表面上的文本混淆视听。</setting-text>
+                        <setting-text data-type="secondary">语种与加密内容无关，仅作为表面上的文本混淆视听。
+                        </setting-text>
 
                     </div>
                     <div>
@@ -40,6 +43,14 @@
                             </select>
                         </label>
                     </div>
+                </setting-item>
+
+                <setting-item data-direction="row">
+                    <div style="display: flex">
+                        <setting-text>当前Q号uid：</setting-text>
+                        <setting-text style="font-weight: 600">123ASD</setting-text>
+                    </div>
+                    <setting-button data-type="primary" id="uid-btn" style="cursor: pointer">点击复制</setting-button>
                 </setting-item>
             </setting-list>
         </setting-panel>
@@ -70,7 +81,9 @@
                 <setting-item data-direction="row">
                     <div>
                         <setting-text>是否启用更明显的开启加密提示</setting-text>
-                        <setting-text data-type="secondary">开启后聊天框会有主题背景色。原理是filter的drop-shadow，若高版本有bug请关闭</setting-text>
+                        <setting-text data-type="secondary">
+                            开启后聊天框会有主题背景色。原理是filter的drop-shadow，若高版本有bug请关闭
+                        </setting-text>
                     </div>
                     <div id="ec-enhance-input-area-button" class="q-switch">
                         <span class="q-switch__handle"></span>
@@ -80,13 +93,13 @@
         </setting-panel>
     </setting-section>
 
-    <section class="path">
-        <h1>独立密钥配置</h1>
-        <div class="wrap">
-            <div class="list">
-                <div class="vertical-list-item" style="display: flex; flex-direction: column">
-                    <h1>此处配置单独的群聊密钥(如需要私聊密钥需要手动填写Q号对应的uin)</h1>
-                </div>
+    <setting-section data-title="独立密钥配置">
+        <setting-panel>
+            <setting-list data-direction="column">
+                <setting-item data-direction="row" style="justify-content: center;align-items: center">
+                    <h1 style="font-size: 16px;margin-top: 5px;font-weight: bold">
+                        此处配置单独的群聊密钥(如需要私聊密钥需要手动填写Q号对应的uin)</h1>
+                </setting-item>
                 <hr class="horizontal-dividing-line"/>
                 <div class="key-list-container">
                     <!--                    <div class="vertical-list-item singal-key-row">-->
@@ -112,38 +125,34 @@
                     <!--                    </div>-->
                 </div>
                 <hr class="horizontal-dividing-line"/>
-                <div class="vertical-list-item" style="display: flex; flex-direction: column">
+                <setting-item data-direction="row" style="justify-content: center">
                     <button class="q-button q-button--secondary q-button--large add-row-button">+</button>
-                </div>
+                </setting-item>
 
+            </setting-list>
+        </setting-panel>
+    </setting-section>
 
-            </div>
-        </div>
-    </section>
-
-    <section class="path">
-        <h1>插件说明</h1>
-        <div class="wrap">
-            <div class="list">
-                <div class="vertical-list-item" style="display: flex; flex-direction: column">
-                    <h1>使用方法：打开聊天窗口，点击输入栏上方右侧的加密图标即可切换是否加密。</h1>
-                    <h2>目前全局共用一个密钥。</h2>
-                </div>
-                <hr class="horizontal-dividing-line"/>
-                <div class="vertical-list-item">
-                    <h1>加密图片的缓存在插件目录/decryptedImgs内，每次退出QQ会自动删除缓存。</h1>
-                </div>
-                <hr class="horizontal-dividing-line"/>
-                <div class="vertical-list-item">
-                    <h1>加密文件下载地址在插件目录/decryptedFiles内。</h1>
-                </div>
-                <hr class="horizontal-dividing-line"/>
-                <div class="vertical-list-item" style="display: flex; flex-direction: column">
-                    <h1>按Ctrl+E可快捷切换EC状态</h1>
-                </div>
-            </div>
-        </div>
-    </section>
+    <setting-section data-title="插件说明">
+        <setting-panel>
+            <setting-list data-direction="column">
+                <setting-item data-direction="row" style="justify-content: center">
+                    <div>
+                        <setting-text>使用方法：打开聊天窗口，点击输入栏上方右侧的加密图标即可切换是否加密。</setting-text>
+                    </div>
+                </setting-item>
+                <setting-item data-direction="row" style="justify-content: center">
+                    <setting-text>加密图片的缓存在插件目录/decryptedImgs内，每次退出QQ会自动删除缓存。</setting-text>
+                </setting-item>
+                <setting-item data-direction="row" style="justify-content: center">
+                    <setting-text>加密文件下载地址在插件目录/decryptedFiles内。</setting-text>
+                </setting-item>
+                <setting-item data-direction="row" style="justify-content: center">
+                    <setting-text>按Ctrl+E可快捷切换EC状态</setting-text>
+                </setting-item>
+            </setting-list>
+        </setting-panel>
+    </setting-section>
 
 
     <style>
@@ -177,6 +186,12 @@
         #ec-style-selector:focus {
             border-color: #007BFF;
             box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+        }
+
+        .singal-key-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
 
         .add-row-button {
@@ -234,113 +249,6 @@
             display: flex;
             flex-direction: column;
             margin-right: 10px;
-        }
-
-        /* 通用 */
-        .config_view {
-            margin: 20px;
-            overflow-y: auto;
-        }
-
-        .config_view h1 {
-            color: var(--text_primary);
-            font-weight: var(--font-bold);
-            font-size: min(var(--font_size_3), 18px);
-            line-height: min(var(--line_height_3), 24px);
-            padding: 0px 16px;
-            margin-bottom: 8px;
-        }
-
-        .config_view .wrap {
-            /* Linux样式兼容：--fg_white */
-            background-color: var(--fill_light_primary, var(--fg_white));
-            border-radius: 8px;
-            font-size: min(var(--font_size_3), 18px);
-            line-height: min(var(--line_height_3), 24px);
-            margin-bottom: 20px;
-            overflow: hidden;
-            padding: 0px 16px;
-        }
-
-        .config_view .vertical-list-item {
-            margin: 10px 0px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .config_view .horizontal-dividing-line {
-            border: unset;
-            margin: unset;
-            height: 1px;
-            background-color: rgba(127, 127, 127, 0.15);
-        }
-
-        .config_view .secondary-text {
-            color: var(--text_secondary);
-            font-size: min(var(--font_size_2), 16px);
-            line-height: min(var(--line_height_2), 22px);
-            margin-top: 4px;
-        }
-
-        .config_view .wrap .title svg {
-            width: 1em;
-            height: 1em;
-            transform: rotate(-180deg);
-            transition-duration: 0.2s;
-            transition-timing-function: ease;
-            transition-delay: 0s;
-            transition-property: transform;
-        }
-
-        .config_view .modal-dialog header {
-            font-size: 12px;
-            height: 30px;
-            line-height: 30px;
-            text-align: center;
-        }
-
-        .config_view .modal-dialog main {
-            padding: 0px 16px;
-        }
-
-        .config_view .modal-dialog main p {
-            margin: 8px 0px;
-        }
-
-        .config_view .modal-dialog footer {
-            height: 30px;
-            display: flex;
-            justify-content: right;
-            align-items: center;
-        }
-
-
-        /* 版本号 */
-        .config_view .versions .wrap {
-            display: flex;
-            justify-content: space-between;
-            padding: 16px 0px;
-        }
-
-        .config_view .versions .wrap > div {
-            flex: 1;
-            margin: 0px 10px;
-            border-radius: 8px;
-            text-align: center;
-        }
-
-
-        @media (prefers-color-scheme: light) {
-            .text_color {
-                color: black;
-            }
-        }
-
-        @media (prefers-color-scheme: dark) {
-            .text_color {
-                color: white;
-            }
         }
 
     </style>
