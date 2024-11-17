@@ -183,6 +183,20 @@ export class SettingListeners {
         container.appendChild(rowDiv);
     }
 
+    //监听点击复制按钮，并且写入UID到左侧
+    async uidBtnListener() {
+        const uid = app.__vue_app__.config.globalProperties.$store.state.common_Auth.authData.uid
+        this.document.querySelector("#uid").innerText = uid
+        this.document.querySelector("#uid-btn").addEventListener('click', () => {
+            navigator.clipboard.writeText(uid).then(() => {
+                console.log('复制成功：', uid);
+            })
+                .catch(err => {
+                    console.error('复制失败：', err);
+                });
+        })
+    }
+
     async onLoad() {
         this.keyList = (await ecAPI.getConfig()).independentKeyList;
         this.keyInputListener()
@@ -193,5 +207,6 @@ export class SettingListeners {
         this.addKeyRowButtonListener()
         this.initIndependentKeyList()
         this.activeButtonListener()
+        this.uidBtnListener()
     }
 }
