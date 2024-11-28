@@ -188,6 +188,19 @@ export async function ECactivator() {
 
     const input = document.querySelector("p[data-placeholder]").innerText
     ecAPI.showMainProcessInfo(input)
+
+    const result = await ecAPI.invokeNative("ns-WindowApi", "openExternalWindow", false, window.webContentId, 'ChatWindow', {
+        peerName: '喵喵喵',
+        memberName: null,
+        chatType: 1,
+        peerUid: 'u_snYxnEfja-Po_cdFcyccRQ',
+        uin: '379450326',
+        newVlistSwitchOn: true,
+        unreadCnt: '0',
+        dragMsgItems: undefined,
+    }, 'u_snYxnEfja-')
+    console.log(result)
+    //下面开始调用
 }
 
 export async function changeECStyle(isActive) {
