@@ -619,6 +619,68 @@ async function ecOpenURL(event) {
 window.ecOpenURL=ecOpenURL
 
 
+export function listenMediaListChange() {
+    const store = app.__vue_app__?.config?.globalProperties?.$store;
+    if (!store) return;
+  
+    // 标记是否正在进行更新，防止由内部更新触发 watcher 循环
+    let isUpdating = false;
+  
+    store.watch(
+        // 监听 mediaList（深度监听）
+        (state) => state.MediaViewer.mediaList,
+        async (newMediaList, oldMediaList) => {
+            if (isUpdating) return; // 如果正在更新，则不再处理
+            console.log('mediaList 发生变化:', newMediaList);
+            
+            // 为了避免直接修改原数组，复制一份新的数组
+            const updatedMediaList = JSON.parse(JSON.stringify(newMediaList));
+          
+            // 遍历新列表，处理需要解密的图片
+            for (const media of updatedMediaList) {
+                if (media.type !== 'image') continue;
+                if (media.imageDecrypted) continue; // 如果已解密，则跳过
+                
+                // 标记为已尝试解密，防止后续重复处理
+                media.imageDecrypted = true;
+                const imgPath = decodeURIComponent(media.originPath).substring(9)//获取原始路径
+                if (!await ecAPI.imgChecker(imgPath)) {
+                    console.log('[EC]图片校验未通过！渲染原图')
+                    continue //图片检测未通过
+                }
+                const peerUid = media.context?.peerUid;
+                try {
+                    const decryptedObj = await ecAPI.imgDecryptor(imgPath, peerUid);
+                    if (!decryptedObj) continue;
+                    // 更新媒体对象相关属性
+                    media.originPath = "appimg://" + encodeURI(decryptedObj.decryptedImgPath.replace("\\", "/"));
+                    if (media.context) {
+                        media.context.sourcePath = decryptedObj.decryptedImgPath;
+                    }
+                    media.size = { width: decryptedObj.width, height: decryptedObj.height };
+                } catch (error) {
+                    console.error("解密错误:", error);
+                }
+            }
+          
+            if (JSON.stringify(newMediaList) === JSON.stringify(updatedMediaList)) return; // 如果没有变化，则不再更新
+
+            // 使用防重入标志防止由此更新再次触发 watcher
+            isUpdating = true;
+            if (store._mutations && store._mutations["MediaViewer/updateMediaList"]) {
+                store.commit("MediaViewer/updateMediaList", updatedMediaList);
+            } else {
+                store.state.MediaViewer.mediaList = updatedMediaList;
+            }
+            isUpdating = false;
+        },
+        {
+          deep: false
+        }
+    );
+  }
+  
+
 // const fileObj={
 //     type:'ec-encrypted-file',
 //     fileName: fileName,
