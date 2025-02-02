@@ -55,11 +55,15 @@ function ecFileHandler(filearrayBuffer, fileName, peerUid) {
     if (!decryptedBufFile) {
         pluginLog('文件解密失败！')
         return false
-    }//解密失败就不需要继续了
-    fs.writeFile(config.downloadFilePath + `\\${fileName}`, decryptedBufFile, (err) => {
+    }// 解密失败就不需要继续了
+    const savePath = path.join(config.downloadFilePath, fileName);
+    // 判断是否存在文件夹，不存在则创建
+    if (!fs.existsSync(config.downloadFilePath)) {
+        fs.mkdirSync(config.downloadFilePath)
+    }
+    fs.writeFile(savePath, decryptedBufFile, (err) => {
         if (err) pluginLog(err)
     })
-
 }
 
 
