@@ -69,6 +69,8 @@ async function ipcMsgModify(args, window) {
 
     console.log('[EC ipcUtils ipcMsgModify]下面打印出nodeIKernelMsgService/sendMsg的内容')
     console.log(JSON.stringify(args[3][1][1], null, 2))
+
+    const pictureToUnlink = [] // 要删除的图片路径
     //console.log(args[3][1][1].msgElements?.[0].textElement)
 
     //下面判断加密是否启用，启用了就修改消息内容
@@ -106,9 +108,9 @@ async function ipcMsgModify(args, window) {
             //复制图片到QQ缓存的目录
             pluginLog('正在复制图片到QQ缓存目录,目录为' + cachePath)
             fs.copyFileSync(result.picPath, cachePath);
-            fs.unlink(item.picElement.sourcePath, (err) => {
-                if (err) console.log(err)
-            })//把发送的源图片删除，避免泄露
+            if (pictureToUnlink.indexOf(item.picElement.sourcePath) === -1) {
+                pictureToUnlink.push(item.picElement.sourcePath) // 添加到要删除的图片路径，而不是直接删除，防止同一张图片多次发送时出错
+            }
             Object.assign(item.picElement, {
                 md5HexStr: result.picMD5,
                 sourcePath: cachePath,
@@ -170,6 +172,13 @@ async function ipcMsgModify(args, window) {
 
             args[3][1][1].msgElements = [textElement]
         }
+    }
+
+    // 删除原始图片
+    for (const path of pictureToUnlink) {
+        fs.unlink(path, (err) => {
+            if (err) console.log(err)
+        }) // 把发送的源图片删除，避免泄露
     }
 
     // console.log('修改后的,msgElements为')
