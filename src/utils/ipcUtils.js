@@ -197,21 +197,24 @@ async function ipcMsgModify(args, window) {
 function ipcOpenImgModify(args) {
     // console.log("ipcOpenImgModify", JSON.stringify(args, null, 2))
     const mediaList = args[3][1][1].mediaList
-    const imgPath = decodeURIComponent(mediaList[0].originPath).substring(9)//获取原始路径
-    if (!imgChecker(imgPath)) {
-        console.log('[EC]图片校验未通过！渲染原图')
-        return args
+    // 需要考虑一条消息中有多个图片的情况
+    for (let media of mediaList) {
+        const imgPath = decodeURIComponent(media.originPath).substring(9)//获取原始路径
+        if (!imgChecker(imgPath)) {
+            console.log('[EC]图片校验未通过！渲染原图')
+            return args
+        }
+        // 下面开始解密图片
+        const peerUid = media.context?.peerUid
+        const decryptedObj = imgDecryptor(imgPath, peerUid)
+        if (!decryptedObj) return args; //解密失败直接返回
+        // console.log(decryptedObj)
+        // decryptedImgPath: 'E:\\LiteloaderQQNT\\plugins\\Encrypt-Chat\\decryptedImgs\\54dcd5689b10debf8a718d30f6b0691a.png',
+        media.originPath = "appimg://" + encodeURI(decryptedObj.decryptedImgPath.replace("\\", "/"))
+        media.context.sourcePath = decryptedObj.decryptedImgPath
+        media.size = {width: decryptedObj.width, height: decryptedObj.height}
+        pluginLog('修改后的图片路径：' + media.originPath)
     }
-    // 下面开始解密图片
-    const peerUid = mediaList[0].context?.peerUid
-    const decryptedObj = imgDecryptor(imgPath, peerUid)
-    if (!decryptedObj) return args; //解密失败直接返回
-    // console.log(decryptedObj)
-    // decryptedImgPath: 'E:\\LiteloaderQQNT\\plugins\\Encrypt-Chat\\decryptedImgs\\54dcd5689b10debf8a718d30f6b0691a.png',
-    mediaList[0].originPath = "appimg://" + encodeURI(decryptedObj.decryptedImgPath.replace("\\", "/"))
-    mediaList[0].context.sourcePath = decryptedObj.decryptedImgPath
-    mediaList[0].size = {width: decryptedObj.width, height: decryptedObj.height}
-    pluginLog('修改后的图片路径：' + mediaList[0].originPath)
     return args
 }
 
