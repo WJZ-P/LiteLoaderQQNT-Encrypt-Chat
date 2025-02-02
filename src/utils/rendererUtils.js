@@ -641,7 +641,8 @@ export function listenMediaListChange() {
                 const indexQueue = [currMediaIndex];
 
                 // 根据距离的远近，将需要解密的图片放在前面
-                for (let i = 1; i <= mediaLength / 2; i++) {
+                const maxDistance = Math.max(currMediaIndex, mediaLength - 1 - currMediaIndex);
+                for (let i = 1; i <= maxDistance; i++) {
                     const left = currMediaIndex - i;
                     const right = currMediaIndex + i;
                     if (left >= 0) indexQueue.push(left);
