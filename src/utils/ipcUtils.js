@@ -8,6 +8,7 @@ const {imgChecker, imgDecryptor, uploadImage, singlePixelPngBuffer} = require(".
 const {getFileBuffer} = require("./fileUtils");
 const {encryptImg, messageDecryptor, decodeHex} = require("./cryptoUtils");
 
+let currentUid = null; // 暂存当前UID
 
 /**
  * 修改消息ipc
@@ -19,27 +20,43 @@ function ipcModifyer(ipcProxy, window) {
     return new Proxy(ipcProxy, {
         async apply(target, thisArg, args) {
             let modifiedArgs = args;
+            // 设置ipc通道名
+            const ipcName = args?.[3]?.[1]?.[0]
+            const eventName = args?.[3]?.[0]?.eventName
+
             try {//thisArg是WebContent对象
-                //设置ipc通道名
-                const ipcName = args?.[3]?.[1]?.[0]
-                const eventName = args?.[3]?.[0]?.eventName
                 //测试
                 //if(ipcName==='nodeIKernelMsgService/ForwardMsgWithComment') console.log(JSON.stringify(args))
-                if (eventName !== "ns-LoggerApi-2") console.log(JSON.stringify(args))//调试的时候用
-
+                //if (eventName !== "ns-LoggerApi-2") console.log(JSON.stringify(args))//调试的时候用
+                //if (ipcName === "nodeIKernelMsgService/setMsgEmojiLikes") console.log(JSON.stringify(args))//打印贴表情                
+                if (ipcName === 'nodeIKernelMsgService/setCurOnScreenMsgForMsgEvent') modifiedArgs = updateUid(args); // 暂存当前UID信息
                 if (ipcName === 'nodeIKernelMsgService/sendMsg') modifiedArgs = await ipcMsgModify(args, window);
                 if (ipcName === 'openMediaViewer') modifiedArgs = ipcOpenImgModify(args);
-                if (ipcName === 'writeClipboard') modifiedArgs = ipcwriteClipboardModify(args);//修改复制功能
+                if (ipcName === 'writeClipboard') modifiedArgs = ipcwriteClipboardModify(args);// 修改复制功能
                 if (ipcName === 'startDrag') modifiedArgs = ipcStartDrag(args);
-
-                return target.apply(thisArg, modifiedArgs)
             } catch (err) {
-                console.log(err);
-                target.apply(thisArg, args)
+                console.log("ipcModifyer Error: " + err);
+                modifiedArgs = args; // 出错时不修改
             }
-        }
+
+            return target.apply(thisArg, modifiedArgs);
+        },
+        
     })
 }
+
+
+/**
+ * 更新当前UID，通过监听setCurOnScreenMsgForMsgEvent事件获取
+ * @param args
+ * @returns {args}
+ */
+async function updateUid(args) {
+    currentUid = args[3][1][1].peer.peerUid;
+    console.log('[EC updateUid] Uid Updated: ' + currentUid);
+    return args;
+}
+
 
 /**
  * 处理QQ消息,对符合条件的msgElement的content进行加密再返回
@@ -115,7 +132,7 @@ async function ipcMsgModify(args, window) {
             const fileSize = item.fileElement.fileSize
             //获取文件的buffer后对buffer进行加密
             pluginLog('获取到文件buffer，加密中')
-            const encryptedFileBuffer = encryptImg((await getFileBuffer(filePath)))//和图片加密的方法是一样的，都是二进制
+            const encryptedFileBuffer = encryptImg((await getFileBuffer(filePath)), peerUid) // 和图片加密的方法是一样的，都是二进制
 
 
             //把文件buffer插入1x1的png里面后发送文件请求
@@ -169,36 +186,40 @@ async function ipcMsgModify(args, window) {
  * @returns {args}
  */
 function ipcOpenImgModify(args) {
+    // console.log("ipcOpenImgModify", JSON.stringify(args, null, 2))
     const mediaList = args[3][1][1].mediaList
     const imgPath = decodeURIComponent(mediaList[0].originPath).substring(9)//获取原始路径
     if (!imgChecker(imgPath)) {
         console.log('[EC]图片校验未通过！渲染原图')
         return args
     }
-    //下面开始解密图片
-    const decryptedObj = imgDecryptor(imgPath)
+    // 下面开始解密图片
+    const peerUid = mediaList[0].context?.peerUid
+    const decryptedObj = imgDecryptor(imgPath, peerUid)
     if (!decryptedObj) return args; //解密失败直接返回
-    console.log(decryptedObj)
-    //decryptedImgPath: 'E:\\LiteloaderQQNT\\plugins\\Encrypt-Chat\\decryptedImgs\\54dcd5689b10debf8a718d30f6b0691a.png',
+    // console.log(decryptedObj)
+    // decryptedImgPath: 'E:\\LiteloaderQQNT\\plugins\\Encrypt-Chat\\decryptedImgs\\54dcd5689b10debf8a718d30f6b0691a.png',
     mediaList[0].originPath = "appimg://" + encodeURI(decryptedObj.decryptedImgPath.replace("\\", "/"))
+    mediaList[0].context.sourcePath = decryptedObj.decryptedImgPath
     mediaList[0].size = {width: decryptedObj.width, height: decryptedObj.height}
     pluginLog('修改后的图片路径：' + mediaList[0].originPath)
     return args
 }
 
 function ipcwriteClipboardModify(args) {
+    // console.log("ipcwriteClipboardModify", JSON.stringify(args, null, 2))
     for (const item of args[3][1][1]) {
 
         //说明消息内容是文字类
         if (item.elementType === 1) {
             //修改解密消息
-            const decryptedMsg = messageDecryptor(decodeHex(item.textElement.content), null)
+            const decryptedMsg = messageDecryptor(decodeHex(item.textElement.content), currentUid)
             if (decryptedMsg) item.textElement.content = decryptedMsg
         }
 
         //说明消息内容是图片类，md5HexStr这个属性一定要对，会做校验
         else if (item.elementType === 2) {
-            const decryptedObj = imgDecryptor(item.picElement.sourcePath, null)
+            const decryptedObj = imgDecryptor(item.picElement.sourcePath, currentUid)
 
             if (decryptedObj.decryptedImgPath !== "")  //解密成功才继续
             {
@@ -213,17 +234,18 @@ function ipcwriteClipboardModify(args) {
 
 //拖拽图片时解密
 function ipcStartDrag(args) {
-    const decryptedObj = imgDecryptor(args[3][1][1], null)
+    // console.log("ipcwriteClipboardModify", JSON.stringify(args, null, 2))
+    const decryptedObj = imgDecryptor(args[3][1][1], currentUid)
     if (decryptedObj.decryptedImgPath !== "")  //解密成功才继续
         args[3][1][1] = decryptedObj.decryptedImgPath
     return args
 }
 
-const c = [{"frameId": 1, "processId": 5}, false, "IPC_UP_2", [{
-    "type": "request",
-    "callbackId": "30511689-ba3b-447e-add5-41df0d9f8a4a",
-    "eventName": "ns-OsApi-2"
-}, ["startDrag", "F:\\QQ文件\\1369727119\\nt_qq\\nt_data\\Pic\\2024-10\\Ori\\db8eedfbb3aefe4a5a92ec35439fe076.png"]]]
+// const c = [{"frameId": 1, "processId": 5}, false, "IPC_UP_2", [{
+//     "type": "request",
+//     "callbackId": "30511689-ba3b-447e-add5-41df0d9f8a4a",
+//     "eventName": "ns-OsApi-2"
+// }, ["startDrag", "F:\\QQ文件\\1369727119\\nt_qq\\nt_data\\Pic\\2024-10\\Ori\\db8eedfbb3aefe4a5a92ec35439fe076.png"]]]
 
 module.exports = {ipcModifyer}
 
