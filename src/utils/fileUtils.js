@@ -47,19 +47,23 @@ function getFileBuffer(filePath) {
     })
 }
 
-function ecFileHandler(filearrayBuffer, fileName) {
+function ecFileHandler(filearrayBuffer, fileName, peerUid) {
     const fileBuffer = Buffer.from(filearrayBuffer, 'binary')
     pluginLog('获取到的文件buffer为')
     console.log(fileBuffer)
-    const decryptedBufFile = decryptImg(fileBuffer.slice(68))//可以用同样的办法解密文件，因为都是二进制
+    const decryptedBufFile = decryptImg(fileBuffer.slice(68), peerUid)//可以用同样的办法解密文件，因为都是二进制
     if (!decryptedBufFile) {
         pluginLog('文件解密失败！')
         return false
-    }//解密失败就不需要继续了
-    fs.writeFile(config.downloadFilePath + `\\${fileName}`, decryptedBufFile, (err) => {
+    }// 解密失败就不需要继续了
+    const savePath = path.join(config.downloadFilePath, fileName);
+    // 判断是否存在文件夹，不存在则创建
+    if (!fs.existsSync(config.downloadFilePath)) {
+        fs.mkdirSync(config.downloadFilePath)
+    }
+    fs.writeFile(savePath, decryptedBufFile, (err) => {
         if (err) pluginLog(err)
     })
-
 }
 
 

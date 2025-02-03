@@ -1,6 +1,6 @@
 import {addFuncBarIcon, addMenuItemEC, changeECStyle, ECactivator} from "./utils/chatUtils.js";
 import {SettingListeners} from "./utils/SettingListeners.js"
-import {messageRenderer, patchCss, rePatchCss} from "./utils/rendererUtils.js";
+import {messageRenderer, patchCss, rePatchCss, listenMediaListChange} from "./utils/rendererUtils.js";
 
 const ecAPI = window.encrypt_chat
 await onLoad();//注入
@@ -42,10 +42,23 @@ async function onLoad() {
 
 function onHashUpdate() {
     const hash = location.hash;
-    if (hash === '#/blank') return
+    if (hash === '#/blank') return;
 
-    if (!(hash.includes("#/main/message") || hash.includes("#/chat"))) return;//不符合条件直接返回
+    // 聊天页面
+    if (hash.includes("#/main/message") || hash.includes("#/chat")) {
+        handleMainPage();
+        return;
+    }
 
+    // 图片查看器
+    if (hash.includes("#/image-viewer")) {
+        handleImageViewer();
+        return;
+    }
+}
+
+// 针对聊天页面的处理
+function handleMainPage() {
     console.log('[EC渲染进程]执行onHashUpdate~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~')
 
     ecAPI.addEventListener('LiteLoader.encrypt_chat.rePatchCss', rePatchCss) //监听设置被修改后，从主进程发过来的重新修改css请求
@@ -65,13 +78,11 @@ function onHashUpdate() {
         console.log(e)
     }
 
-    render()
+    mainRender()
 }
 
-
-//
-//渲染函数
-async function render() {
+// 聊天渲染器
+async function mainRender() {
     try {
         while (true) {
             await sleep(100)//稍微调大点
@@ -86,6 +97,18 @@ async function render() {
         console.log(e)
     }
 }
+
+
+// 针对图片查看器的处理
+function handleImageViewer() {
+    // 图片查看器
+    console.log('[EC渲染进程]执行onHashUpdate~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~');
+
+    // 监听图片查看MediaList的变化，动态解密图片
+    listenMediaListChange();
+}
+
+
 
 export async function sleep(ms) {
     return new Promise(resolve => {
