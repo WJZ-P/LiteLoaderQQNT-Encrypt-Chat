@@ -80,7 +80,7 @@ async function onload() {
     ipcMain.handle("LiteLoader.encrypt_chat.imgDecryptor", (_, imgPath, peerUid) => imgDecryptor(imgPath, peerUid))
     ipcMain.handle("LiteLoader.encrypt_chat.imgChecker", (_, imgPath) => imgChecker(imgPath))
     //进行下载文件的解密与保存。
-    ipcMain.on("LiteLoader.encrypt_chat.ecFileHandler", (_, fileBuffer, fileName) => ecFileHandler(fileBuffer, fileName))
+    ipcMain.on("LiteLoader.encrypt_chat.ecFileHandler", (_, fileBuffer, fileName, peerUid) => ecFileHandler(fileBuffer, fileName, peerUid))
     //打开对应目录的文件夹
     ipcMain.on("LiteLoader.encrypt_chat.openPath", (_, filePath) => shell.openPath(filePath))
 

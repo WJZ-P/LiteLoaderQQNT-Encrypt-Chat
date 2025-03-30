@@ -3,7 +3,7 @@ import "../assests/minJS/axios.min.js"
 //添加css样式
 const ecAPI = window.encrypt_chat
 let currentConfig = await ecAPI.getConfig()
-const downloadFunc = (fileObj, msgContent) => () => downloadFile(fileObj, msgContent)
+const downloadFunc = (fileObj, msgContent, peerUid) => () => downloadFile(fileObj, msgContent, peerUid)
 
 //const curAioData = app.__vue_app__.config.globalProperties.$store.state.common_Aio.curAioData
 export function patchCss() {
@@ -252,7 +252,8 @@ export async function checkMsgElement(msgElement) {
 export async function messageRenderer(allChats) {//下面对每条消息进行判断
     if(!(await ecAPI.getConfig()).useEncrypt) return//说明未开启加密，不做处理。
 
-    const uin = app.__vue_app__?.config?.globalProperties?.$store?.state?.common_Aio?.curAioData?.header.uin//当天聊天的对应信息
+    const uid = app.__vue_app__?.config?.globalProperties?.$store?.state?.common_Aio?.curAioData?.header.uid // 当天聊天的对应信息
+
     for (const chatElement of allChats) {
         try {
             const msgContentContainer = chatElement.querySelector('.msg-content-container')
@@ -281,7 +282,7 @@ export async function messageRenderer(allChats) {//下面对每条消息进行�
                         hexString = await checkMsgElement(child)
                         if (hexString) {
                             //pluginLog('检测到加密回复消息')
-                            const decryptedMsg = await ecAPI.messageDecryptor(hexString, uin)
+                            const decryptedMsg = await ecAPI.messageDecryptor(hexString, uid)
                             if (!decryptedMsg) continue//解密后如果消息是空的，那就直接忽略，进入下次循环
                             //直接修改内容
                             child.innerText = decryptedMsg
@@ -296,7 +297,7 @@ export async function messageRenderer(allChats) {//下面对每条消息进行�
 
 
                     if (hexString) {
-                        const decryptedMsg = await ecAPI.messageDecryptor(hexString, uin)
+                        const decryptedMsg = await ecAPI.messageDecryptor(hexString, uid)
                         if (!decryptedMsg) continue//解密后如果消息是空的，那就直接忽略，进入下次循环
 
                         //这里开始判断是否是文件
@@ -304,7 +305,7 @@ export async function messageRenderer(allChats) {//下面对每条消息进行�
                             totalOriginalMsg = '[EC文件]'//注意这里是直接=，因为如果是文件只可能有一个Msg。
 
                             //建立个函数进行fileDiv处理
-                            await fileDivCreater(msgContent, JSON.parse(decryptedMsg))
+                            await fileDivCreater(msgContent, JSON.parse(decryptedMsg), uid)
 
                         } else {
                             totalOriginalMsg += normalText.innerText//获取原本的密文
@@ -369,7 +370,7 @@ export async function messageRenderer(allChats) {//下面对每条消息进行�
                     //下面进行图片解密
                     //console.log('[EC]图片校验通过！尝试进行解密')
                     //解密图片
-                    const decryptedObj = await ecAPI.imgDecryptor(imgPath, uin)
+                    const decryptedObj = await ecAPI.imgDecryptor(imgPath, uid)
 
                     if (decryptedObj.decryptedImgPath !== "")  //解密成功才继续
                     {
@@ -421,7 +422,7 @@ export async function messageRenderer(allChats) {//下面对每条消息进行�
  * @param {Element} msgContent
  * @param {Object} fileObj
  */
-async function fileDivCreater(msgContent, fileObj) {
+async function fileDivCreater(msgContent, fileObj, peerUid) {
     msgContent.innerHTML = `
 <div class="ec-file-card">
     <div class="ec-file-info">
@@ -454,7 +455,7 @@ async function fileDivCreater(msgContent, fileObj) {
         })
     } else {
         // 添加下载按钮的点击事件
-        const funcReference = downloadFunc(fileObj, msgContent)
+        const funcReference = downloadFunc(fileObj, msgContent, peerUid)
         fileObj.downloadFunc = funcReference
         msgContent.querySelector('.ec-download-button').addEventListener('click', funcReference)
     }
@@ -550,7 +551,7 @@ function formatFileSize(bytes) {
     return Math.round(bytes / Math.pow(1024, i)) + ' ' + sizes[i];
 }
 
-function downloadFile(fileObj, msgContent) {
+function downloadFile(fileObj, msgContent, peerUid) {
     const progressElement = msgContent.querySelector('.progress')
     const iconElement = msgContent.querySelector('.ec-file-icon') //下载的图标元素
     const downloadButton = msgContent.querySelector('.ec-download-button')
@@ -579,9 +580,7 @@ function downloadFile(fileObj, msgContent) {
         }).then(response => {
             //通过IPC发送到主进程
             progressElement.style.display = 'none'
-            console.log(response.data)
-            console.log(JSON.stringify(response, null, 4))
-            ecAPI.ecFileHandler(response.data, fileObj.fileName)
+            ecAPI.ecFileHandler(response.data, fileObj.fileName, peerUid)
             //下载完成，图标修改为下载完成状态
             iconElement.innerHTML = `<path d="M383-327 167.5-542.5 221-596l162 162 356-356 53.5 53.5L383-327ZM210-170v-70h540v70H210Z"/>`
             //下面的下载按钮要改成打开所在目录
@@ -619,6 +618,86 @@ async function ecOpenURL(event) {
 //给window对象添加函数
 window.ecOpenURL=ecOpenURL
 
+
+export function listenMediaListChange() {
+    const store = app.__vue_app__?.config?.globalProperties?.$store;
+    if (!store) return;
+  
+    // 标记是否正在进行更新，防止由内部更新触发 watcher 循环
+    let isUpdating = false;
+  
+    store.watch(
+        // 监听 mediaList（深度监听）
+        (state) => state.MediaViewer.mediaList,
+        async (newMediaList, oldMediaList) => {
+            try {
+                if (isUpdating) return; // 如果正在更新，则不再处理
+                console.log('mediaList 发生变化:', newMediaList);
+                
+                // 为了避免直接修改原数组，复制一份新的数组
+                const updatedMediaList = JSON.parse(JSON.stringify(newMediaList));
+                const currMediaIndex = store.state.MediaViewer.currMediaIndex;
+                const mediaLength = updatedMediaList.length;
+                const indexQueue = [currMediaIndex];
+
+                // 根据距离的远近，将需要解密的图片放在前面
+                const maxDistance = Math.max(currMediaIndex, mediaLength - 1 - currMediaIndex);
+                for (let i = 1; i <= maxDistance; i++) {
+                    const left = currMediaIndex - i;
+                    const right = currMediaIndex + i;
+                    if (left >= 0) indexQueue.push(left);
+                    if (right < mediaLength) indexQueue.push(right);
+                }
+            
+                // 遍历新列表，处理需要解密的图片
+                for (const index of indexQueue) {
+                    const media = updatedMediaList[index];
+                    if (media.type !== 'image') continue;
+                    if (media.imageDecrypted) continue; // 如果已解密，则跳过
+                    
+                    // 标记为已尝试解密，防止后续重复处理
+                    media.imageDecrypted = true;
+                    const imgPath = decodeURIComponent(media.originPath).substring(9)//获取原始路径
+                    if (!await ecAPI.imgChecker(imgPath)) {
+                        // console.log('[EC]图片校验未通过！渲染原图: ' + imgPath)
+                        continue //图片检测未通过
+                    }
+                    const peerUid = media.context?.peerUid;
+                    try {
+                        const decryptedObj = await ecAPI.imgDecryptor(imgPath, peerUid);
+                        if (!decryptedObj) continue;
+                        // 更新媒体对象相关属性
+                        media.originPath = "appimg://" + encodeURI(decryptedObj.decryptedImgPath.replace("\\", "/"));
+                        if (media.context) {
+                            media.context.sourcePath = decryptedObj.decryptedImgPath;
+                        }
+                        media.size = { width: decryptedObj.width, height: decryptedObj.height };
+                    } catch (error) {
+                        console.error("解密错误:", error);
+                    }
+                }
+            
+                if (JSON.stringify(newMediaList) === JSON.stringify(updatedMediaList)) return; // 如果没有变化，则不再更新
+
+                // 使用防重入标志防止由此更新再次触发 watcher
+                isUpdating = true;
+                console.log('mediaList 更新中:', updatedMediaList);
+                if (store._mutations && store._mutations["MediaViewer/updateMediaList"]) {
+                    store.commit("MediaViewer/updateMediaList", updatedMediaList);
+                } else {
+                    store.state.MediaViewer.mediaList = updatedMediaList;
+                }
+                isUpdating = false;
+            } catch (err) {
+                console.error(err);
+            }
+        },
+        {
+          deep: true
+        }
+    );
+  }
+  
 
 // const fileObj={
 //     type:'ec-encrypted-file',
