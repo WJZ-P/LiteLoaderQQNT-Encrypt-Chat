@@ -25,7 +25,7 @@ function ipcModifyer(ipcProxy, window) {
                 const eventName = args?.[3]?.[0]?.eventName
                 //测试
                 //if(ipcName==='nodeIKernelMsgService/ForwardMsgWithComment') console.log(JSON.stringify(args))
-                if (eventName !== "ns-LoggerApi-2") console.log(JSON.stringify(args))//调试的时候用
+                //if (eventName !== "ns-LoggerApi-2") console.log(JSON.stringify(args))//调试的时候用
 
                 if (ipcName === 'nodeIKernelMsgService/sendMsg') modifiedArgs = await ipcMsgModify(args, window);
                 if (ipcName === 'openMediaViewer') modifiedArgs = ipcOpenImgModify(args);
