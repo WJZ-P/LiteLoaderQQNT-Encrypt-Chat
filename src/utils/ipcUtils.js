@@ -27,10 +27,10 @@ function ipcModifyer(ipcProxy, window) {
                 //if(ipcName==='nodeIKernelMsgService/ForwardMsgWithComment') console.log(JSON.stringify(args))
                 //if (eventName !== "ns-LoggerApi-2") console.log(JSON.stringify(args))//调试的时候用
 
-                if (ipcName === 'nodeIKernelMsgService/sendMsg') modifiedArgs = await ipcMsgModify(args, window);
-                if (ipcName === 'openMediaViewer') modifiedArgs = ipcOpenImgModify(args);
+                if (ipcName === 'nodeIKernelMsgService/sendMsg') modifiedArgs = await ipcMsgModify(args, window);//修改发送消息
+                if (ipcName === 'openMediaViewer') modifiedArgs = ipcOpenImgModify(args);//修改图片查看器
                 if (ipcName === 'writeClipboard') modifiedArgs = ipcwriteClipboardModify(args);//修改复制功能
-                if (ipcName === 'startDrag') modifiedArgs = ipcStartDrag(args);
+                if (ipcName === 'startDrag') modifiedArgs = ipcStartDrag(args);//修改拖动
 
                 return target.apply(thisArg, modifiedArgs)
             } catch (err) {
