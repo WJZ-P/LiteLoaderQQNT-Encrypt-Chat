@@ -250,7 +250,7 @@ export async function checkMsgElement(msgElement) {
  * @returns {Promise<void>}
  */
 export async function messageRenderer(allChats) {//下面对每条消息进行判断
-    if(!(await ecAPI.getConfig()).useEncrypt) return//说明未开启加密，不做处理。
+    if (!(await ecAPI.getConfig()).useEncrypt) return//说明未开启加密，不做处理。
 
     const uid = app.__vue_app__?.config?.globalProperties?.$store?.state?.common_Aio?.curAioData?.header.uid // 当天聊天的对应信息
 
@@ -297,13 +297,14 @@ export async function messageRenderer(allChats) {//下面对每条消息进行�
 
 
                     if (hexString) {
-                        const decryptedMsg = await ecAPI.messageDecryptor(hexString, uid)
+                        let decryptedMsg = await ecAPI.messageDecryptor(hexString, uid)
+                        console.log("解密后的消息为" + decryptedMsg)
                         if (!decryptedMsg) continue//解密后如果消息是空的，那就直接忽略，进入下次循环
 
                         //这里开始判断是否是文件
                         if (decryptedMsg.includes('ec-encrypted-file')) {
                             totalOriginalMsg = '[EC文件]'//注意这里是直接=，因为如果是文件只可能有一个Msg。
-
+                            decryptedMsg=unescapeHTML(decryptedMsg)//做反转义处理
                             //建立个函数进行fileDiv处理
                             await fileDivCreater(msgContent, JSON.parse(decryptedMsg), uid)
 
@@ -611,21 +612,22 @@ function wrapLinks(text) {
 async function ecOpenURL(event) {
     // console.log("[EC链接]ecOpenURL的参数为")
     // console.log(event)
-    let url=event.target.innerText
-    if(!url.startsWith("http")) url="https://"+url
+    let url = event.target.innerText
+    if (!url.startsWith("http")) url = "https://" + url
     await ecAPI.invokeNative("ns-BusinessApi", "openUrl", false, window.webContentId, {"url": url})
 }
+
 //给window对象添加函数
-window.ecOpenURL=ecOpenURL
+window.ecOpenURL = ecOpenURL
 
 
 export function listenMediaListChange() {
     const store = app.__vue_app__?.config?.globalProperties?.$store;
     if (!store) return;
-  
+
     // 标记是否正在进行更新，防止由内部更新触发 watcher 循环
     let isUpdating = false;
-  
+
     store.watch(
         // 监听 mediaList（深度监听）
         (state) => state.MediaViewer.mediaList,
@@ -633,7 +635,7 @@ export function listenMediaListChange() {
             try {
                 if (isUpdating) return; // 如果正在更新，则不再处理
                 console.log('mediaList 发生变化:', newMediaList);
-                
+
                 // 为了避免直接修改原数组，复制一份新的数组
                 const updatedMediaList = JSON.parse(JSON.stringify(newMediaList));
                 const currMediaIndex = store.state.MediaViewer.currMediaIndex;
@@ -648,13 +650,13 @@ export function listenMediaListChange() {
                     if (left >= 0) indexQueue.push(left);
                     if (right < mediaLength) indexQueue.push(right);
                 }
-            
+
                 // 遍历新列表，处理需要解密的图片
                 for (const index of indexQueue) {
                     const media = updatedMediaList[index];
                     if (media.type !== 'image') continue;
                     if (media.imageDecrypted) continue; // 如果已解密，则跳过
-                    
+
                     // 标记为已尝试解密，防止后续重复处理
                     media.imageDecrypted = true;
                     const imgPath = decodeURIComponent(media.originPath).substring(9)//获取原始路径
@@ -671,12 +673,12 @@ export function listenMediaListChange() {
                         if (media.context) {
                             media.context.sourcePath = decryptedObj.decryptedImgPath;
                         }
-                        media.size = { width: decryptedObj.width, height: decryptedObj.height };
+                        media.size = {width: decryptedObj.width, height: decryptedObj.height};
                     } catch (error) {
                         console.error("解密错误:", error);
                     }
                 }
-            
+
                 if (JSON.stringify(newMediaList) === JSON.stringify(updatedMediaList)) return; // 如果没有变化，则不再更新
 
                 // 使用防重入标志防止由此更新再次触发 watcher
@@ -693,11 +695,43 @@ export function listenMediaListChange() {
             }
         },
         {
-          deep: true
+            deep: true
         }
     );
-  }
-  
+}
+
+/**
+ * 反转义HTML实体
+ * 将 HTML 实体（如 &lt; &amp;）转换回对应的特殊字符（如 < &）
+ * @param {string} str 包含 HTML 实体的输入字符串
+ * @return {string} 反转义后的字符串
+ */
+function unescapeHTML(str) {
+    // 确保输入是字符串类型
+    if (typeof str !== 'string') {
+        return str;
+    }
+    // 定义一个映射表，将 HTML 实体映射回特殊字符
+    const htmlUnentities = {
+        '&amp;': '&',
+        '&lt;': '<',
+        '&gt;': '>',
+        '&quot;': '"',
+        '&#39;': "'",
+        '&apos;': "'"
+    };
+
+    // 创建一个正则表达式，用来匹配所有需要反转义的实体
+    // 使用 | 符号表示“或”，全局匹配 (g)
+    // 注意：如果实体之间有包含关系（例如 &amp; 包含 &），需要注意顺序，但这里列出的标准实体没有这个问题
+    const entityRegex = /&amp;|&lt;|&gt;|&quot;|&#39;|&apos;/g;
+
+    // 使用字符串的 replace 方法进行替换
+    // replace 方法找到匹配的实体后，会调用一个回调函数
+    // 回调函数接收匹配到的实体字符串作为参数 (entity)
+    // 回调函数从 htmlUnentities 映射表中查找对应的特殊字符并返回，进行替换
+    return str.replace(entityRegex, entity => htmlUnentities[entity]);
+}
 
 // const fileObj={
 //     type:'ec-encrypted-file',
