@@ -3,7 +3,7 @@
   "type": "extension",
   "name": "Encrypt Chat",
   "slug": "encrypt_chat",
-  "description": "一个方便好用加密通话插件(*^_^*)",
+  "description": "一个方便好用的加密通话插件(*^_^*)",
   "version": "2.6.1",
   "icon": "./src/assests/chat_blue.svg",
   "thumb": "./src/assests/chat_blue.svg",
