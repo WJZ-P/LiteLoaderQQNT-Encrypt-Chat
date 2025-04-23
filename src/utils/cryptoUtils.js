@@ -46,9 +46,6 @@ function getKey(peerUid = undefined) {
 function messageEncryptor(messageToBeEncrypted, peerUid) {
     if (messageToBeEncrypted.trim() === '') return ''//空字符不加密
 
-    //这里为了防止xss攻击，需要对即将加密的明文进行转义
-    messageToBeEncrypted = escapeHTML(messageToBeEncrypted);
-
     //随机生成密语
     let minLength = getCurrentStyle().length[0];
     let maxLength = getCurrentStyle().length[1];
@@ -87,8 +84,8 @@ function messageDecryptor(hexStr, uin) {
             console.error('解密失败，返回的结果为空或无效 UTF-8 数据');
             return null; // 或其他处理
         }
-
-        return decryptedText;
+        //这里为了防止xss攻击，需要进行转义
+        return escapeHTML(decryptedText);
     } catch (e) {
         console.log(e)
         return null

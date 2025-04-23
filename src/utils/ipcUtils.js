@@ -55,6 +55,7 @@ async function ipcMsgModify(args, window) {
     //console.log(args[3][1][1].msgElements?.[0].textElement)
 
     //下面判断加密是否启用，启用了就修改消息内容
+
     if (!config.activeEC) return args
 
     //————————————————————————————————————————————————————————————————————
