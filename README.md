@@ -218,7 +218,7 @@
 
 [linkedin-url]: https://linkedin.com/in/shaojintian
 
-[oldQQ-download-link]:https://ats-prod.oss-accelerate.aliyuncs.com/91ff35732557ef7d8415050a85973801
+[oldQQ-download-link]:https://dldir1.qq.com/qqfile/qq/QQNT/448e164c/QQ9.9.15.26909_x64.exe
 
 [LL-installer-link]:https://ats-prod.oss-accelerate.aliyuncs.com/18734247705198dcb594916e8ba1facc
 
